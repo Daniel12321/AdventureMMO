@@ -22,6 +22,7 @@ public class AdvancedConfig {
 	
 	public static ImmutableMap<BlockType, Integer> blockExps;
 	public static ImmutableMap<SkillType, Double> skillExps;
+	public static ImmutableMap<String, double[]> abilities;
 	
 	public static void setup() {
 		Main.getInstance().getLogger().info("Loading Advanced Config File");
@@ -67,16 +68,93 @@ public class AdvancedConfig {
 				
 				config.getNode("acrobatics").setComment("Here you can set the EXP you gain for each half-heart of fall damage");
 				config.getNode("acrobatics").setValue(4.0);
-				
 				config.getNode("fishing").setComment("Here you can set the EXP you gain for fishin one fish");
 				config.getNode("fishing").setValue(450.0);
-				
 				config.getNode("taming").setComment("Here you can set the EXP you gain for taming one animal");
 				config.getNode("taming").setValue(750.0);
+				
+				config.getNode("abilities", "SUPER_BREAKER", "beginvalue").setValue(5.0);
+				config.getNode("abilities", "SUPER_BREAKER", "increment").setValue(0.08);
+				config.getNode("abilities", "TREE_VELLER", "beginvalue").setValue(5.0);
+				config.getNode("abilities", "TREE_VELLER", "increment").setValue(0.08);
+				config.getNode("abilities", "GIGA_DRILL_BREAKER", "beginvalue").setValue(5.0);
+				config.getNode("abilities", "GIGA_DRILL_BREAKER", "increment").setValue(0.08);
+				config.getNode("abilities", "GREEN_TERRA", "beginvalue").setValue(5.0);
+				config.getNode("abilities", "GREEN_TERRA", "increment").setValue(0.08);
+				config.getNode("abilities", "MINING_DOUBLEDROP", "beginvalue").setValue(0.0);
+				config.getNode("abilities", "MINING_DOUBLEDROP", "increment").setValue(0.2);
+				config.getNode("abilities", "FARMING_DOUBLEDROP", "beginvalue").setValue(0.0);
+				config.getNode("abilities", "FARMING_DOUBLEDROP", "increment").setValue(0.2);
+				config.getNode("abilities", "EXCAVATION_DOUBLEDROP", "beginvalue").setValue(0);
+				config.getNode("abilities", "EXCAVATION_DOUBLEDROP", "increment").setValue(0.2);
+				config.getNode("abilities", "WOODCUTTING_DOUBLEDROP", "beginvalue").setValue(0.0);
+				config.getNode("abilities", "WOODCUTTING_DOUBLEDROP", "increment").setValue(0.2);
+				config.getNode("abilities", "ROLL", "beginvalue").setValue(0.0);
+				config.getNode("abilities", "ROLL", "increment").setValue(0.2);
+				config.getNode("abilities", "DODGE", "beginvalue").setValue(0.0);
+				config.getNode("abilities", "DODGE", "increment").setValue(0.1);
+				config.getNode("abilities", "SALVAGE", "beginvalue").setValue(20.0);
+				config.getNode("abilities", "SALVAGE", "increment").setValue(0.2);
+				config.getNode("abilities", "REPAIR", "beginvalue").setValue(10);
+				config.getNode("abilities", "REPAIR", "increment").setValue(0.12);
+				config.getNode("abilities", "TREASURE_HUNT", "beginvalue").setValue(2.0);
+				config.getNode("abilities", "TREASURE_HUNT", "increment").setValue(0.04);
+				config.getNode("abilities", "WATER_TREASURE", "beginvalue").setValue(8);
+				config.getNode("abilities", "WATER_TREASURE", "increment").setValue(0.2);
+				config.getNode("abilities", "SUMMON_WOLF", "beginvalue").setValue(1000.0);
+				config.getNode("abilities", "SUMMON_WOLF", "increment").setComment("SUMMON_WOLF increment must have a negative value");
+				config.getNode("abilities", "SUMMON_WOLF", "increment").setValue(-2.0);
+				config.getNode("abilities", "SUMMON_OCELOT", "beginvalue").setValue(1500.0);
+				config.getNode("abilities", "SUMMON_OCELOT", "increment").setComment("SUMMON_OCELOT increment must have a negative value");
+				config.getNode("abilities", "SUMMON_OCELOT", "increment").setValue(-2.0);
+				config.getNode("abilities", "SUMMON_HORSE", "beginvalue").setValue(2000.0);
+				config.getNode("abilities", "SUMMON_HORSE", "increment").setComment("SUMMON_HORSE increment must have a negative value");
+				config.getNode("abilities", "SUMMON_HORSE", "increment").setValue(-2.0);
 				
 		        manager.save(config);
 			}
 	        config = manager.load();
+	        
+	        if (config.getNode("abilities", "SUMMON_HORSE", "beginvalue").getInt() == 0) {
+	        	config.getNode("abilities", "SUPER_BREAKER", "beginvalue").setValue(5.0);
+				config.getNode("abilities", "SUPER_BREAKER", "increment").setValue(0.08);
+				config.getNode("abilities", "TREE_VELLER", "beginvalue").setValue(5.0);
+				config.getNode("abilities", "TREE_VELLER", "increment").setValue(0.08);
+				config.getNode("abilities", "GIGA_DRILL_BREAKER", "beginvalue").setValue(5.0);
+				config.getNode("abilities", "GIGA_DRILL_BREAKER", "increment").setValue(0.08);
+				config.getNode("abilities", "GREEN_TERRA", "beginvalue").setValue(5.0);
+				config.getNode("abilities", "GREEN_TERRA", "increment").setValue(0.08);
+				config.getNode("abilities", "MINING_DOUBLEDROP", "beginvalue").setValue(0.0);
+				config.getNode("abilities", "MINING_DOUBLEDROP", "increment").setValue(0.2);
+				config.getNode("abilities", "FARMING_DOUBLEDROP", "beginvalue").setValue(0.0);
+				config.getNode("abilities", "FARMING_DOUBLEDROP", "increment").setValue(0.2);
+				config.getNode("abilities", "EXCAVATION_DOUBLEDROP", "beginvalue").setValue(0);
+				config.getNode("abilities", "EXCAVATION_DOUBLEDROP", "increment").setValue(0.2);
+				config.getNode("abilities", "WOODCUTTING_DOUBLEDROP", "beginvalue").setValue(0.0);
+				config.getNode("abilities", "WOODCUTTING_DOUBLEDROP", "increment").setValue(0.2);
+				config.getNode("abilities", "ROLL", "beginvalue").setValue(0.0);
+				config.getNode("abilities", "ROLL", "increment").setValue(0.2);
+				config.getNode("abilities", "DODGE", "beginvalue").setValue(0.0);
+				config.getNode("abilities", "DODGE", "increment").setValue(0.1);
+				config.getNode("abilities", "SALVAGE", "beginvalue").setValue(20.0);
+				config.getNode("abilities", "SALVAGE", "increment").setValue(0.2);
+				config.getNode("abilities", "REPAIR", "beginvalue").setValue(10);
+				config.getNode("abilities", "REPAIR", "increment").setValue(0.12);
+				config.getNode("abilities", "TREASURE_HUNT", "beginvalue").setValue(2.0);
+				config.getNode("abilities", "TREASURE_HUNT", "increment").setValue(0.04);
+				config.getNode("abilities", "WATER_TREASURE", "beginvalue").setValue(8);
+				config.getNode("abilities", "WATER_TREASURE", "increment").setValue(0.2);
+				config.getNode("abilities", "SUMMON_WOLF", "beginvalue").setValue(1000.0);
+				config.getNode("abilities", "SUMMON_WOLF", "increment").setComment("SUMMON_WOLF increment must have a negative value");
+				config.getNode("abilities", "SUMMON_WOLF", "increment").setValue(-2.0);
+				config.getNode("abilities", "SUMMON_OCELOT", "beginvalue").setValue(1500.0);
+				config.getNode("abilities", "SUMMON_OCELOT", "increment").setComment("SUMMON_OCELOT increment must have a negative value");
+				config.getNode("abilities", "SUMMON_OCELOT", "increment").setValue(-2.0);
+				config.getNode("abilities", "SUMMON_HORSE", "beginvalue").setValue(2000.0);
+				config.getNode("abilities", "SUMMON_HORSE", "increment").setComment("SUMMON_HORSE increment must have a negative value");
+				config.getNode("abilities", "SUMMON_HORSE", "increment").setValue(-2.0);
+				manager.save(config);
+	        }
 	        
 	        ImmutableMap.Builder<BlockType, Integer> b = ImmutableMap.builder();
 	        blockExps = b.put(BlockTypes.POTATOES, config.getNode("blocks", "POTATOES").getInt())
@@ -123,6 +201,26 @@ public class AdvancedConfig {
 	        skillExps = b2.put(SkillType.ACROBATICS, config.getNode("acrobatics").getDouble())
 	        		.put(SkillType.FISHING, config.getNode("fishing").getDouble())
 	        		.put(SkillType.TAMING, config.getNode("taming").getDouble())
+	        		.build();
+	        
+	        ImmutableMap.Builder<String, double[]> b3 = ImmutableMap.builder();
+	        abilities = b3.put("Super Breaker", new double[]{config.getNode("abilities", "SUPER_BREAKER", "beginvalue").getDouble(), config.getNode("abilities", "SUPER_BREAKER", "increment").getDouble()})
+	        		.put("Tree Feller", new double[]{config.getNode("abilities", "TREE_VELLER", "beginvalue").getDouble(), config.getNode("abilities", "TREE_VELLER", "increment").getDouble()})
+	        		.put("Giga Drill Breaker", new double[]{config.getNode("abilities", "GIGA_DRILL_BREAKER", "beginvalue").getDouble(), config.getNode("abilities", "GIGA_DRILL_BREAKER", "increment").getDouble()})
+	        		.put("Green Terra", new double[]{config.getNode("abilities", "GREEN_TERRA", "beginvalue").getDouble(), config.getNode("abilities", "GREEN_TERRA", "increment").getDouble()})
+	        		.put("Mining Double Drop", new double[]{config.getNode("abilities", "MINING_DOUBLEDROP", "beginvalue").getDouble(), config.getNode("abilities", "MINING_DOUBLEDROP", "increment").getDouble()})
+	        		.put("Farming Double Drop", new double[]{config.getNode("abilities", "FARMING_DOUBLEDROP", "beginvalue").getDouble(), config.getNode("abilities", "FARMING_DOUBLEDROP", "increment").getDouble()})
+	        		.put("Excavation Double Drop", new double[]{config.getNode("abilities", "EXCAVATION_DOUBLEDROP", "beginvalue").getDouble(), config.getNode("abilities", "EXCAVATION_DOUBLEDROP", "increment").getDouble()})
+	        		.put("Woodcutting Double Drop", new double[]{config.getNode("abilities", "WOODCUTTING_DOUBLEDROP", "beginvalue").getDouble(), config.getNode("abilities", "WOODCUTTING_DOUBLEDROP", "increment").getDouble()})
+	        		.put("Roll", new double[]{config.getNode("abilities", "ROLL", "beginvalue").getDouble(), config.getNode("abilities", "ROLL", "increment").getDouble()})
+	        		.put("Dodge", new double[]{config.getNode("abilities", "DODGE", "beginvalue").getDouble(), config.getNode("abilities", "DODGE", "increment").getDouble()})
+	        		.put("Salvage", new double[]{config.getNode("abilities", "SALVAGE", "beginvalue").getDouble(), config.getNode("abilities", "SALVAGE", "increment").getDouble()})
+	        		.put("Repair", new double[]{config.getNode("abilities", "REPAIR", "beginvalue").getDouble(), config.getNode("abilities", "REPAIR", "increment").getDouble()})
+	        		.put("Treasure Hunt", new double[]{config.getNode("abilities", "TREASURE_HUNT", "beginvalue").getDouble(), config.getNode("abilities", "TREASURE_HUNT", "increment").getDouble()})
+	        		.put("Water Treasure", new double[]{config.getNode("abilities", "WATER_TREASURE", "beginvalue").getDouble(), config.getNode("abilities", "WATER_TREASURE", "increment").getDouble()})
+	        		.put("Wolf Summoning", new double[]{config.getNode("abilities", "SUMMON_WOLF", "beginvalue").getDouble(), config.getNode("abilities", "SUMMON_WOLF", "increment").getDouble()})
+	        		.put("Ocelot Summoning", new double[]{config.getNode("abilities", "SUMMON_OCELOT", "beginvalue").getDouble(), config.getNode("abilities", "SUMMON_OCELOT", "increment").getDouble()})
+	        		.put("Horse Summoning", new double[]{config.getNode("abilities", "SUMMON_HORSE", "beginvalue").getDouble(), config.getNode("abilities", "SUMMON_HORSE", "increment").getDouble()})
 	        		.build();
 		}
 		catch (IOException e) {

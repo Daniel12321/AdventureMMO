@@ -29,7 +29,7 @@ import me.mrdaniel.mmo.listeners.BlockListener;
 import me.mrdaniel.mmo.listeners.PlayerListener;
 import me.mrdaniel.mmo.listeners.WorldListener;
 
-@Plugin(id = "adventuremmo", name = "AdventureMMO", version = "1.3.0")
+@Plugin(id = "adventuremmo", name = "AdventureMMO", version = "1.4.1")
 public class Main {
 
 	@Inject
@@ -86,5 +86,6 @@ public class Main {
 		logger.info("Saving All Data");
 		MMOPlayerDatabase.getInstance().writeAll();
 		ChunkManager.getInstance().writeAll();
+		logger.info("All Data Was Saved");
 	}
 }
