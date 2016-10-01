@@ -1,4 +1,4 @@
-package me.mrdaniel.mmo.skills;
+package me.mrdaniel.mmo.listeners;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,6 +33,7 @@ import me.mrdaniel.mmo.enums.SkillType;
 import me.mrdaniel.mmo.io.Config;
 import me.mrdaniel.mmo.io.players.MMOPlayer;
 import me.mrdaniel.mmo.io.players.MMOPlayerDatabase;
+import me.mrdaniel.mmo.skills.Skill;
 import me.mrdaniel.mmo.utils.DelayWrapper;
 import me.mrdaniel.mmo.utils.EffectUtils;
 import me.mrdaniel.mmo.utils.ServerUtils;

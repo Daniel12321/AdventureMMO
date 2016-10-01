@@ -12,8 +12,9 @@ public class SkillSet {
 	private Skill acrobatics;
 	private Skill taming;
 	private Skill salvage;
+	private Skill repair;
 	
-	public SkillSet(Skill mining, Skill woodcutting, Skill excavation, Skill fishing, Skill farming, Skill acrobatics, Skill taming, Skill salvage) {
+	public SkillSet(Skill mining, Skill woodcutting, Skill excavation, Skill fishing, Skill farming, Skill acrobatics, Skill taming, Skill salvage, Skill repair) {
 		this.mining = mining;
 		this.woodcutting = woodcutting;
 		this.excavation = excavation;
@@ -22,6 +23,7 @@ public class SkillSet {
 		this.acrobatics = acrobatics;
 		this.taming = taming;
 		this.salvage = salvage;
+		this.repair = repair;
 	}
 	
 	public Skill getSkill(SkillType type) {
@@ -33,6 +35,7 @@ public class SkillSet {
 		else if (type == SkillType.ACROBATICS) { return acrobatics; }
 		else if (type == SkillType.TAMING) { return taming; }
 		else if (type == SkillType.SALVAGE) { return salvage; }
+		else if (type == SkillType.REPAIR) { return repair; }
 		else return null;
 	}
 	
@@ -45,9 +48,10 @@ public class SkillSet {
 		else if (type == SkillType.ACROBATICS) { acrobatics = skill; }
 		else if (type == SkillType.TAMING) { taming = skill; }
 		else if (type == SkillType.SALVAGE) { salvage = skill; }
+		else if (type == SkillType.REPAIR) { repair = skill; }
 	}
 	
-	public static SkillSet getEmpty() { return new SkillSet(new Skill(0,0), new Skill(0,0), new Skill(0,0), new Skill(0,0), new Skill(0,0), new Skill(0,0), new Skill(0,0), new Skill(0,0)); }
+	public static SkillSet getEmpty() { return new SkillSet(new Skill(0,0), new Skill(0,0), new Skill(0,0), new Skill(0,0), new Skill(0,0), new Skill(0,0), new Skill(0,0), new Skill(0,0), new Skill(0,0)); }
 	
 	public boolean addExp(SkillType type, int exp) {
 		Skill skill = getSkill(type);
@@ -60,14 +64,17 @@ public class SkillSet {
 	}
 	public int expTillNextLevel(int level) { return 83 * level + 500; }
 	public int[][] serialize() {
-		int[][] sRaw = new int[8][2];
+		int[][] sRaw = new int[SkillType.MAXNUMBER][2];
 		for (SkillType type : SkillType.values()) {
 			Skill s = getSkill(type);
-			sRaw[type.id][0] = s.level; sRaw[type.id][1] = s.exp;
+			int id = type.id;
+			sRaw[id][0] = s.level; sRaw[id][1] = s.exp;
 		}
 		return sRaw;
 	}
 	public static SkillSet deserialize(int[][] sRaw) {
+		if (sRaw.length != SkillType.MAXNUMBER) { return update(sRaw); }
+		
 		Skill mining = new Skill(sRaw[SkillType.MINING.id][0], sRaw[SkillType.MINING.id][1]);
 		Skill woodcutting = new Skill(sRaw[SkillType.WOODCUTTING.id][0], sRaw[SkillType.WOODCUTTING.id][1]);
 		Skill excavation = new Skill(sRaw[SkillType.EXCAVATION.id][0], sRaw[SkillType.EXCAVATION.id][1]);
@@ -76,7 +83,18 @@ public class SkillSet {
 		Skill acrobatics = new Skill(sRaw[SkillType.ACROBATICS.id][0], sRaw[SkillType.ACROBATICS.id][1]);
 		Skill taming = new Skill(sRaw[SkillType.TAMING.id][0], sRaw[SkillType.TAMING.id][1]);
 		Skill salvage = new Skill(sRaw[SkillType.SALVAGE.id][0], sRaw[SkillType.SALVAGE.id][1]);
+		Skill repair = new Skill(sRaw[SkillType.REPAIR.id][0], sRaw[SkillType.REPAIR.id][1]);
 		
-		return new SkillSet(mining, woodcutting, excavation, fishing, farming, acrobatics, taming, salvage);
+		return new SkillSet(mining, woodcutting, excavation, fishing, farming, acrobatics, taming, salvage, repair);
+	}
+	public static SkillSet update(int[][] sRawOld) {
+		int[][] sRaw = new int[SkillType.MAXNUMBER][2];
+		
+		int lowest = (sRaw.length > sRawOld.length) ? sRawOld.length : sRaw.length;
+		
+		for (int i = 0; i < lowest; i++) {
+			sRaw[i][0] = sRawOld[i][0]; sRaw[i][1] = sRawOld[i][1];
+		}
+		return deserialize(sRaw);
 	}
 }

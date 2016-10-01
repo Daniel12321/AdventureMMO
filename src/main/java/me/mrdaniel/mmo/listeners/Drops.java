@@ -19,7 +19,6 @@ import me.mrdaniel.mmo.enums.Ability;
 import me.mrdaniel.mmo.enums.SkillType;
 import me.mrdaniel.mmo.enums.ToolType;
 import me.mrdaniel.mmo.io.players.MMOPlayer;
-import me.mrdaniel.mmo.skills.Abilities;
 import me.mrdaniel.mmo.skills.Skill;
 import me.mrdaniel.mmo.utils.ItemUtils;
 
@@ -75,14 +74,14 @@ public class Drops {
 	public void FishingTreasure(Player p, MMOPlayer mmop) {
 		Ability ability = Ability.WATER_TREASURE;
 		Skill skill = mmop.getSkills().getSkill(SkillType.FISHING);
-		if (ability.getValue(skill.level) > r.nextInt(101)) { return; }
+		if (ability.getValue(skill.level) < r.nextInt(101)) { return; }
 		ItemStack item = getFishingTreasure(skill.level);
 		ItemUtils.drop(item, p.getLocation());
 	}
 	public void DiggingTreasure(MMOPlayer mmop, Location<World> loc) {
 		Ability ability = Ability.TREASURE_HUNT;
 		Skill skill = mmop.getSkills().getSkill(SkillType.EXCAVATION);
-		if (ability.getValue(skill.level) > r.nextInt(101)) { return; }
+		if (ability.getValue(skill.level) < r.nextInt(101)) { return; }
 		ItemStack item = getDiggingTreasure(skill.level);
 		ItemUtils.drop(item, loc);
 	}

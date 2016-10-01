@@ -13,6 +13,7 @@ import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
+import me.mrdaniel.mmo.io.AdvancedConfig;
 import me.mrdaniel.mmo.io.BlackList;
 import me.mrdaniel.mmo.io.Config;
 import me.mrdaniel.mmo.io.ModdedBlocks;
@@ -30,6 +31,7 @@ public class CommandMMOReload implements CommandCallable {
 		sender.sendMessage(Config.PREFIX().concat(Text.of(TextColors.GOLD, "Reloading AdventureMMO")));
 		
 		Config.setup();
+		AdvancedConfig.setup();
 		MMOPlayerDatabase.getInstance().writeAll();
 		MMOPlayerDatabase.getInstance().players.clear();
 		MMOPlayerDatabase.getInstance().setup();

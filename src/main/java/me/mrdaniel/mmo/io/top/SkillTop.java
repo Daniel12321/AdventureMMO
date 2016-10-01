@@ -21,6 +21,7 @@ public class SkillTop {
 	private Top acrobatics;
 	private Top taming;
 	private Top salvage;
+	private Top repair;
 	
 	public void setup() {
 		File folder = new File("config/mmo/top");
@@ -35,6 +36,7 @@ public class SkillTop {
 		acrobatics = new Top(new File("config/mmo/top/acrobaticstop.conf"));
 		taming = new Top(new File("config/mmo/top/tamingtop.conf"));
 		salvage = new Top(new File("config/mmo/top/salvagetop.conf"));
+		repair = new Top(new File("config/mmo/top/repairtop.conf"));
 		
 		total.setup();
 		mining.setup();
@@ -45,6 +47,7 @@ public class SkillTop {
 		acrobatics.setup();
 		taming.setup();
 		salvage.setup();
+		repair.setup();
 	}
 	public void update(String name, MMOPlayer mmop) {
 		SkillSet skills = mmop.getSkills();
@@ -58,6 +61,7 @@ public class SkillTop {
 		acrobatics.update(name, skills.getSkill(SkillType.ACROBATICS).level);
 		taming.update(name, skills.getSkill(SkillType.TAMING).level);
 		salvage.update(name, skills.getSkill(SkillType.SALVAGE).level);
+		repair.update(name, skills.getSkill(SkillType.REPAIR).level);
 	}
 	public Top getTop(SkillType type) {
 		if (type == null) { return total; }
@@ -69,6 +73,7 @@ public class SkillTop {
 		else if (type == SkillType.ACROBATICS) { return acrobatics; }
 		else if (type == SkillType.TAMING) { return taming; }
 		else if (type == SkillType.SALVAGE) { return salvage; }
+		else if (type == SkillType.REPAIR) { return repair; }
 		return total;
 	}
 }

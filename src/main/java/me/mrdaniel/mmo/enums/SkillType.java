@@ -9,7 +9,8 @@ public enum SkillType {
 	FARMING("Farming", 4, true),
 	ACROBATICS("Acrobatics", 5, false),
 	TAMING("Taming", 6, false),
-	SALVAGE("Salvage", 7, false);
+	SALVAGE("Salvage", 7, false),
+	REPAIR("Repair", 8, false);
 	
 	public String name;
 	public int id;
@@ -25,4 +26,5 @@ public enum SkillType {
 		for (SkillType type : SkillType.values()) { if (type.name.equalsIgnoreCase(name)) { return type; } }
 		return null;
 	}
+	public static int MAXNUMBER = 9;
 }

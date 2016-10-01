@@ -4,7 +4,8 @@ public enum ShowState {
 	DURATION("Duration: ", "s"),
 	CHANCE("Change: ", "%"),
 	DELAY("Delay: ", "s"),
-	RETRIEVE("retrieve: ", "%");
+	RETRIEVE("retrieve: ", "%"),
+	REPAIR("Repair: ", "%");
 	
 	String pre;
 	String post;

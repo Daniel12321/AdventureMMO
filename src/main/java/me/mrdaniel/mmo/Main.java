@@ -16,6 +16,7 @@ import me.mrdaniel.mmo.commands.CommandMMOReload;
 import me.mrdaniel.mmo.commands.CommandShell;
 import me.mrdaniel.mmo.commands.CommandSkills;
 import me.mrdaniel.mmo.commands.CommandTop;
+import me.mrdaniel.mmo.io.AdvancedConfig;
 import me.mrdaniel.mmo.io.BlackList;
 import me.mrdaniel.mmo.io.Config;
 import me.mrdaniel.mmo.io.ModdedBlocks;
@@ -50,6 +51,7 @@ public class Main {
 		
 		MMOPlayerDatabase.getInstance().setup();
 		Config.setup();
+		AdvancedConfig.setup();
 		SkillTop.getInstance().setup();
 		ModdedBlocks.setup();
 		ModdedTools.setup();
@@ -67,6 +69,7 @@ public class Main {
 		game.getCommandManager().register(this, new CommandShell("salvage"), "salvage");
 		game.getCommandManager().register(this, new CommandShell("taming"), "taming");
 		game.getCommandManager().register(this, new CommandShell("woodcutting"), "woodcutting");
+		game.getCommandManager().register(this, new CommandShell("repair"), "repair");
 		game.getCommandManager().register(this, new CommandMMOAdmin(), "mmoadmin");
 		game.getCommandManager().register(this, new CommandMMOReload(), "mmoreload");
 		
@@ -79,7 +82,7 @@ public class Main {
     }
 	
 	@Listener
-	public void serverStopping(GameStoppingEvent e) {
+	public void onDisable(GameStoppingEvent e) {
 		logger.info("Saving All Data");
 		MMOPlayerDatabase.getInstance().writeAll();
 		ChunkManager.getInstance().writeAll();

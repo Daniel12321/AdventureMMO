@@ -14,7 +14,9 @@ public enum Ability {
 	
 	ROLL(SkillType.ACROBATICS, ShowState.CHANCE, "Roll", "Roll on the ground to avoid fall damage", 0.2, 0, false, false),
 	DODGE(SkillType.ACROBATICS, ShowState.CHANCE, "Dodge", "Use a skillful dodge to avoid damage", 0.1, 0, false, false),
-	SALVAGE(SkillType.SALVAGE, ShowState.RETRIEVE, "Salvage", "Break items on a gold block re retrieve items", 0.2, 20, false, false),
+	SALVAGE(SkillType.SALVAGE, ShowState.RETRIEVE, "Salvage", "Break items on a gold block to retrieve items", 0.2, 20, false, false),
+	REPAIR(SkillType.REPAIR, ShowState.REPAIR, "Repair", "Repair items on an iron block using raw materials", 0.12, 10, false, false),
+	
 	TREASURE_HUNT(SkillType.EXCAVATION, ShowState.CHANCE, "Treasure Hunt", "You can find some nice items hiding in the ground", 0.04, 2, false, false),
 	WATER_TREASURE(SkillType.FISHING, ShowState.CHANCE, "Water Treasure", "You can find some nice items hiding in the water", 0.2, 8, false, false),
 	

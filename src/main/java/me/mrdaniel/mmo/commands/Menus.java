@@ -28,6 +28,7 @@ public class Menus {
 		p.sendMessage(TextUtils.setCommandClick("&bAcrobatics &7- &aLevel " + String.valueOf(mmop.getSkills().getSkill(SkillType.ACROBATICS).level), "/acrobatics" + otherUUID, "&9Click to see more"));
 		p.sendMessage(TextUtils.setCommandClick("&bTaming &7- &aLevel " + String.valueOf(mmop.getSkills().getSkill(SkillType.TAMING).level), "/taming" + otherUUID, "&9Click to see more"));
 		p.sendMessage(TextUtils.setCommandClick("&bSalvage &7- &aLevel " + String.valueOf(mmop.getSkills().getSkill(SkillType.SALVAGE).level), "/salvage" + otherUUID, "&9Click to see more"));
+		p.sendMessage(TextUtils.setCommandClick("&bRepair &7- &aLevel " + String.valueOf(mmop.getSkills().getSkill(SkillType.REPAIR).level), "/repair" + otherUUID, "&9Click to see more"));
 		p.sendMessage(Text.of(TextColors.AQUA, "Total", TextColors.GRAY, " - ", TextColors.GREEN, "Level ", mmop.totalLevels()));
 	}
 	

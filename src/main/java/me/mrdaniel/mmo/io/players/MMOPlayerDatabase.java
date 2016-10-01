@@ -72,6 +72,7 @@ public class MMOPlayerDatabase {
 		}
 		catch (Exception exc) {
 			Main.getInstance().getLogger().error("Error while loading player file");
+			exc.printStackTrace();
 			return SkillSet.getEmpty();
 		}
 	}

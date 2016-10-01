@@ -34,12 +34,12 @@ import me.mrdaniel.mmo.Main;
 import me.mrdaniel.mmo.enums.Ability;
 import me.mrdaniel.mmo.enums.SkillType;
 import me.mrdaniel.mmo.enums.ToolType;
+import me.mrdaniel.mmo.io.AdvancedConfig;
 import me.mrdaniel.mmo.io.BlackList;
 import me.mrdaniel.mmo.io.Config;
 import me.mrdaniel.mmo.io.blocktracking.WatchList;
 import me.mrdaniel.mmo.io.players.MMOPlayer;
 import me.mrdaniel.mmo.io.players.MMOPlayerDatabase;
-import me.mrdaniel.mmo.skills.Abilities;
 import me.mrdaniel.mmo.skills.Skill;
 import me.mrdaniel.mmo.skills.SkillAction;
 import me.mrdaniel.mmo.utils.DelayWrapper;
@@ -210,7 +210,7 @@ public class AbilityListener {
 					int dura = matchTree(l.getBlock().get(Keys.TREE_TYPE).get());
 					Skill skill = jp.getSkills().getSkill(SkillType.WOODCUTTING);
 					if (Ability.WOODCUTTING_DOUBLEDROP.getValue(skill.level) > Math.random()*100.0) { amount = 2; }
-					jp.process(new SkillAction(SkillType.WOODCUTTING, 50));
+					jp.process(new SkillAction(SkillType.WOODCUTTING, AdvancedConfig.blockExps.get(l.getBlock().getType())));
 					ItemStack stack = ItemUtils.build(type, amount, dura);
 					ItemUtils.drop(stack, l);
 					l.removeBlock(ServerUtils.getCause());
