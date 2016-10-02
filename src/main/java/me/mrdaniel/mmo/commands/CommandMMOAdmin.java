@@ -51,11 +51,11 @@ public class CommandMMOAdmin implements CommandCallable {
 			catch(NumberFormatException exc) { p.sendMessage(Text.of(TextColors.RED, "Level must be a number")); return CommandResult.success(); }
 			
 			Skill skill = new Skill(level, 0);
-			MMOPlayer mmop = MMOPlayerDatabase.getInstance().getOrCreate(other.getUniqueId().toString());
+			MMOPlayer mmop = MMOPlayerDatabase.getInstance().getOrCreatePlayer(other.getUniqueId().toString());
 			mmop.getSkills().setSkill(type, skill);
 			SkillTop.getInstance().update(other.getName(), mmop);
 			
-			p.sendMessage(Config.PREFIX().concat(Text.of(TextColors.GREEN, "You set ", other.getName(), "'s ", args[2], " level to ", level)));
+			p.sendMessage(Config.getInstance().PREFIX().concat(Text.of(TextColors.GREEN, "You set ", other.getName(), "'s ", args[2], " level to ", level)));
 		}
 		
 		else if (args[0].equalsIgnoreCase("view")) {
@@ -66,7 +66,7 @@ public class CommandMMOAdmin implements CommandCallable {
 			if (!otherOpt.isPresent()) { p.sendMessage(Text.of(TextColors.RED, "Player not found")); return CommandResult.success(); }
 			Player other = otherOpt.get();
 			
-			MMOPlayer mmop = MMOPlayerDatabase.getInstance().getOrCreate(other.getUniqueId().toString());
+			MMOPlayer mmop = MMOPlayerDatabase.getInstance().getOrCreatePlayer(other.getUniqueId().toString());
 			Menus.sendMainInfo(p, other.getName(), mmop, true);
 			
 		}

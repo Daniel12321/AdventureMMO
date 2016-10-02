@@ -16,15 +16,28 @@ import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 
 public class AdvancedConfig {
-	public static File file = new File("config/mmo/advancedconfig.conf");
-	public static ConfigurationLoader<CommentedConfigurationNode> manager = HoconConfigurationLoader.builder().setFile(file).build();
-	public static CommentedConfigurationNode config = manager.createEmptyNode(ConfigurationOptions.defaults());
 	
-	public static ImmutableMap<BlockType, Integer> blockExps;
-	public static ImmutableMap<SkillType, Double> skillExps;
-	public static ImmutableMap<String, double[]> abilities;
+	private static AdvancedConfig instance = null;
+	public static AdvancedConfig getInstance() {
+		if (instance == null) { instance = new AdvancedConfig(); }
+		return instance;
+	}
 	
-	public static void setup() {
+	public File file;
+	public ConfigurationLoader<CommentedConfigurationNode> manager;
+	public CommentedConfigurationNode config;
+	
+	public ImmutableMap<BlockType, Integer> blockExps;
+	public ImmutableMap<SkillType, Double> skillExps;
+	public ImmutableMap<String, double[]> abilities;
+	
+	private AdvancedConfig() {
+		file = Main.getInstance().getPath().resolve("advancedconfig.conf").toFile();
+		manager = HoconConfigurationLoader.builder().setFile(file).build();
+		config = manager.createEmptyNode(ConfigurationOptions.defaults());
+	}
+	
+	public void setup() {
 		Main.getInstance().getLogger().info("Loading Advanced Config File");
 		try {
 			if (!file.exists()) {

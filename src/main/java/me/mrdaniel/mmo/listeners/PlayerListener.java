@@ -74,7 +74,7 @@ public class PlayerListener {
 					delays.add(p.getName());
 					Main.getInstance().getGame().getScheduler().createTaskBuilder().delay(100, TimeUnit.MILLISECONDS).execute(()-> { if (delays.contains(p.getName())) { delays.remove(p.getName()); } }).submit(Main.getInstance());
 					
-					MMOPlayer mmop = MMOPlayerDatabase.getInstance().getOrCreate(p.getUniqueId().toString());
+					MMOPlayer mmop = MMOPlayerDatabase.getInstance().getOrCreatePlayer(p.getUniqueId().toString());
 					p.setItemInHand(HandTypes.MAIN_HAND, null);
 					Location<World> dropLoc = new Location<World>(loc.getExtent(), loc.getX(), loc.getY()+1, loc.getZ());
 					
@@ -89,7 +89,7 @@ public class PlayerListener {
 					ItemUtils.drop(item, dropLoc);
 					mmop.process(new SkillAction(SkillType.SALVAGE, ir.exp));
 				}
-				else { p.sendMessage(Config.PREFIX().concat(Text.of(TextColors.GREEN, "Click the Gold Block with an item to salvage it"))); }
+				else { p.sendMessage(Config.getInstance().PREFIX().concat(Text.of(TextColors.GREEN, "Click the Gold Block with an item to salvage it"))); }
 			}
 			else if (bs.getType() == BlockTypes.IRON_BLOCK) {
 				if (p.getItemInHand(HandTypes.MAIN_HAND).isPresent() && p.getItemInHand(HandTypes.MAIN_HAND).get() != ItemTypes.NONE) {
@@ -104,7 +104,7 @@ public class PlayerListener {
 					delays.add(p.getName());
 					Main.getInstance().getGame().getScheduler().createTaskBuilder().delay(100, TimeUnit.MILLISECONDS).execute(()-> { if (delays.contains(p.getName())) { delays.remove(p.getName()); } }).submit(Main.getInstance());
 					
-					MMOPlayer mmop = MMOPlayerDatabase.getInstance().getOrCreate(p.getUniqueId().toString());
+					MMOPlayer mmop = MMOPlayerDatabase.getInstance().getOrCreatePlayer(p.getUniqueId().toString());
 					
 					for (int i = 0; i < 9; i++) {
 						Optional<ItemStack> itemOpt = p.getInventory().query(Hotbar.class).query(new SlotIndex(i)).peek();
@@ -134,22 +134,22 @@ public class PlayerListener {
 	public void onFallDamage(DamageEntityEvent e) {
 		if (!(e.getTargetEntity() instanceof Player)) { return; }
 		Player p = (Player) e.getTargetEntity();
-		MMOPlayer mmop = MMOPlayerDatabase.getInstance().getOrCreate(p.getUniqueId().toString());
+		MMOPlayer mmop = MMOPlayerDatabase.getInstance().getOrCreatePlayer(p.getUniqueId().toString());
 		Skill skill = mmop.getSkills().getSkill(SkillType.ACROBATICS);
 		Ability ability = Ability.DODGE;
 		if (ability.getValue(skill.level) > Math.random()*100.0) {
 			e.setCancelled(true);
-			p.sendMessage(Config.PREFIX().concat(Text.of(TextColors.GREEN, "*You dodged to avoid taking damage*")));
+			p.sendMessage(Config.getInstance().PREFIX().concat(Text.of(TextColors.GREEN, "*You dodged to avoid taking damage*")));
 		}
 		Optional<DamageSource> sourceOpt = e.getCause().first(DamageSource.class);
 		if (sourceOpt.isPresent()) {
 			DamageSource source = sourceOpt.get();
 			if (source.getType().equals(DamageTypes.FALL)) {
-				mmop.process(new SkillAction(SkillType.ACROBATICS, (int) (AdvancedConfig.skillExps.get(SkillType.ACROBATICS)*e.getOriginalDamage())));
+				mmop.process(new SkillAction(SkillType.ACROBATICS, (int) (AdvancedConfig.getInstance().skillExps.get(SkillType.ACROBATICS)*e.getOriginalDamage())));
 				ability = Ability.ROLL;
 				if (ability.getValue(skill.level) > Math.random()*100.0) {
 					e.setCancelled(true);
-					p.sendMessage(Config.PREFIX().concat(Text.of(TextColors.GREEN, "*You rolled to avoid taking damage*")));
+					p.sendMessage(Config.getInstance().PREFIX().concat(Text.of(TextColors.GREEN, "*You rolled to avoid taking damage*")));
 				}
 			}
 		}
@@ -157,32 +157,31 @@ public class PlayerListener {
 	@Listener(order = Order.LAST)
 	public void onFishing(FishingEvent.Stop e, @First Player p) {
 		if (e.isCancelled()) { return; }
-		if (e.getItemStackTransaction() != null) if (e.getItemStackTransaction() != null 
-				&& e.getItemStackTransaction().get(0) != null 
-				&& e.getItemStackTransaction().get(0).getFinal() != null 
-				&& e.getItemStackTransaction().get(0).getFinal() != ItemTypes.NONE) { 
-			MMOPlayer mmop = MMOPlayerDatabase.getInstance().getOrCreate(p.getUniqueId().toString());
-			mmop.process(new SkillAction(SkillType.FISHING, (AdvancedConfig.skillExps.get(SkillType.FISHING))));
-			Drops.getInstance().FishingTreasure(p, mmop);
+		if (e.getItemStackTransaction() != null) {
+			if (e.getItemStackTransaction().get(0).getFinal() != null && e.getItemStackTransaction().get(0).getFinal().getType() != ItemTypes.NONE) {
+				MMOPlayer mmop = MMOPlayerDatabase.getInstance().getOrCreatePlayer(p.getUniqueId().toString());
+				mmop.process(new SkillAction(SkillType.FISHING, 450));
+				Drops.getInstance().FishingTreasure(p, mmop);
+			}
 		}
 	}
 	@Listener(order = Order.LAST)
 	public void onTaming(TameEntityEvent e, @First Player p) {
 		if (e.isCancelled()) { return; }
-		MMOPlayer mmop = MMOPlayerDatabase.getInstance().getOrCreate(p.getUniqueId().toString());
-		mmop.process(new SkillAction(SkillType.TAMING, AdvancedConfig.skillExps.get(SkillType.TAMING)));
+		MMOPlayer mmop = MMOPlayerDatabase.getInstance().getOrCreatePlayer(p.getUniqueId().toString());
+		mmop.process(new SkillAction(SkillType.TAMING, AdvancedConfig.getInstance().skillExps.get(SkillType.TAMING)));
 	}
 	@Listener
 	public void onPlayerJoin(ClientConnectionEvent.Join e) {
-		MMOPlayer mmop = MMOPlayerDatabase.getInstance().getOrCreate(e.getTargetEntity().getUniqueId().toString());
+		MMOPlayer mmop = MMOPlayerDatabase.getInstance().getOrCreatePlayer(e.getTargetEntity().getUniqueId().toString());
 		mmop.save();
 		mmop.updateTop(e.getTargetEntity().getName());
 	}
 	@Listener
 	public void onPlayerQuit(ClientConnectionEvent.Disconnect e) {
-		MMOPlayer mmop = MMOPlayerDatabase.getInstance().getOrCreate(e.getTargetEntity().getUniqueId().toString());
+		MMOPlayer mmop = MMOPlayerDatabase.getInstance().getOrCreatePlayer(e.getTargetEntity().getUniqueId().toString());
 		mmop.save();
 		mmop.updateTop(e.getTargetEntity().getName());
-		MMOPlayerDatabase.getInstance().unload(mmop);
+		MMOPlayerDatabase.getInstance().unload(mmop.getUUID());
 	}
 }

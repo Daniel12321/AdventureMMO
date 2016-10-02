@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -19,16 +20,19 @@ public class ChunkManager {
 	private static ChunkManager instance = null;
 	public static ChunkManager getInstance() { if (instance == null) { instance = new ChunkManager(); } return instance; }
 	
-	private ChunkManager() {}
+	private ChunkManager() {
+		chunks = new ArrayList<ChunkStore>();
+		path = Main.getInstance().getPath().resolve("store");
+	}
 	
 	private List<ChunkStore> chunks;
+	private Path path;
+	public Path getPath() { return path; }
 	
 	public void setup() {
 		
-		File folder = new File("config/mmo/store");
+		File folder = path.toFile();
 		if (!folder.exists()) folder.mkdir();
-		
-		chunks = new ArrayList<ChunkStore>();
 		
 		Main.getInstance().getGame().getScheduler().createTaskBuilder()
 		.delay(5, TimeUnit.SECONDS)
@@ -103,7 +107,6 @@ public class ChunkManager {
 		}
 		catch (Exception exc) {
 			Main.getInstance().getLogger().error("Error while saving chunk file");
-			//Main.getInstance().getGame().getServer().getConsole().sendMessage(Text.of(TextColors.RED, "[AdventureMMO]: Error saving chunk file"));
 			exc.printStackTrace();
 		}
 	}
@@ -126,7 +129,6 @@ public class ChunkManager {
 		}
 		catch (Exception exc) {
 			Main.getInstance().getLogger().error("Error while loading chunk file");
-			//Main.getInstance().getGame().getServer().getConsole().sendMessage(Text.of(TextColors.RED, "[AdventureMMO]: Error loading chunk file"));
 			return new ArrayList<Coord>();
 		}
 	}

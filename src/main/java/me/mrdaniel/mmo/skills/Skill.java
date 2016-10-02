@@ -8,5 +8,4 @@ public class Skill {
 		this.level = level;
 		this.exp = exp;
 	}
-	public String serialize() { String str = String.valueOf(level) + ":" + String.valueOf(exp); return str; }
 }

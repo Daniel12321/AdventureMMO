@@ -13,13 +13,27 @@ import ninja.leaping.configurate.loader.ConfigurationLoader;
 
 public class ModdedTools {
 	
-	public static File file = new File("config/mmo/moddedtools.conf");
-	public static ConfigurationLoader<CommentedConfigurationNode> manager = HoconConfigurationLoader.builder().setFile(file).build();
-	public static CommentedConfigurationNode config = manager.createEmptyNode(ConfigurationOptions.defaults());
+	private static ModdedTools instance = null;
+	public static ModdedTools getInstance() {
+		if (instance == null) { instance = new ModdedTools(); }
+		return instance;
+	}
 	
-	private static ArrayList<ModdedTool> tools = new ArrayList<ModdedTool>();
+	public File file;
+	public ConfigurationLoader<CommentedConfigurationNode> manager;
+	public CommentedConfigurationNode config;
 	
-	public static void setup() {
+	private ArrayList<ModdedTool> tools;
+	
+	private ModdedTools() {
+		file = Main.getInstance().getPath().resolve("moddedtools.conf").toFile();
+		manager = HoconConfigurationLoader.builder().setFile(file).build();
+		config = manager.createEmptyNode(ConfigurationOptions.defaults());
+		tools = new ArrayList<ModdedTool>();
+	}
+	
+	
+	public void setup() {
 		tools.clear();
 		Main.getInstance().getLogger().info("Loading Modded Tools File");
 		try {
@@ -107,7 +121,7 @@ public class ModdedTools {
 		}
 		Main.getInstance().getLogger().info("Loaded " + tools.size() + " Modded Tools");
 	}
-	public static ModdedTool getToolType(String id) {
+	public ModdedTool getToolType(String id) {
 		for (ModdedTool mTool : tools) {
 			if (mTool.id.equalsIgnoreCase(id)) {
 				return mTool;

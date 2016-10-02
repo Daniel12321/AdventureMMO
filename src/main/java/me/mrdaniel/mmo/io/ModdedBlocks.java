@@ -13,13 +13,26 @@ import ninja.leaping.configurate.loader.ConfigurationLoader;
 
 public class ModdedBlocks {
 	
-	public static File file = new File("config/mmo/moddedblocks.conf");
-	public static ConfigurationLoader<CommentedConfigurationNode> manager = HoconConfigurationLoader.builder().setFile(file).build();
-	public static CommentedConfigurationNode config = manager.createEmptyNode(ConfigurationOptions.defaults());
+	private static ModdedBlocks instance = null;
+	public static ModdedBlocks getInstance() {
+		if (instance == null) { instance = new ModdedBlocks(); }
+		return instance;
+	}
 	
-	private static ArrayList<ModdedBlock> blocks = new ArrayList<ModdedBlock>();
+	public File file;
+	public ConfigurationLoader<CommentedConfigurationNode> manager;
+	public CommentedConfigurationNode config;
 	
-	public static void setup() {
+	private ArrayList<ModdedBlock> blocks;
+	
+	private ModdedBlocks() {
+		file = Main.getInstance().getPath().resolve("moddedblocks.conf").toFile();
+		manager = HoconConfigurationLoader.builder().setFile(file).build();
+		config = manager.createEmptyNode(ConfigurationOptions.defaults());
+		blocks = new ArrayList<ModdedBlock>();
+	}
+	
+	public void setup() {
 		blocks.clear();
 		Main.getInstance().getLogger().info("Loading Modded Blocks File");
 		try {
@@ -89,7 +102,7 @@ public class ModdedBlocks {
 		}
 		Main.getInstance().getLogger().info("Loading " + blocks.size() + " Modded Blocks");
 	}
-	public static ModdedBlock getModdedBlock(String id) {
+	public ModdedBlock getModdedBlock(String id) {
 		for (ModdedBlock mBlock : blocks) {
 			if (mBlock.id.equalsIgnoreCase(id)) {
 				return mBlock;

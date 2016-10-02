@@ -128,7 +128,7 @@ public enum ToolType {
 			return ToolType.ROD;
 		}
 		else {
-			ModdedTool tool = ModdedTools.getToolType(id);
+			ModdedTool tool = ModdedTools.getInstance().getToolType(id);
 			if (tool == null) return null;
 			return tool.type;
 		}

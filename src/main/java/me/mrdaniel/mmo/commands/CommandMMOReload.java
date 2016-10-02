@@ -26,21 +26,20 @@ public class CommandMMOReload implements CommandCallable {
 	
 	public CommandResult process(CommandSource sender, String arguments) throws CommandException {
 		
-		if (!(sender.hasPermission(Permissions.MMO_RELOAD()))) { sender.sendMessage(Config.PREFIX().concat(Text.of(TextColors.RED, "You don't have permission for this command"))); return CommandResult.success(); }
+		if (!(sender.hasPermission(Permissions.MMO_RELOAD()))) { sender.sendMessage(Config.getInstance().PREFIX().concat(Text.of(TextColors.RED, "You don't have permission for this command"))); return CommandResult.success(); }
 		
-		sender.sendMessage(Config.PREFIX().concat(Text.of(TextColors.GOLD, "Reloading AdventureMMO")));
+		sender.sendMessage(Config.getInstance().PREFIX().concat(Text.of(TextColors.GOLD, "Reloading AdventureMMO")));
 		
-		Config.setup();
-		AdvancedConfig.setup();
-		MMOPlayerDatabase.getInstance().writeAll();
-		MMOPlayerDatabase.getInstance().players.clear();
-		MMOPlayerDatabase.getInstance().setup();
+		Config.getInstance().setup();
+		AdvancedConfig.getInstance().setup();
+		MMOPlayerDatabase.getInstance().saveAll();
+		MMOPlayerDatabase.getInstance().unloadAll();
 		SkillTop.getInstance().setup();
-		ModdedBlocks.setup();
-		ModdedTools.setup();
-		BlackList.setup();
+		ModdedBlocks.getInstance().setup();
+		ModdedTools.getInstance().setup();
+		BlackList.getInstance().setup();
 		
-		sender.sendMessage(Config.PREFIX().concat(Text.of(TextColors.GOLD, "AdventureMMO reloaded succesfully")));
+		sender.sendMessage(Config.getInstance().PREFIX().concat(Text.of(TextColors.GOLD, "AdventureMMO reloaded succesfully")));
 		
 		return CommandResult.success();
 	}

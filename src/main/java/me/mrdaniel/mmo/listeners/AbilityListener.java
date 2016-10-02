@@ -15,6 +15,7 @@ import org.spongepowered.api.data.type.TreeType;
 import org.spongepowered.api.data.type.TreeTypes;
 import org.spongepowered.api.entity.Item;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
@@ -65,6 +66,7 @@ public class AbilityListener {
 			if (System.currentTimeMillis() > clickDelays.get(p.getName())) { clickDelays.remove(p.getName()); }
 			else { return; }
 		}
+		if (!(p.gameMode().get().equals(GameModes.SURVIVAL))) { return; }
 		
 		ItemStack hand = p.getItemInHand(HandTypes.MAIN_HAND).get();
 		ToolType toolType = ToolType.matchID(hand.getItem(), hand.getItem().getId());
@@ -72,7 +74,7 @@ public class AbilityListener {
 		Ability ability = toolType.getAbility();
 		if (ability == null) { return; }
 		
-		if (BlackList.blacklist.contains(hand.getItem().getId().toLowerCase())) { return; }
+		if (BlackList.getInstance().blacklist.contains(hand.getItem().getId().toLowerCase())) { return; }
 		
 		if (ability.requiresSneaking) {
 			if (!p.get(Keys.IS_SNEAKING).isPresent()) { return; }	
@@ -83,7 +85,7 @@ public class AbilityListener {
 		
 		if (players.containsKey(p.getName())) {
 			if (ability == players.get(p.getName())) {
-				p.sendMessage(Config.PREFIX().concat(Text.of(TextColors.RED, "*You lower your " + toolType.name + "*")));
+				p.sendMessage(Config.getInstance().PREFIX().concat(Text.of(TextColors.RED, "*You lower your " + toolType.name + "*")));
 				players.remove(p.getName());
 				return;
 			}
@@ -98,21 +100,21 @@ public class AbilityListener {
 					}
 					else {
 						int seconds = (int) ((wrapper.expires - System.currentTimeMillis()) / 1000);
-						p.sendMessage(Config.PREFIX().concat(Text.of(TextColors.RED, "*Ability is recharging (" + seconds + "s)*")));
+						p.sendMessage(Config.getInstance().PREFIX().concat(Text.of(TextColors.RED, "*Ability is recharging (" + seconds + "s)*")));
 						return;
 					}
 				}
 			}
 		}
 		
-		p.sendMessage(Config.PREFIX().concat(Text.of(TextColors.GREEN, "*You ready your " + toolType.name + "*")));
+		p.sendMessage(Config.getInstance().PREFIX().concat(Text.of(TextColors.GREEN, "*You ready your " + toolType.name + "*")));
 		players.put(p.getName(), ability);
 		
 		Main.getInstance().getGame().getScheduler().createTaskBuilder()
 		.delay(4, TimeUnit.SECONDS)
 		.execute(()-> {
 			if (players.containsKey(p.getName())) {
-				p.sendMessage(Config.PREFIX().concat(Text.of(TextColors.RED, "*You lower your " + toolType.name + "*"))); players.remove(p.getName());
+				p.sendMessage(Config.getInstance().PREFIX().concat(Text.of(TextColors.RED, "*You lower your " + toolType.name + "*"))); players.remove(p.getName());
 			}
 		}).submit(Main.getInstance());
 	}
@@ -125,6 +127,8 @@ public class AbilityListener {
 		ItemStack hand = p.getItemInHand(HandTypes.MAIN_HAND).get();
 		
 		if (players.containsKey(p.getName())) {
+			if (!(p.gameMode().get().equals(GameModes.SURVIVAL))) { return; }
+			
 			ToolType toolType = ToolType.matchID(hand.getItem().getType(), hand.getItem().getId());
 			if (toolType == null) { return; }
 			
@@ -150,7 +154,7 @@ public class AbilityListener {
 			if (WatchList.isBlocked(bss.getLocation().get())) { return; }
 			if (Abilities.getInstance().active.containsKey(p.getName())) {
 				if (Abilities.getInstance().active.get(p.getName()) == Ability.TREE_VELLER) {
-					MMOPlayer mmop = MMOPlayerDatabase.getInstance().getOrCreate(p.getUniqueId().toString());
+					MMOPlayer mmop = MMOPlayerDatabase.getInstance().getOrCreatePlayer(p.getUniqueId().toString());
 					breakNext(e.getTransactions().get(0).getOriginal().getLocation().get(), mmop);
 				}
 			}
@@ -210,7 +214,7 @@ public class AbilityListener {
 					int dura = matchTree(l.getBlock().get(Keys.TREE_TYPE).get());
 					Skill skill = jp.getSkills().getSkill(SkillType.WOODCUTTING);
 					if (Ability.WOODCUTTING_DOUBLEDROP.getValue(skill.level) > Math.random()*100.0) { amount = 2; }
-					jp.process(new SkillAction(SkillType.WOODCUTTING, AdvancedConfig.blockExps.get(l.getBlock().getType())));
+					jp.process(new SkillAction(SkillType.WOODCUTTING, AdvancedConfig.getInstance().blockExps.get(l.getBlock().getType())));
 					ItemStack stack = ItemUtils.build(type, amount, dura);
 					ItemUtils.drop(stack, l);
 					l.removeBlock(ServerUtils.getCause());

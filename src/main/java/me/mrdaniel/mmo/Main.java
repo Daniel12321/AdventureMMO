@@ -1,9 +1,11 @@
 package me.mrdaniel.mmo;
 
 import java.io.File;
+import java.nio.file.Path;
 
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
+import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStoppingEvent;
@@ -29,33 +31,39 @@ import me.mrdaniel.mmo.listeners.BlockListener;
 import me.mrdaniel.mmo.listeners.PlayerListener;
 import me.mrdaniel.mmo.listeners.WorldListener;
 
-@Plugin(id = "adventuremmo", name = "AdventureMMO", version = "1.4.1")
+@Plugin(id = "adventuremmo", name = "AdventureMMO", version = "1.5.0")
 public class Main {
 
 	@Inject
 	private Logger logger;
 	@Inject
 	private Game game;
+    @Inject
+    @ConfigDir(sharedRoot = false)
+    private Path path;
 	
 	private static Main instance;
 	public static Main getInstance() { return instance; }
 	public Game getGame() { return game; }
 	public Logger getLogger() { return logger; }
+	public Path getPath() { return path; }
 	
 	@Listener
 	public void onEnable(GameInitializationEvent event) {
 		logger.info("Preparing plugin");
 		Main.instance = this;
-		File folder = new File("config/mmo");
-		if (!folder.exists()) folder.mkdir();
+		File oldfolder = new File("config/mmo");
 		
-		MMOPlayerDatabase.getInstance().setup();
-		Config.setup();
-		AdvancedConfig.setup();
+		if (path.toFile().exists()) { path.toFile().delete(); }
+		if (oldfolder.exists()) { oldfolder.renameTo(new File("config/adventuremmo")); }
+
+        MMOPlayerDatabase.getInstance().setPlayersPath(path.resolve("players"));
+		Config.getInstance().setup();
+		AdvancedConfig.getInstance().setup();
 		SkillTop.getInstance().setup();
-		ModdedBlocks.setup();
-		ModdedTools.setup();
-		BlackList.setup();
+		ModdedBlocks.getInstance().setup();
+		ModdedTools.getInstance().setup();
+		BlackList.getInstance().setup();
 		
 		ChunkManager.getInstance().setup();
 		
@@ -84,7 +92,7 @@ public class Main {
 	@Listener
 	public void onDisable(GameStoppingEvent e) {
 		logger.info("Saving All Data");
-		MMOPlayerDatabase.getInstance().writeAll();
+		MMOPlayerDatabase.getInstance().saveAll();
 		ChunkManager.getInstance().writeAll();
 		logger.info("All Data Was Saved");
 	}

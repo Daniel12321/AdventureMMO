@@ -21,7 +21,7 @@ public class SkillManager {
 		Optional<Player> pOpt = Main.getInstance().getGame().getServer().getPlayer(UUID.fromString(mmop.getUUID()));
 		if (!pOpt.isPresent()) { return; }
 		Player p = pOpt.get();
-		p.sendMessage(Config.PREFIX().concat(Text.of(TextColors.AQUA, "Your " + type.name + " Skill went up to " + String.valueOf(mmop.getSkills().getSkill(type).level) + "!")));
+		p.sendMessage(Config.getInstance().PREFIX().concat(Text.of(TextColors.AQUA, "Your " + type.name + " Skill went up to " + String.valueOf(mmop.getSkills().getSkill(type).level) + "!")));
 		
 		EffectUtils.sendEffects(p, ParticleTypes.FIREWORKS_SPARK, 50);
 		EffectUtils.sendSound(p, SoundTypes.ENTITY_FIREWORK_TWINKLE);

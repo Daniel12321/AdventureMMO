@@ -40,8 +40,8 @@ public enum Ability {
 		this.showState = showState;
 		this.name = name;
 		this.desc = desc;
-		this.increase = AdvancedConfig.abilities.get(name)[1];
-		this.start = AdvancedConfig.abilities.get(name)[0];
+		this.increase = AdvancedConfig.getInstance().abilities.get(name)[1];
+		this.start = AdvancedConfig.getInstance().abilities.get(name)[0];
 		this.millis = millis;
 		this.requiresSneaking = requiresSneaking;
 	}

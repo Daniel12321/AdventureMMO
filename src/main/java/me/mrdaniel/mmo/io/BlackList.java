@@ -12,13 +12,25 @@ import ninja.leaping.configurate.loader.ConfigurationLoader;
 
 public class BlackList {
 	
-	public static File file = new File("config/mmo/blacklist.conf");
-	public static ConfigurationLoader<CommentedConfigurationNode> manager = HoconConfigurationLoader.builder().setFile(file).build();
-	public static CommentedConfigurationNode config = manager.createEmptyNode(ConfigurationOptions.defaults());
+	private static BlackList instance = null;
+	public static BlackList getInstance() {
+		if (instance == null) { instance = new BlackList(); }
+		return instance;
+	}
 	
-	public static ArrayList<String> blacklist = new ArrayList<String>();
+	public File file;
+	public ConfigurationLoader<CommentedConfigurationNode> manager;
+	public CommentedConfigurationNode config;
 	
-	public static void setup() {
+	public ArrayList<String> blacklist = new ArrayList<String>();
+	
+	private BlackList() {
+		file = Main.getInstance().getPath().resolve("blacklist.conf").toFile();
+		manager = HoconConfigurationLoader.builder().setFile(file).build();
+		config = manager.createEmptyNode(ConfigurationOptions.defaults());
+	}
+		
+	public void setup() {
 		blacklist.clear();
 		Main.getInstance().getLogger().info("Loading Blacklist File");
 		try {

@@ -20,7 +20,7 @@ public class ChunkStore {
 		this.world = world.getName();
 		this.chunkX = chunkX;
 		this.chunkZ = chunkZ;
-		this.fileStr = "config/mmo/store/" + this.world + "." + chunkX + "." + chunkZ + ".dat";
+		this.fileStr = ChunkManager.getInstance().getPath().resolve(this.world + "." + chunkX + "." + chunkZ + ".dat").toString();
 		this.lastUse = System.currentTimeMillis();
 	}
 	public void add(int x, int y, int z) { lastUse = System.currentTimeMillis(); store.add(new Coord(x,y,z)); }

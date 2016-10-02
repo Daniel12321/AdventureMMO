@@ -1,7 +1,9 @@
 package me.mrdaniel.mmo.io.top;
 
 import java.io.File;
+import java.nio.file.Path;
 
+import me.mrdaniel.mmo.Main;
 import me.mrdaniel.mmo.enums.SkillType;
 import me.mrdaniel.mmo.io.players.MMOPlayer;
 import me.mrdaniel.mmo.skills.SkillSet;
@@ -24,19 +26,21 @@ public class SkillTop {
 	private Top repair;
 	
 	public void setup() {
-		File folder = new File("config/mmo/top");
-		if (!folder.exists()) folder.mkdir();
 		
-		total = new Top(new File("config/mmo/top/totaltop.conf"));
-		mining = new Top(new File("config/mmo/top/miningtop.conf"));
-		woodcutting = new Top(new File("config/mmo/top/woodcuttingtop.conf"));
-		excavation = new Top(new File("config/mmo/top/excavationtop.conf"));
-		fishing = new Top(new File("config/mmo/top/fishingtop.conf"));
-		farming = new Top(new File("config/mmo/top/farmingtop.conf"));
-		acrobatics = new Top(new File("config/mmo/top/acrobaticstop.conf"));
-		taming = new Top(new File("config/mmo/top/tamingtop.conf"));
-		salvage = new Top(new File("config/mmo/top/salvagetop.conf"));
-		repair = new Top(new File("config/mmo/top/repairtop.conf"));
+		File folder = Main.getInstance().getPath().resolve("top").toFile();
+		if (!folder.exists()) folder.mkdir();
+		Path path = folder.toPath();
+		
+		total = new Top(path.resolve("totaltop.conf").toFile());
+		mining = new Top(path.resolve("miningtop.conf").toFile());
+		woodcutting = new Top(path.resolve("woodcuttingtop.conf").toFile());
+		excavation = new Top(path.resolve("excavationtop.conf").toFile());
+		fishing = new Top(path.resolve("fishingtop.conf").toFile());
+		farming = new Top(path.resolve("farmingtop.conf").toFile());
+		acrobatics = new Top(path.resolve("acrobaticstop.conf").toFile());
+		taming = new Top(path.resolve("tamingtop.conf").toFile());
+		salvage = new Top(path.resolve("salvagetop.conf").toFile());
+		repair = new Top(path.resolve("repairtop.conf").toFile());
 		
 		total.setup();
 		mining.setup();

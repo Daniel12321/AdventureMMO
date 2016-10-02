@@ -10,42 +10,42 @@ import me.mrdaniel.mmo.io.ModdedBlocks;
 public class WatchList {
 	
 	public static boolean shouldWatch(BlockType type, String id) {
-		if (type.equals(BlockTypes.OBSIDIAN)
-			|| type.equals(BlockTypes.DIAMOND_ORE)
-			|| type.equals(BlockTypes.EMERALD_ORE)
-			|| type.equals(BlockTypes.GOLD_ORE)
-			|| type.equals(BlockTypes.IRON_ORE)
-			|| type.equals(BlockTypes.COAL_ORE)
-			|| type.equals(BlockTypes.REDSTONE_ORE)
-			|| type.equals(BlockTypes.LIT_REDSTONE_ORE)
-			|| type.equals(BlockTypes.LAPIS_ORE)
-			|| type.equals(BlockTypes.QUARTZ_ORE)
-			|| type.equals(BlockTypes.MOSSY_COBBLESTONE)
-			|| type.equals(BlockTypes.LOG)
-			|| type.equals(BlockTypes.LOG2)
-			|| type.equals(BlockTypes.SAND)
-			|| type.equals(BlockTypes.DIRT)
-			|| type.equals(BlockTypes.GRAVEL)
-			|| type.equals(BlockTypes.SOUL_SAND)
-			|| type.equals(BlockTypes.GRASS)
-			|| type.equals(BlockTypes.MYCELIUM)
-			|| type.equals(BlockTypes.CLAY)
-			|| type.equals(BlockTypes.POTATOES)
-			|| type.equals(BlockTypes.CARROTS)
-			|| type.equals(BlockTypes.CACTUS)
-			|| type.equals(BlockTypes.REEDS)
-			|| type.equals(BlockTypes.WATERLILY)
-			|| type.equals(BlockTypes.WHEAT)
-			|| type.equals(BlockTypes.MELON_BLOCK)
-			|| type.equals(BlockTypes.PUMPKIN)
-			|| type.equals(BlockTypes.NETHER_WART)
-			|| type.equals(BlockTypes.BROWN_MUSHROOM)
-			|| type.equals(BlockTypes.BROWN_MUSHROOM_BLOCK)
-			|| type.equals(BlockTypes.RED_MUSHROOM)
-			|| type.equals(BlockTypes.RED_MUSHROOM_BLOCK)
-			|| type.equals(BlockTypes.LEAVES)
-			|| type.equals(BlockTypes.LEAVES2)
-			|| ModdedBlocks.getModdedBlock(id) != null) { return true; }
+		if (type == BlockTypes.OBSIDIAN
+			|| type == BlockTypes.DIAMOND_ORE
+			|| type == BlockTypes.EMERALD_ORE
+			|| type == BlockTypes.GOLD_ORE
+			|| type == BlockTypes.IRON_ORE
+			|| type == BlockTypes.COAL_ORE
+			|| type == BlockTypes.REDSTONE_ORE
+			|| type == BlockTypes.LIT_REDSTONE_ORE
+			|| type == BlockTypes.LAPIS_ORE
+			|| type == BlockTypes.QUARTZ_ORE
+			|| type == BlockTypes.MOSSY_COBBLESTONE
+			|| type == BlockTypes.LOG
+			|| type == BlockTypes.LOG2
+			|| type == BlockTypes.SAND
+			|| type == BlockTypes.DIRT
+			|| type == BlockTypes.GRAVEL
+			|| type == BlockTypes.SOUL_SAND
+			|| type == BlockTypes.GRASS
+			|| type == BlockTypes.MYCELIUM
+			|| type == BlockTypes.CLAY
+			|| type == BlockTypes.POTATOES
+			|| type == BlockTypes.CARROTS
+			|| type == BlockTypes.CACTUS
+			|| type == BlockTypes.REEDS
+			|| type == BlockTypes.WATERLILY
+			|| type == BlockTypes.WHEAT
+			|| type == BlockTypes.MELON_BLOCK
+			|| type == BlockTypes.PUMPKIN
+			|| type == BlockTypes.NETHER_WART
+			|| type == BlockTypes.BROWN_MUSHROOM
+			|| type == BlockTypes.BROWN_MUSHROOM_BLOCK
+			|| type == BlockTypes.RED_MUSHROOM
+			|| type == BlockTypes.RED_MUSHROOM_BLOCK
+			|| type == BlockTypes.LEAVES
+			|| type == BlockTypes.LEAVES2
+			|| ModdedBlocks.getInstance().getModdedBlock(id) != null) { return true; }
 		return false;
 	}
 	public static void add(Location<World> loc) { ChunkManager.getInstance().add(loc); }

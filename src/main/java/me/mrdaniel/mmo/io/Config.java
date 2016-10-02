@@ -13,11 +13,24 @@ import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 
 public class Config {
-	public static File file = new File("config/mmo/config.conf");
-	public static ConfigurationLoader<CommentedConfigurationNode> manager = HoconConfigurationLoader.builder().setFile(file).build();
-	public static CommentedConfigurationNode config = manager.createEmptyNode(ConfigurationOptions.defaults());
 	
-	public static void setup() {
+	private static Config instance = null;
+	public static Config getInstance() {
+		if (instance == null) { instance = new Config(); }
+		return instance;
+	}
+	
+	public File file;
+	public ConfigurationLoader<CommentedConfigurationNode> manager;
+	public CommentedConfigurationNode config;
+	
+	private Config() {
+		file = Main.getInstance().getPath().resolve("config.conf").toFile();
+		manager = HoconConfigurationLoader.builder().setFile(file).build();
+		config = manager.createEmptyNode(ConfigurationOptions.defaults());
+	}
+	
+	public void setup() {
 		Main.getInstance().getLogger().info("Loading Config File");
 		try {
 			if (!file.exists()) {
@@ -37,6 +50,6 @@ public class Config {
 		}
 		Main.getInstance().getLogger().info("Done Loading Config File");
 	}
-	public static Text PREFIX() { return TextUtils.color(config.getNode("prefix").getString() + " "); }
-	public static long RECHARGE_MILLIS() { return config.getNode("recharge_millis").getLong(); }
+	public Text PREFIX() { return TextUtils.color(config.getNode("prefix").getString() + " "); }
+	public long RECHARGE_MILLIS() { return config.getNode("recharge_millis").getLong(); }
 }
