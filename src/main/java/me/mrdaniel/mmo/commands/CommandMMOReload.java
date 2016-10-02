@@ -1,9 +1,13 @@
 package me.mrdaniel.mmo.commands;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
+import me.mrdaniel.mmo.io.AdvancedConfig;
+import me.mrdaniel.mmo.io.BlackList;
+import me.mrdaniel.mmo.io.Config;
+import me.mrdaniel.mmo.io.ModdedBlocks;
+import me.mrdaniel.mmo.io.ModdedTools;
+import me.mrdaniel.mmo.io.players.MMOPlayerDatabase;
+import me.mrdaniel.mmo.io.top.SkillTop;
+import me.mrdaniel.mmo.utils.Permissions;
 import org.spongepowered.api.command.CommandCallable;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
@@ -13,14 +17,9 @@ import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
-import me.mrdaniel.mmo.io.AdvancedConfig;
-import me.mrdaniel.mmo.io.BlackList;
-import me.mrdaniel.mmo.io.Config;
-import me.mrdaniel.mmo.io.ModdedBlocks;
-import me.mrdaniel.mmo.io.ModdedTools;
-import me.mrdaniel.mmo.io.players.MMOPlayerDatabase;
-import me.mrdaniel.mmo.io.top.SkillTop;
-import me.mrdaniel.mmo.utils.Permissions;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public class CommandMMOReload implements CommandCallable {
 	
@@ -32,9 +31,8 @@ public class CommandMMOReload implements CommandCallable {
 		
 		Config.setup();
 		AdvancedConfig.setup();
-		MMOPlayerDatabase.getInstance().writeAll();
-		MMOPlayerDatabase.getInstance().players.clear();
-		MMOPlayerDatabase.getInstance().setup();
+		MMOPlayerDatabase.getInstance().saveAll();
+		MMOPlayerDatabase.getInstance().unloadAll();
 		SkillTop.getInstance().setup();
 		ModdedBlocks.setup();
 		ModdedTools.setup();

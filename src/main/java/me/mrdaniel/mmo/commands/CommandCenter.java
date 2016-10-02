@@ -1,13 +1,5 @@
 package me.mrdaniel.mmo.commands;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.spongepowered.api.command.CommandSource;
-import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
-
 import me.mrdaniel.mmo.enums.Ability;
 import me.mrdaniel.mmo.enums.SkillType;
 import me.mrdaniel.mmo.io.Config;
@@ -16,6 +8,13 @@ import me.mrdaniel.mmo.io.players.MMOPlayerDatabase;
 import me.mrdaniel.mmo.skills.Skill;
 import me.mrdaniel.mmo.utils.Permissions;
 import me.mrdaniel.mmo.utils.TextUtils;
+import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class CommandCenter {
 		
@@ -24,7 +23,7 @@ public class CommandCenter {
 		if (!(sender instanceof Player)) { sender.sendMessage(Text.of(TextColors.RED, "This command is for players only")); return; }
 		Player p = (Player) sender;
 		
-		MMOPlayer mmop = MMOPlayerDatabase.getInstance().getOrCreate(p.getUniqueId().toString());
+		MMOPlayer mmop = MMOPlayerDatabase.getInstance().getOrCreatePlayer(p.getUniqueId().toString());
 		
 		Menus.sendMainInfo(p, p.getName(), mmop, false);
 	}
@@ -38,8 +37,8 @@ public class CommandCenter {
 		if (args.length > 2) { p.sendMessage(Text.of(TextColors.BLUE, "Usage: /skills [skill]")); return; }
 		
 		MMOPlayer mmop = null;
-		if (args.length == 1) { mmop = MMOPlayerDatabase.getInstance().getOrCreate(p.getUniqueId().toString()); }
-		else if ((args.length == 2) && (p.hasPermission(Permissions.MMO_ADMIN_VIEW_OTHERS()))) { mmop = MMOPlayerDatabase.getInstance().getOrCreate(args[1]); }
+		if (args.length == 1) { mmop = MMOPlayerDatabase.getInstance().getOrCreatePlayer(p.getUniqueId().toString()); }
+		else if ((args.length == 2) && (p.hasPermission(Permissions.MMO_ADMIN_VIEW_OTHERS()))) { mmop = MMOPlayerDatabase.getInstance().getOrCreatePlayer(args[1]); }
 		if (mmop == null) { p.sendMessage(Text.of(TextColors.RED, "You don't have permission to view others skills")); return; }
 		
 		SkillType type = SkillType.match(args[0]);
