@@ -26,7 +26,7 @@ public class MMOPlayer {
 		for (SkillType type : SkillType.values()) { total += skills.getSkill(type).level; }
 		return total;
 	}
-	public void save() { MMOPlayerDatabase.getInstance().store(this); }
+	public void save() { MMOPlayerDatabase.getInstance().save(this); }
 	public void updateTop(String name) { SkillTop.getInstance().update(name, this); }
 	public void updateTop(String name, SkillType type) { SkillTop.getInstance().getTop(type).update(name, skills.getSkill(type).level); }
 }
