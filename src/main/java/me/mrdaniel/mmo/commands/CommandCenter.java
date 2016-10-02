@@ -1,13 +1,5 @@
 package me.mrdaniel.mmo.commands;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.spongepowered.api.command.CommandSource;
-import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
-
 import me.mrdaniel.mmo.enums.Ability;
 import me.mrdaniel.mmo.enums.SkillType;
 import me.mrdaniel.mmo.io.Config;
@@ -16,6 +8,13 @@ import me.mrdaniel.mmo.io.players.MMOPlayerDatabase;
 import me.mrdaniel.mmo.skills.Skill;
 import me.mrdaniel.mmo.utils.Permissions;
 import me.mrdaniel.mmo.utils.TextUtils;
+import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class CommandCenter {
 		

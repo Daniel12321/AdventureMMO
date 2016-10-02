@@ -1,11 +1,15 @@
 package me.mrdaniel.mmo.listeners;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-
+import me.mrdaniel.mmo.Main;
+import me.mrdaniel.mmo.enums.Ability;
+import me.mrdaniel.mmo.enums.SkillType;
+import me.mrdaniel.mmo.io.Config;
+import me.mrdaniel.mmo.io.players.MMOPlayer;
+import me.mrdaniel.mmo.io.players.MMOPlayerDatabase;
+import me.mrdaniel.mmo.skills.Skill;
+import me.mrdaniel.mmo.utils.DelayWrapper;
+import me.mrdaniel.mmo.utils.EffectUtils;
+import me.mrdaniel.mmo.utils.ServerUtils;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.manipulator.mutable.item.EnchantmentData;
 import org.spongepowered.api.data.manipulator.mutable.item.LoreData;
@@ -27,16 +31,11 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;
 
-import me.mrdaniel.mmo.Main;
-import me.mrdaniel.mmo.enums.Ability;
-import me.mrdaniel.mmo.enums.SkillType;
-import me.mrdaniel.mmo.io.Config;
-import me.mrdaniel.mmo.io.players.MMOPlayer;
-import me.mrdaniel.mmo.io.players.MMOPlayerDatabase;
-import me.mrdaniel.mmo.skills.Skill;
-import me.mrdaniel.mmo.utils.DelayWrapper;
-import me.mrdaniel.mmo.utils.EffectUtils;
-import me.mrdaniel.mmo.utils.ServerUtils;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public class Abilities {
 	

@@ -1,9 +1,17 @@
 package me.mrdaniel.mmo.listeners;
 
-import java.util.ArrayList;
-import java.util.Optional;
-import java.util.concurrent.TimeUnit;
-
+import me.mrdaniel.mmo.Main;
+import me.mrdaniel.mmo.enums.Ability;
+import me.mrdaniel.mmo.enums.RepairStore;
+import me.mrdaniel.mmo.enums.SkillType;
+import me.mrdaniel.mmo.io.AdvancedConfig;
+import me.mrdaniel.mmo.io.Config;
+import me.mrdaniel.mmo.io.players.MMOPlayer;
+import me.mrdaniel.mmo.io.players.MMOPlayerDatabase;
+import me.mrdaniel.mmo.skills.Skill;
+import me.mrdaniel.mmo.skills.SkillAction;
+import me.mrdaniel.mmo.utils.ItemUtils;
+import me.mrdaniel.mmo.utils.ItemWrapper;
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.block.BlockTypes;
@@ -30,18 +38,10 @@ import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
-import me.mrdaniel.mmo.Main;
-import me.mrdaniel.mmo.enums.Ability;
-import me.mrdaniel.mmo.enums.RepairStore;
-import me.mrdaniel.mmo.enums.SkillType;
-import me.mrdaniel.mmo.io.AdvancedConfig;
-import me.mrdaniel.mmo.io.Config;
-import me.mrdaniel.mmo.io.players.MMOPlayer;
-import me.mrdaniel.mmo.io.players.MMOPlayerDatabase;
-import me.mrdaniel.mmo.skills.Skill;
-import me.mrdaniel.mmo.skills.SkillAction;
-import me.mrdaniel.mmo.utils.ItemUtils;
-import me.mrdaniel.mmo.utils.ItemWrapper;
+import java.util.ArrayList;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public class PlayerListener {
 	
@@ -157,19 +157,33 @@ public class PlayerListener {
 	@Listener(order = Order.LAST)
 	public void onFishing(FishingEvent.Stop e, @First Player p) {
 		if (e.isCancelled()) { return; }
+<<<<<<< HEAD
 		if (e.getItemStackTransaction() != null) {
 			if (e.getItemStackTransaction().get(0).getFinal() != null && e.getItemStackTransaction().get(0).getFinal().getType() != ItemTypes.NONE) {
 				MMOPlayer mmop = MMOPlayerDatabase.getInstance().getOrCreatePlayer(p.getUniqueId().toString());
 				mmop.process(new SkillAction(SkillType.FISHING, 450));
 				Drops.getInstance().FishingTreasure(p, mmop);
 			}
+=======
+		if (e.getItemStackTransaction() != null) if (e.getItemStackTransaction() != null 
+				&& e.getItemStackTransaction().get(0) != null 
+				&& e.getItemStackTransaction().get(0).getFinal() != null 
+				&& e.getItemStackTransaction().get(0).getFinal() != ItemTypes.NONE) { 
+			MMOPlayer mmop = MMOPlayerDatabase.getInstance().getOrCreatePlayer(p.getUniqueId().toString());
+			mmop.process(new SkillAction(SkillType.FISHING, (AdvancedConfig.skillExps.get(SkillType.FISHING))));
+			Drops.getInstance().FishingTreasure(p, mmop);
+>>>>>>> origin/master
 		}
 	}
 	@Listener(order = Order.LAST)
 	public void onTaming(TameEntityEvent e, @First Player p) {
 		if (e.isCancelled()) { return; }
 		MMOPlayer mmop = MMOPlayerDatabase.getInstance().getOrCreatePlayer(p.getUniqueId().toString());
+<<<<<<< HEAD
 		mmop.process(new SkillAction(SkillType.TAMING, AdvancedConfig.getInstance().skillExps.get(SkillType.TAMING)));
+=======
+		mmop.process(new SkillAction(SkillType.TAMING, AdvancedConfig.skillExps.get(SkillType.TAMING)));
+>>>>>>> origin/master
 	}
 	@Listener
 	public void onPlayerJoin(ClientConnectionEvent.Join e) {
@@ -182,6 +196,10 @@ public class PlayerListener {
 		MMOPlayer mmop = MMOPlayerDatabase.getInstance().getOrCreatePlayer(e.getTargetEntity().getUniqueId().toString());
 		mmop.save();
 		mmop.updateTop(e.getTargetEntity().getName());
+<<<<<<< HEAD
 		MMOPlayerDatabase.getInstance().unload(mmop.getUUID());
+=======
+		MMOPlayerDatabase.getInstance().unload(UUID.fromString(mmop.getUUID()));
+>>>>>>> origin/master
 	}
 }
