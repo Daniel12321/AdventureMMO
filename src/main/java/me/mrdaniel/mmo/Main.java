@@ -1,6 +1,5 @@
 package me.mrdaniel.mmo;
 
-<<<<<<< HEAD
 import java.io.File;
 import java.nio.file.Path;
 
@@ -12,9 +11,8 @@ import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStoppingEvent;
 import org.spongepowered.api.plugin.Plugin;
 
-=======
->>>>>>> origin/master
 import com.google.inject.Inject;
+
 import me.mrdaniel.mmo.commands.CommandMMOAdmin;
 import me.mrdaniel.mmo.commands.CommandMMOReload;
 import me.mrdaniel.mmo.commands.CommandShell;
@@ -32,16 +30,6 @@ import me.mrdaniel.mmo.listeners.AbilityListener;
 import me.mrdaniel.mmo.listeners.BlockListener;
 import me.mrdaniel.mmo.listeners.PlayerListener;
 import me.mrdaniel.mmo.listeners.WorldListener;
-import org.slf4j.Logger;
-import org.spongepowered.api.Game;
-import org.spongepowered.api.config.ConfigDir;
-import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.game.state.GameInitializationEvent;
-import org.spongepowered.api.event.game.state.GameStoppingEvent;
-import org.spongepowered.api.plugin.Plugin;
-
-import java.io.File;
-import java.nio.file.Path;
 
 @Plugin(id = "adventuremmo", name = "AdventureMMO", version = "1.5.0")
 public class Main {
@@ -64,7 +52,6 @@ public class Main {
 	public void onEnable(GameInitializationEvent event) {
 		logger.info("Preparing plugin");
 		Main.instance = this;
-<<<<<<< HEAD
 		File oldfolder = new File("config/mmo");
 		
 		if (path.toFile().exists()) { path.toFile().delete(); }
@@ -73,14 +60,6 @@ public class Main {
         MMOPlayerDatabase.getInstance().setPlayersPath(path.resolve("players"));
 		Config.getInstance().setup();
 		AdvancedConfig.getInstance().setup();
-=======
-		File folder = new File("config/mmo");
-		if (!folder.exists()) folder.mkdir();
-
-        MMOPlayerDatabase.getInstance().setPlayersPath(path.resolve("players"));
-		Config.setup();
-		AdvancedConfig.setup();
->>>>>>> origin/master
 		SkillTop.getInstance().setup();
 		ModdedBlocks.getInstance().setup();
 		ModdedTools.getInstance().setup();

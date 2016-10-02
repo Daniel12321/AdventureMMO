@@ -1,16 +1,7 @@
 package me.mrdaniel.mmo.listeners;
 
-import me.mrdaniel.mmo.enums.Ability;
-import me.mrdaniel.mmo.enums.SkillType;
-import me.mrdaniel.mmo.io.AdvancedConfig;
-import me.mrdaniel.mmo.io.BlackList;
-import me.mrdaniel.mmo.io.ModdedBlock;
-import me.mrdaniel.mmo.io.ModdedBlocks;
-import me.mrdaniel.mmo.io.blocktracking.WatchList;
-import me.mrdaniel.mmo.io.players.MMOPlayer;
-import me.mrdaniel.mmo.io.players.MMOPlayerDatabase;
-import me.mrdaniel.mmo.skills.SkillAction;
-import me.mrdaniel.mmo.skills.SkillSet;
+import java.util.Optional;
+
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.block.BlockType;
@@ -32,7 +23,17 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
-import java.util.Optional;
+import me.mrdaniel.mmo.enums.Ability;
+import me.mrdaniel.mmo.enums.SkillType;
+import me.mrdaniel.mmo.io.AdvancedConfig;
+import me.mrdaniel.mmo.io.BlackList;
+import me.mrdaniel.mmo.io.ModdedBlock;
+import me.mrdaniel.mmo.io.ModdedBlocks;
+import me.mrdaniel.mmo.io.blocktracking.WatchList;
+import me.mrdaniel.mmo.io.players.MMOPlayer;
+import me.mrdaniel.mmo.io.players.MMOPlayerDatabase;
+import me.mrdaniel.mmo.skills.SkillAction;
+import me.mrdaniel.mmo.skills.SkillSet;
 
 public class BlockListener {
 	

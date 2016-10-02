@@ -1,14 +1,9 @@
 package me.mrdaniel.mmo.commands;
 
-import me.mrdaniel.mmo.Main;
-import me.mrdaniel.mmo.enums.SkillType;
-import me.mrdaniel.mmo.io.Config;
-import me.mrdaniel.mmo.io.players.MMOPlayer;
-import me.mrdaniel.mmo.io.players.MMOPlayerDatabase;
-import me.mrdaniel.mmo.io.top.SkillTop;
-import me.mrdaniel.mmo.skills.Skill;
-import me.mrdaniel.mmo.utils.Permissions;
-import me.mrdaniel.mmo.utils.TextUtils;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 import org.spongepowered.api.command.CommandCallable;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
@@ -19,9 +14,15 @@ import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import me.mrdaniel.mmo.Main;
+import me.mrdaniel.mmo.enums.SkillType;
+import me.mrdaniel.mmo.io.Config;
+import me.mrdaniel.mmo.io.players.MMOPlayer;
+import me.mrdaniel.mmo.io.players.MMOPlayerDatabase;
+import me.mrdaniel.mmo.io.top.SkillTop;
+import me.mrdaniel.mmo.skills.Skill;
+import me.mrdaniel.mmo.utils.Permissions;
+import me.mrdaniel.mmo.utils.TextUtils;
 
 public class CommandMMOAdmin implements CommandCallable {
 	
