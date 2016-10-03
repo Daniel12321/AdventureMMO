@@ -31,7 +31,7 @@ import me.mrdaniel.mmo.listeners.BlockListener;
 import me.mrdaniel.mmo.listeners.PlayerListener;
 import me.mrdaniel.mmo.listeners.WorldListener;
 
-@Plugin(id = "adventuremmo", name = "AdventureMMO", version = "1.5.0")
+@Plugin(id = "adventuremmo", name = "AdventureMMO", version = "1.5.1")
 public class Main {
 
 	@Inject
@@ -54,8 +54,10 @@ public class Main {
 		Main.instance = this;
 		File oldfolder = new File("config/mmo");
 		
-		if (path.toFile().exists()) { path.toFile().delete(); }
-		if (oldfolder.exists()) { oldfolder.renameTo(new File("config/adventuremmo")); }
+		if (oldfolder.exists()) { 
+			if (path.toFile().exists()) { path.toFile().delete(); }
+			oldfolder.renameTo(new File("config/adventuremmo"));
+		}
 
         MMOPlayerDatabase.getInstance().setPlayersPath(path.resolve("players"));
 		Config.getInstance().setup();

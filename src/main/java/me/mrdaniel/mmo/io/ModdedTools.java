@@ -32,7 +32,6 @@ public class ModdedTools {
 		tools = new ArrayList<ModdedTool>();
 	}
 	
-	
 	public void setup() {
 		tools.clear();
 		Main.getInstance().getLogger().info("Loading Modded Tools File");

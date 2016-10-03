@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.TreeMap;
 
-import me.mrdaniel.mmo.utils.TopWrapper;
+import me.mrdaniel.mmo.utils.TopInfo;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
@@ -109,10 +109,10 @@ public class Top {
 		storage.getNode(String.valueOf(second), "name").setValue(tempName);
 		storage.getNode(String.valueOf(second), "level").setValue(tempLevel);
 	}
-	public TreeMap<Integer, TopWrapper> getTop() {
-		TreeMap<Integer, TopWrapper> top = new TreeMap<Integer, TopWrapper>();
+	public TreeMap<Integer, TopInfo> getTop() {
+		TreeMap<Integer, TopInfo> top = new TreeMap<Integer, TopInfo>();
 		for (ConfigurationNode idNode : storage.getChildrenMap().values()) {
-			top.put(Integer.valueOf(idNode.getKey().toString()), new TopWrapper(idNode.getNode("level").getInt(), idNode.getNode("name").getString()));
+			top.put(Integer.valueOf(idNode.getKey().toString()), new TopInfo(idNode.getNode("level").getInt(), idNode.getNode("name").getString()));
 		}
 		return top;
 	}

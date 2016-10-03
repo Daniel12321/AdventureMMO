@@ -26,6 +26,15 @@ public class SkillSet {
 		this.repair = repair;
 	}
 	
+	/**
+	 * Get a Skill from the player.
+	 * 
+	 * @param SkillType type
+	 * The SkillType of the skill you want to get.
+	 * 
+	 * @return Skill
+	 * The skill info of the SkillType you gave.
+	 */
 	public Skill getSkill(SkillType type) {
 		if (type == SkillType.MINING) { return mining; }
 		else if (type == SkillType.WOODCUTTING) { return woodcutting; }
@@ -39,6 +48,15 @@ public class SkillSet {
 		else return null;
 	}
 	
+	/**
+	 * Set a Skill from the player.
+	 * 
+	 * @param SkillType type
+	 * The SkillType of the skill you want to set.
+	 * 
+	 * @param Skill skill
+	 * The Skill that you want the player to have.
+	 */
 	public void setSkill(SkillType type, Skill skill) {
 		if (type == SkillType.MINING) { mining = skill; }
 		else if (type == SkillType.WOODCUTTING) { woodcutting = skill; }
@@ -51,8 +69,26 @@ public class SkillSet {
 		else if (type == SkillType.REPAIR) { repair = skill; }
 	}
 	
+	/**
+	 * Get a new empty SkillSet.
+	 * 
+	 * @return SkillSet 
+	 * Empty SkillSet
+	 */
 	public static SkillSet getEmpty() { return new SkillSet(new Skill(0,0), new Skill(0,0), new Skill(0,0), new Skill(0,0), new Skill(0,0), new Skill(0,0), new Skill(0,0), new Skill(0,0), new Skill(0,0)); }
 	
+	/**
+	 * Add exp to a Skill
+	 * 
+ 	 * @param SkillType type
+	 * The SkillType you want to add exp to.
+	 * 
+  	 * @param int exp
+	 * The amount of exp you want to add.
+	 * 
+	 * @return boolean levelup 
+	 * Returns true when the aditional exp caused a levelup.
+	 */
 	public boolean addExp(SkillType type, int exp) {
 		Skill skill = getSkill(type);
 		
@@ -62,7 +98,24 @@ public class SkillSet {
 		if (newExp >= nextLvl) { skill.level = skill.level+1; skill.exp = newExp - nextLvl; return true; }
 		else { skill.exp = newExp; return false; }
 	}
+	
+	/**
+	 * Add exp to a Skill
+	 * 
+ 	 * @param int level
+	 * The level the player has.
+	 * 
+	 * @return int exp 
+	 * Returns the amount of exp needed to levelup.
+	 */
 	public int expTillNextLevel(int level) { return 83 * level + 500; }
+	
+	/**
+	 * Serialize the SkillSet into an int[][].
+	 * 
+	 * @return int[][] serialized SkillSet 
+	 * Returns the serialized SkillSet.
+	 */
 	public int[][] serialize() {
 		int[][] sRaw = new int[SkillType.MAXNUMBER][2];
 		for (SkillType type : SkillType.values()) {
@@ -72,6 +125,13 @@ public class SkillSet {
 		}
 		return sRaw;
 	}
+	
+	/**
+	 * Deserialize the int[][] into an SkillSet.
+	 * 
+	 * @return SkillSet deserialized int[][].
+	 * Returns the deserialized int[][].
+	 */
 	public static SkillSet deserialize(int[][] sRaw) {
 		if (sRaw.length != SkillType.MAXNUMBER) { return update(sRaw); }
 		
@@ -87,7 +147,7 @@ public class SkillSet {
 		
 		return new SkillSet(mining, woodcutting, excavation, fishing, farming, acrobatics, taming, salvage, repair);
 	}
-	public static SkillSet update(int[][] sRawOld) {
+	private static SkillSet update(int[][] sRawOld) {
 		int[][] sRaw = new int[SkillType.MAXNUMBER][2];
 		
 		int lowest = (sRaw.length > sRawOld.length) ? sRawOld.length : sRaw.length;

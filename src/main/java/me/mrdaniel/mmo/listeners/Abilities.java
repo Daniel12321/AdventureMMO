@@ -34,18 +34,18 @@ import me.mrdaniel.mmo.io.Config;
 import me.mrdaniel.mmo.io.players.MMOPlayer;
 import me.mrdaniel.mmo.io.players.MMOPlayerDatabase;
 import me.mrdaniel.mmo.skills.Skill;
-import me.mrdaniel.mmo.utils.DelayWrapper;
+import me.mrdaniel.mmo.utils.DelayInfo;
 import me.mrdaniel.mmo.utils.EffectUtils;
 import me.mrdaniel.mmo.utils.ServerUtils;
 
 public class Abilities {
 	
 	public HashMap<String, Ability> active;
-	public HashMap<String, ArrayList<DelayWrapper>> delays;
+	public HashMap<String, ArrayList<DelayInfo>> delays;
 	
 	private static Abilities instance = null;
 	public static Abilities getInstance() { if (instance == null) { instance = new Abilities(); } return instance; }
-	private Abilities() { this.active = new HashMap<String, Ability>(); this.delays = new HashMap<String, ArrayList<DelayWrapper>>(); }
+	private Abilities() { this.active = new HashMap<String, Ability>(); this.delays = new HashMap<String, ArrayList<DelayInfo>>(); }
 	
 	public void activate(Player p, Ability ability, SkillType type) {
 		
@@ -62,11 +62,11 @@ public class Abilities {
 			EffectUtils.sendSound(p, SoundTypes.ENTITY_FIREWORK_LAUNCH);
 			
 			if (delays.containsKey(p.getName())) {
-				delays.get(p.getName()).add(new DelayWrapper(System.currentTimeMillis() + Config.getInstance().RECHARGE_MILLIS(), ability));
+				delays.get(p.getName()).add(new DelayInfo(System.currentTimeMillis() + Config.getInstance().RECHARGE_MILLIS(), ability));
 			}
 			else {
-				delays.put(p.getName(), new ArrayList<DelayWrapper>());
-				delays.get(p.getName()).add(new DelayWrapper(System.currentTimeMillis() + Config.getInstance().RECHARGE_MILLIS(), ability));
+				delays.put(p.getName(), new ArrayList<DelayInfo>());
+				delays.get(p.getName()).add(new DelayInfo(System.currentTimeMillis() + Config.getInstance().RECHARGE_MILLIS(), ability));
 			}
 			
 			final ItemStack item = p.getItemInHand(HandTypes.MAIN_HAND).get().copy();
@@ -116,11 +116,11 @@ public class Abilities {
 			EffectUtils.sendSound(p, SoundTypes.ENTITY_FIREWORK_LAUNCH);
 			
 			if (delays.containsKey(p.getName())) {
-				delays.get(p.getName()).add(new DelayWrapper(System.currentTimeMillis() + ((int) (ability.getValue(skill.level)*1000)), ability));
+				delays.get(p.getName()).add(new DelayInfo(System.currentTimeMillis() + ((int) (ability.getValue(skill.level)*1000)), ability));
 			}
 			else {
-				delays.put(p.getName(), new ArrayList<DelayWrapper>());
-				delays.get(p.getName()).add(new DelayWrapper(System.currentTimeMillis() + ((int) (ability.getValue(skill.level)*1000)), ability));
+				delays.put(p.getName(), new ArrayList<DelayInfo>());
+				delays.get(p.getName()).add(new DelayInfo(System.currentTimeMillis() + ((int) (ability.getValue(skill.level)*1000)), ability));
 			}
 			p.offer(Keys.IS_SNEAKING, false);
 			

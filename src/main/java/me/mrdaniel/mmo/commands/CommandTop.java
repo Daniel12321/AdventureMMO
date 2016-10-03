@@ -16,7 +16,7 @@ import org.spongepowered.api.world.World;
 
 import me.mrdaniel.mmo.enums.SkillType;
 import me.mrdaniel.mmo.io.top.SkillTop;
-import me.mrdaniel.mmo.utils.TopWrapper;
+import me.mrdaniel.mmo.utils.TopInfo;
 
 public class CommandTop  implements CommandCallable {
 	
@@ -43,13 +43,13 @@ public class CommandTop  implements CommandCallable {
 	public List<String> getSuggestions(CommandSource sender, String arguments) throws CommandException {  return CommandCenter.getSkillSuggesions(arguments); }
 	public boolean testPermission(CommandSource sender) { return permission.equals("") ? true : sender.hasPermission(permission); }
 	
-	private void sendTop(CommandSource sender, TreeMap<Integer, TopWrapper> top, String title) {
+	private void sendTop(CommandSource sender, TreeMap<Integer, TopInfo> top, String title) {
 		sender.sendMessage(Text.of(""));
 		sender.sendMessage(Text.of(TextColors.RED, "--=== ", TextColors.AQUA, title, " SkillTop", TextColors.RED, " ==---"));
 		Set<Integer> keys = top.keySet();
 		for (int key : keys) {
-			TopWrapper topWrapper = top.get(key);
-			sender.sendMessage(Text.of(TextColors.RED, String.valueOf(key), ": ", TextColors.AQUA, topWrapper.name, TextColors.GRAY, " - ", TextColors.GREEN, "Level ", topWrapper.level));
+			TopInfo TopInfo = top.get(key);
+			sender.sendMessage(Text.of(TextColors.RED, String.valueOf(key), ": ", TextColors.AQUA, TopInfo.name, TextColors.GRAY, " - ", TextColors.GREEN, "Level ", TopInfo.level));
 		}
 	}
 }

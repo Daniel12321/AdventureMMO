@@ -43,7 +43,7 @@ import me.mrdaniel.mmo.io.players.MMOPlayer;
 import me.mrdaniel.mmo.io.players.MMOPlayerDatabase;
 import me.mrdaniel.mmo.skills.Skill;
 import me.mrdaniel.mmo.skills.SkillAction;
-import me.mrdaniel.mmo.utils.DelayWrapper;
+import me.mrdaniel.mmo.utils.DelayInfo;
 import me.mrdaniel.mmo.utils.ItemUtils;
 import me.mrdaniel.mmo.utils.ServerUtils;
 
@@ -92,7 +92,7 @@ public class AbilityListener {
 		}
 		
 		if (Abilities.getInstance().delays.containsKey(p.getName())) {
-			for (DelayWrapper wrapper : Abilities.getInstance().delays.get(p.getName())) {
+			for (DelayInfo wrapper : Abilities.getInstance().delays.get(p.getName())) {
 				if (wrapper.ability.equals(ability)) {
 					if (System.currentTimeMillis() > wrapper.expires) {
 						Abilities.getInstance().delays.get(p.getName()).remove(wrapper);

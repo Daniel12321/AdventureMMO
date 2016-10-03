@@ -40,8 +40,8 @@ import me.mrdaniel.mmo.io.players.MMOPlayer;
 import me.mrdaniel.mmo.io.players.MMOPlayerDatabase;
 import me.mrdaniel.mmo.skills.Skill;
 import me.mrdaniel.mmo.skills.SkillAction;
+import me.mrdaniel.mmo.utils.ItemInfo;
 import me.mrdaniel.mmo.utils.ItemUtils;
-import me.mrdaniel.mmo.utils.ItemWrapper;
 
 public class PlayerListener {
 	
@@ -67,7 +67,7 @@ public class PlayerListener {
 					ItemStack hand = p.getItemInHand(HandTypes.MAIN_HAND).get();
 					if (!RepairStore.getInstance().items.containsKey(hand.getItem().getType())) { return; }
 					
-					ItemWrapper ir = RepairStore.getInstance().items.get(hand.getItem().getType());
+					ItemInfo ir = RepairStore.getInstance().items.get(hand.getItem().getType());
 					
 					e.setCancelled(true);
 					
@@ -96,7 +96,7 @@ public class PlayerListener {
 					ItemStack hand = p.getItemInHand(HandTypes.MAIN_HAND).get();
 					if (!RepairStore.getInstance().items.containsKey(hand.getItem().getType())) { return; }
 					
-					ItemWrapper ir = RepairStore.getInstance().items.get(hand.getItem().getType());
+					ItemInfo ir = RepairStore.getInstance().items.get(hand.getItem().getType());
 					if (!hand.get(Keys.ITEM_DURABILITY).isPresent()) { return; }	
 					if (hand.get(Keys.ITEM_DURABILITY).get() >= ir.maxDura-1) { return; }
 					e.setCancelled(true);

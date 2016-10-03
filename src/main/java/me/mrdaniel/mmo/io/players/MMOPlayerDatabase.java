@@ -30,6 +30,8 @@ public class MMOPlayerDatabase {
 	}
 	
 	/**
+	 * Set the path location where the players are stored.
+	 * 
 	 * @param playersPath
 	 * Folder where the players are all saved.
 	 */
@@ -37,45 +39,64 @@ public class MMOPlayerDatabase {
 		this.playersPath = playersPath;
 	}
 	
+	/**
+	 * Get the player's information. If the player does not exist, it will create it.
+	 * 
+	 * @param UUID String
+	 * The UUID of the player in String format
+	 * @return MMOPlayer
+	 */
 	public MMOPlayer getOrCreatePlayer(String uuid) {
 		return getOrCreatePlayer(UUID.fromString(uuid));
 	}
 	
 	/**
-	 * Get the player's information. If the player does not exist, it will
-	 * create it.
+	 * Get the player's information. If the player does not exist, it will create it.
 	 * 
-	 * @param uuid
-	 * The UUID of the player
-	 * @return
+	 * @param UUID
+	 * The UUID of the player.
+	 * @return MMOPlayer
 	 */
 	public synchronized MMOPlayer getOrCreatePlayer(UUID uuid) {
 		if (players.containsKey(uuid)) return players.get(uuid);
 		
-		MMOPlayer player = new MMOPlayer(uuid.toString(), load(uuid));
+		MMOPlayer mmoplayer = new MMOPlayer(uuid.toString(), load(uuid));
 		
-		players.put(uuid, player);
-		return player;
-	}
-	
-	public void saveAll() {
-		for (MMOPlayer mmop : players.values()) save(mmop);
-	}
-	
-	public void unloadAll() {
-		for (MMOPlayer mmop : players.values()) unload(UUID.fromString(mmop.getUUID()));
+		players.put(uuid, mmoplayer);
+		return mmoplayer;
 	}
 	
 	/**
-	 * Unload the player from the map.
+	 * Saves all MMOPlayer's.
+	 */
+	public void saveAll() {
+		for (MMOPlayer mmoplayer : players.values()) save(mmoplayer);
+	}
+	
+	/**
+	 * Unloads all MMOPlayer's.
+	 */
+	public void unloadAll() {
+		for (MMOPlayer mmoplayer : players.values()) unload(UUID.fromString(mmoplayer.getUUID()));
+	}
+	
+	/**
+	 * Saves the player and unloads the player from the map.
 	 * 
-	 * @param playerUUID
+	 * @param UUID
 	 * The UUID of the player to unload.
 	 */
 	public synchronized void unload(UUID playerUUID) {
-		players.get(playerUUID).save();
+		save(players.get(playerUUID));
 		players.remove(playerUUID);
 	}
+	
+	/**
+	 * Saves the player and unloads the player from the map.
+	 * 
+	 * @param UUID String
+	 * The UUID of the player to unload in String format.
+	 */
 	public synchronized void unload(String playerUUID) {
 		unload(UUID.fromString(playerUUID));
 	}
@@ -83,17 +104,17 @@ public class MMOPlayerDatabase {
 	/**
 	 * Save the player.
 	 * 
-	 * @param mmop
+	 * @param MMOPlayer
 	 * The player to save.
 	 */
-	public synchronized void save(MMOPlayer mmop) {
+	public synchronized void save(MMOPlayer mmoplayer) {
 		try {
-			File file = getPlayerFile(UUID.fromString(mmop.getUUID()));
+			File file = getPlayerFile(UUID.fromString(mmoplayer.getUUID()));
 			
 			FileOutputStream fos = new FileOutputStream(file);
 			ObjectOutputStream oos = new ObjectOutputStream(fos);
 			
-			oos.writeObject(mmop.getSkills().serialize());
+			oos.writeObject(mmoplayer.getSkills().serialize());
 			oos.flush();
 			oos.close();
 			fos.close();
