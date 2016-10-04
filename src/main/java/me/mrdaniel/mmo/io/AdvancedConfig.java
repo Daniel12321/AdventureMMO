@@ -32,7 +32,7 @@ public class AdvancedConfig {
 	public ImmutableMap<String, double[]> abilities;
 	
 	private AdvancedConfig() {
-		file = Main.getInstance().getPath().resolve("advancedconfig.conf").toFile();
+		file = Main.getInstance().getFile().toPath().resolve("advancedconfig.conf").toFile();
 		manager = HoconConfigurationLoader.builder().setFile(file).build();
 		config = manager.createEmptyNode(ConfigurationOptions.defaults());
 	}

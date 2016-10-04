@@ -25,7 +25,7 @@ public class BlackList {
 	public ArrayList<String> blacklist = new ArrayList<String>();
 	
 	private BlackList() {
-		file = Main.getInstance().getPath().resolve("blacklist.conf").toFile();
+		file = Main.getInstance().getFile().toPath().resolve("blacklist.conf").toFile();
 		manager = HoconConfigurationLoader.builder().setFile(file).build();
 		config = manager.createEmptyNode(ConfigurationOptions.defaults());
 	}

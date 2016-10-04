@@ -25,7 +25,7 @@ public class Config {
 	public CommentedConfigurationNode config;
 	
 	private Config() {
-		file = Main.getInstance().getPath().resolve("config.conf").toFile();
+		file = Main.getInstance().getFile().toPath().resolve("config.conf").toFile();
 		manager = HoconConfigurationLoader.builder().setFile(file).build();
 		config = manager.createEmptyNode(ConfigurationOptions.defaults());
 	}

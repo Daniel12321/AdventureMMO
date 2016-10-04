@@ -26,7 +26,7 @@ public class ModdedTools {
 	private ArrayList<ModdedTool> tools;
 	
 	private ModdedTools() {
-		file = Main.getInstance().getPath().resolve("moddedtools.conf").toFile();
+		file = Main.getInstance().getFile().toPath().resolve("moddedtools.conf").toFile();
 		manager = HoconConfigurationLoader.builder().setFile(file).build();
 		config = manager.createEmptyNode(ConfigurationOptions.defaults());
 		tools = new ArrayList<ModdedTool>();

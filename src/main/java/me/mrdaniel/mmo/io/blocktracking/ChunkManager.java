@@ -22,7 +22,7 @@ public class ChunkManager {
 	
 	private ChunkManager() {
 		chunks = new ArrayList<ChunkStore>();
-		path = Main.getInstance().getPath().resolve("store");
+		path = Main.getInstance().getFile().toPath().resolve("store");
 	}
 	
 	private List<ChunkStore> chunks;

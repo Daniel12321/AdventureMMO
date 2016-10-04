@@ -127,6 +127,7 @@ public class MMOPlayerDatabase {
 	private SkillSet load(UUID playerUUID) {
 		try {
 			File file = getPlayerFile(playerUUID);
+			if (!file.exists()) { return SkillSet.getEmpty(); }
 			FileInputStream fis = new FileInputStream(file);
 			ObjectInputStream ois = new ObjectInputStream(fis);
 			

@@ -1,7 +1,6 @@
 package me.mrdaniel.mmo;
 
 import java.io.File;
-import java.nio.file.Path;
 
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
@@ -31,7 +30,7 @@ import me.mrdaniel.mmo.listeners.BlockListener;
 import me.mrdaniel.mmo.listeners.PlayerListener;
 import me.mrdaniel.mmo.listeners.WorldListener;
 
-@Plugin(id = "adventuremmo", name = "AdventureMMO", version = "1.5.1")
+@Plugin(id = "adventuremmo", name = "AdventureMMO", version = "1.5.2")
 public class Main {
 
 	@Inject
@@ -40,26 +39,21 @@ public class Main {
 	private Game game;
     @Inject
     @ConfigDir(sharedRoot = false)
-    private Path path;
+    private File file;
 	
 	private static Main instance;
 	public static Main getInstance() { return instance; }
 	public Game getGame() { return game; }
 	public Logger getLogger() { return logger; }
-	public Path getPath() { return path; }
+	public File getFile() { return file; }
 	
 	@Listener
 	public void onEnable(GameInitializationEvent event) {
 		logger.info("Preparing plugin");
 		Main.instance = this;
-		File oldfolder = new File("config/mmo");
-		
-		if (oldfolder.exists()) { 
-			if (path.toFile().exists()) { path.toFile().delete(); }
-			oldfolder.renameTo(new File("config/adventuremmo"));
-		}
+		if (!file.exists()) { file.mkdir(); }
 
-        MMOPlayerDatabase.getInstance().setPlayersPath(path.resolve("players"));
+        MMOPlayerDatabase.getInstance().setPlayersPath(file.toPath().resolve("players"));
 		Config.getInstance().setup();
 		AdvancedConfig.getInstance().setup();
 		SkillTop.getInstance().setup();
