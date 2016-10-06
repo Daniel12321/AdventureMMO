@@ -26,9 +26,9 @@ public class CommandMMOReload implements CommandCallable {
 	
 	public CommandResult process(CommandSource sender, String arguments) throws CommandException {
 		
-		if (!(sender.hasPermission(Permissions.MMO_RELOAD()))) { sender.sendMessage(Config.getInstance().PREFIX().concat(Text.of(TextColors.RED, "You don't have permission for this command"))); return CommandResult.success(); }
+		if (!(sender.hasPermission(Permissions.MMO_RELOAD()))) { sender.sendMessage(Config.getInstance().PREFIX.concat(Text.of(TextColors.RED, "You don't have permission for this command"))); return CommandResult.success(); }
 		
-		sender.sendMessage(Config.getInstance().PREFIX().concat(Text.of(TextColors.GOLD, "Reloading AdventureMMO")));
+		sender.sendMessage(Config.getInstance().PREFIX.concat(Text.of(TextColors.GOLD, "Reloading AdventureMMO")));
 		
 		Config.getInstance().setup();
 		AdvancedConfig.getInstance().setup();
@@ -39,7 +39,7 @@ public class CommandMMOReload implements CommandCallable {
 		ModdedTools.getInstance().setup();
 		BlackList.getInstance().setup();
 		
-		sender.sendMessage(Config.getInstance().PREFIX().concat(Text.of(TextColors.GOLD, "AdventureMMO reloaded succesfully")));
+		sender.sendMessage(Config.getInstance().PREFIX.concat(Text.of(TextColors.GOLD, "AdventureMMO reloaded succesfully")));
 		
 		return CommandResult.success();
 	}

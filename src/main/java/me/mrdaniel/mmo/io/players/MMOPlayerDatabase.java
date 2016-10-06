@@ -31,6 +31,7 @@ public class MMOPlayerDatabase {
 	
 	/**
 	 * Set the path location where the players are stored.
+	 * It is not advised to use this method outside of the AdventureMMO Plugin
 	 * 
 	 * @param playersPath
 	 * Folder where the players are all saved.
@@ -60,7 +61,7 @@ public class MMOPlayerDatabase {
 	public synchronized MMOPlayer getOrCreatePlayer(UUID uuid) {
 		if (players.containsKey(uuid)) return players.get(uuid);
 		
-		MMOPlayer mmoplayer = new MMOPlayer(uuid.toString(), load(uuid));
+		MMOPlayer mmoplayer = load(uuid);
 		
 		players.put(uuid, mmoplayer);
 		return mmoplayer;
@@ -110,11 +111,14 @@ public class MMOPlayerDatabase {
 	public synchronized void save(MMOPlayer mmoplayer) {
 		try {
 			File file = getPlayerFile(UUID.fromString(mmoplayer.getUUID()));
+			if (!file.exists()) { file.createNewFile(); }
 			
 			FileOutputStream fos = new FileOutputStream(file);
 			ObjectOutputStream oos = new ObjectOutputStream(fos);
 			
-			oos.writeObject(mmoplayer.getSkills().serialize());
+			MMOPlayerData data = new MMOPlayerData(mmoplayer.getSkills().serialize(), mmoplayer.getSettings().serialize());
+			
+			oos.writeObject(data);
 			oos.flush();
 			oos.close();
 			fos.close();
@@ -124,33 +128,34 @@ public class MMOPlayerDatabase {
 			exc.printStackTrace();
 		}
 	}
-	private SkillSet load(UUID playerUUID) {
+	private MMOPlayer load(UUID playerUUID) {
 		try {
 			File file = getPlayerFile(playerUUID);
-			if (!file.exists()) { return SkillSet.getEmpty(); }
+			if (!file.exists()) { return new MMOPlayer(playerUUID.toString(), new SkillSet(), new Settings()); }
 			FileInputStream fis = new FileInputStream(file);
 			ObjectInputStream ois = new ObjectInputStream(fis);
 			
-			int[][] sRaw = (int[][]) ois.readObject();
-
+			Object raw = ois.readObject();
+			
 			ois.close();
 			fis.close();
 			
-			return SkillSet.deserialize(sRaw);
+			if (raw instanceof int[][]) { return new MMOPlayer(playerUUID.toString(), SkillSet.deserialize((int[][])raw), new Settings()); }
+			MMOPlayerData data = (MMOPlayerData) raw;
+			
+			return new MMOPlayer(playerUUID.toString(), SkillSet.deserialize(data.skills), Settings.deserialize(data.settings));
 		}
 		catch (Exception exc) {
 			Main.getInstance().getLogger().error("Error while loading player file");
-			return SkillSet.getEmpty();
+			exc.printStackTrace();
+			return new MMOPlayer(playerUUID.toString(), new SkillSet(), new Settings());
 		}
 	}
 	private File getPlayerFile(UUID playerUUID) throws IOException {
 		File folder = playersPath.toFile();
-		
 		if (!folder.exists()) folder.mkdir();
 		
-		File file = playersPath.resolve(playerUUID + ".dat").toFile();
-		
-		if (!file.exists()) file.createNewFile();
+		File file = playersPath.resolve(playerUUID.toString() + ".dat").toFile();
 		return file;
 	}
 }

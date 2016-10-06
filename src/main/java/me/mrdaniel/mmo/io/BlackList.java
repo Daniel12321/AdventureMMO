@@ -25,7 +25,7 @@ public class BlackList {
 	public ArrayList<String> blacklist = new ArrayList<String>();
 	
 	private BlackList() {
-		file = Main.getInstance().getFile().toPath().resolve("blacklist.conf").toFile();
+		file = Main.getInstance().getPath().resolve("blacklist.conf").toFile();
 		manager = HoconConfigurationLoader.builder().setFile(file).build();
 		config = manager.createEmptyNode(ConfigurationOptions.defaults());
 	}
@@ -38,7 +38,7 @@ public class BlackList {
 				file.createNewFile();
 				
 				config.getNode("blocked", "minecraft:wooden_axe").setValue(true);
-				config.getNode("blocked", "pixelmon:ThunderstoneAxe").setValue(true);
+				config.getNode("blocked", "pixelmon:ThunderstoneAxe").setValue(false);
 				
 				manager.save(config);
 			}

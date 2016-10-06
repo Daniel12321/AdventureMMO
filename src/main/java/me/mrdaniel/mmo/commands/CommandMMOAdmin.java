@@ -15,6 +15,7 @@ import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
 import me.mrdaniel.mmo.Main;
+import me.mrdaniel.mmo.enums.Setting;
 import me.mrdaniel.mmo.enums.SkillType;
 import me.mrdaniel.mmo.io.Config;
 import me.mrdaniel.mmo.io.players.MMOPlayer;
@@ -33,7 +34,7 @@ public class CommandMMOAdmin implements CommandCallable {
 		if (!p.hasPermission(Permissions.MMO_ADMIN())) { p.sendMessage(Text.of(TextColors.RED, "You don't have permission to use this command")); return CommandResult.success(); }
 		
 		String[] args = arguments.split(" ");
-		if (arguments.equals("")) { Menus.sendAdminInfo(p); return CommandResult.success(); }
+		if (arguments.equals("")) { ChatMenus.sendAdminInfo(p); return CommandResult.success(); }
 		
 		else if (args[0].equalsIgnoreCase("set")) {
 			if (!p.hasPermission(Permissions.MMO_ADMIN_SET())) { p.sendMessage(Text.of(TextColors.RED, "You don't have permission to use this command")); return CommandResult.success(); }
@@ -55,7 +56,7 @@ public class CommandMMOAdmin implements CommandCallable {
 			mmop.getSkills().setSkill(type, skill);
 			SkillTop.getInstance().update(other.getName(), mmop);
 			
-			p.sendMessage(Config.getInstance().PREFIX().concat(Text.of(TextColors.GREEN, "You set ", other.getName(), "'s ", args[2], " level to ", level)));
+			p.sendMessage(Config.getInstance().PREFIX.concat(Text.of(TextColors.GREEN, "You set ", other.getName(), "'s ", args[2], " level to ", level)));
 		}
 		
 		else if (args[0].equalsIgnoreCase("view")) {
@@ -67,10 +68,11 @@ public class CommandMMOAdmin implements CommandCallable {
 			Player other = otherOpt.get();
 			
 			MMOPlayer mmop = MMOPlayerDatabase.getInstance().getOrCreatePlayer(other.getUniqueId().toString());
-			Menus.sendMainInfo(p, other.getName(), mmop, true);
+			if (mmop.getSettings().getSetting(Setting.SCOREBOARD)) { BoardMenus.sendMainInfo(p, other.getName(), mmop); }
+			else { ChatMenus.sendMainInfo(p, other.getName(), mmop, true); }
 			
 		}
-		else  { Menus.sendAdminInfo(p); return CommandResult.success(); }
+		else { ChatMenus.sendAdminInfo(p); return CommandResult.success(); }
 		return CommandResult.success();
 	}
 	private final Text usage = Text.of(TextColors.BLUE, "Usage: /mmoadmin");

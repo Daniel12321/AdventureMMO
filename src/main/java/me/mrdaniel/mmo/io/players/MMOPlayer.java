@@ -10,10 +10,12 @@ public class MMOPlayer {
 	
 	private String uuid;
 	private SkillSet skills;
+	private Settings settings;
 	
-	public MMOPlayer(String uuid, SkillSet skills) {
+	public MMOPlayer(String uuid, SkillSet skills, Settings settings) {
 		this.uuid = uuid;
 		this.skills = skills;
+		this.settings = settings;
 	}
 	
 	/**
@@ -32,6 +34,15 @@ public class MMOPlayer {
 	 */
 	public SkillSet getSkills() { 
 		return skills; 
+	}
+	
+	/**
+	 * Get the player's settings.
+	 * 
+	 * @return Settings
+	 */
+	public Settings getSettings() { 
+		return settings; 
 	}
 	
 	/**

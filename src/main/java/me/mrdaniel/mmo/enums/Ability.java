@@ -14,13 +14,13 @@ public enum Ability {
 	EXCAVATION_DOUBLEDROP(SkillType.EXCAVATION, ShowState.CHANCE, "Excavation Double Drop", "Get double the items", false, false),
 	WOODCUTTING_DOUBLEDROP(SkillType.WOODCUTTING, ShowState.CHANCE, "Woodcutting Double Drop", "Get double the items", false, false),
 	
-	ROLL(SkillType.ACROBATICS, ShowState.CHANCE, "Roll", "Roll on the ground to avoid fall damage", false, false),
-	DODGE(SkillType.ACROBATICS, ShowState.CHANCE, "Dodge", "Use a skillful dodge to avoid damage", false, false),
-	SALVAGE(SkillType.SALVAGE, ShowState.RETRIEVE, "Salvage", "Break items on a gold block to retrieve items", false, false),
-	REPAIR(SkillType.REPAIR, ShowState.REPAIR, "Repair", "Repair items on an iron block using raw materials", false, false),
+	ROLL(SkillType.ACROBATICS, ShowState.CHANCE, "Roll", "Roll to avoid fall damage", false, false),
+	DODGE(SkillType.ACROBATICS, ShowState.CHANCE, "Dodge", "Dodge to avoid damage", false, false),
+	SALVAGE(SkillType.SALVAGE, ShowState.RETRIEVE, "Salvage", "Salvage items on a gold block", false, false),
+	REPAIR(SkillType.REPAIR, ShowState.REPAIR, "Repair", "Repair items on an iron block", false, false),
 	
-	TREASURE_HUNT(SkillType.EXCAVATION, ShowState.CHANCE, "Treasure Hunt", "You can find some nice items hiding in the ground", false, false),
-	WATER_TREASURE(SkillType.FISHING, ShowState.CHANCE, "Water Treasure", "You can find some nice items hiding in the water", false, false),
+	TREASURE_HUNT(SkillType.EXCAVATION, ShowState.CHANCE, "Treasure Hunt", "Find nice items hiding in the ground", false, false),
+	WATER_TREASURE(SkillType.FISHING, ShowState.CHANCE, "Water Treasure", "Find nice items hiding in the water", false, false),
 	
 	SUMMON_WOLF(SkillType.TAMING, ShowState.DELAY, "Wolf Summoning", "Summon a wolf", false, true),
 	SUMMON_OCELOT(SkillType.TAMING, ShowState.DELAY, "Ocelot Summoning", "Summon an ocelot", false, true),

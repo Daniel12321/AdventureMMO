@@ -2,7 +2,6 @@ package me.mrdaniel.mmo.commands;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.TreeMap;
 
 import org.spongepowered.api.command.CommandCallable;
 import org.spongepowered.api.command.CommandException;
@@ -15,33 +14,31 @@ import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
 import me.mrdaniel.mmo.enums.Setting;
-import me.mrdaniel.mmo.enums.SkillType;
 import me.mrdaniel.mmo.io.players.MMOPlayer;
 import me.mrdaniel.mmo.io.players.MMOPlayerDatabase;
-import me.mrdaniel.mmo.io.top.SkillTop;
-import me.mrdaniel.mmo.utils.TopInfo;
 
-public class CommandTop  implements CommandCallable {
+public class CommandSettings  implements CommandCallable {
 	
 	public CommandResult process(CommandSource sender, String arguments) throws CommandException {
 		
-		if (!(sender instanceof Player)) { sender.sendMessage(Text.of(TextColors.RED, "This command is for players only")); }
+		if (!(sender instanceof Player)) { sender.sendMessage(Text.of(TextColors.RED, "This command is for players only")); return CommandResult.success(); }
 		Player p = (Player) sender;
-		
-		if (arguments.contains(" ")) { sender.sendMessage(usage); return CommandResult.success(); }
-		
 		MMOPlayer mmop = MMOPlayerDatabase.getInstance().getOrCreatePlayer(p.getUniqueId());
 		
-		if (arguments.equals("")) { sendTop(p, SkillTop.getInstance().getTop(null).getTop(), "Total", mmop); return CommandResult.success(); }
+		if (arguments.equals("")) { ChatMenus.sendSettingsInfo(p, mmop); return CommandResult.success(); }
+		String[] args = arguments.split(" ");
+		if (args.length == 1) { ChatMenus.sendSettingsInfo(p, mmop); return CommandResult.success(); }
 		
-		SkillType type = SkillType.match(arguments);
-		if (type == null) { sendTop(p, SkillTop.getInstance().getTop(null).getTop(), "Total", mmop);  return CommandResult.success();  }
-		
-		sendTop(p, SkillTop.getInstance().getTop(type).getTop(), type.name, mmop);
-		return CommandResult.success();
+		try {
+			boolean value = Boolean.valueOf(args[1]);
+			mmop.getSettings().setSetting(Setting.match(args[0]), value);
+			ChatMenus.sendSettingsInfo(p, mmop);
+			return CommandResult.success();
+		}
+		catch (Exception exc) { ChatMenus.sendSettingsInfo(p, mmop); return CommandResult.success(); }
 	}
-	private final Text usage = Text.of(TextColors.BLUE, "Usage: /skilltop [stat]");
-	private final Text description = Text.of(TextColors.BLUE, "MMO | SkillTop Command");
+	private final Text usage = Text.of(TextColors.BLUE, "Usage: /settings <setting> <value>");
+	private final Text description = Text.of(TextColors.BLUE, "MMO | Settings Command");
 	
 	public Text getUsage(CommandSource sender) { return usage; }
 	public Optional<Text> getHelp(CommandSource sender) { return Optional.of(usage); }
@@ -49,8 +46,4 @@ public class CommandTop  implements CommandCallable {
 	public List<String> getSuggestions(CommandSource sender, String arguments, Location<World> loc) throws CommandException { return getSuggestions(sender, arguments); }
 	public List<String> getSuggestions(CommandSource sender, String arguments) throws CommandException {  return CommandCenter.getSkillSuggesions(arguments); }
 	public boolean testPermission(CommandSource sender) { return true; }
-	private void sendTop(Player p, TreeMap<Integer, TopInfo> top, String title, MMOPlayer mmop) {
-		if (mmop.getSettings().getSetting(Setting.SCOREBOARD)) { BoardMenus.sendTop(p, top, title); }
-		else { ChatMenus.sendTop(p, top, title); }
-	}
 }

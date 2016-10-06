@@ -16,7 +16,7 @@ import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
-import org.spongepowered.api.event.filter.cause.First;
+import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.text.Text;
@@ -38,7 +38,7 @@ import me.mrdaniel.mmo.skills.SkillSet;
 public class BlockListener {
 	
 	@Listener(order = Order.LAST)
-	public void onBlockBreak(ChangeBlockEvent.Break e, @First Player p) {
+	public void onBlockBreak(ChangeBlockEvent.Break e, @Root Player p) {
 		if (e.isCancelled()) { return; }
 		BlockSnapshot bss = e.getTransactions().get(0).getOriginal();
 		BlockType type = bss.getState().getType();
@@ -118,7 +118,7 @@ public class BlockListener {
 		}
 	}
 	@Listener(order = Order.LAST)
-	public void onBlockPlace(ChangeBlockEvent.Place e, @First Player p) {
+	public void onBlockPlace(ChangeBlockEvent.Place e, @Root Player p) {
 		if (e.isCancelled()) { return; }
 		BlockState state = e.getTransactions().get(0).getFinal().getState();
 		if (WatchList.shouldWatch(state.getType(), state.getId())) {

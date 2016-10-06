@@ -26,5 +26,5 @@ public enum SkillType {
 		for (SkillType type : SkillType.values()) { if (type.name.equalsIgnoreCase(name)) { return type; } }
 		return null;
 	}
-	public static int MAXNUMBER = 9;
+	public static int MAXNUMBER() { return 9; }
 }

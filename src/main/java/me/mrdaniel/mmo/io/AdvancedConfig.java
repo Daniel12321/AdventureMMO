@@ -32,7 +32,7 @@ public class AdvancedConfig {
 	public ImmutableMap<String, double[]> abilities;
 	
 	private AdvancedConfig() {
-		file = Main.getInstance().getFile().toPath().resolve("advancedconfig.conf").toFile();
+		file = Main.getInstance().getPath().resolve("advancedconfig.conf").toFile();
 		manager = HoconConfigurationLoader.builder().setFile(file).build();
 		config = manager.createEmptyNode(ConfigurationOptions.defaults());
 	}
@@ -128,45 +128,9 @@ public class AdvancedConfig {
 			}
 	        config = manager.load();
 	        
-	        if (config.getNode("abilities", "SUMMON_HORSE", "beginvalue").getInt() == 0) {
-	        	config.getNode("abilities", "SUPER_BREAKER", "beginvalue").setValue(5.0);
-				config.getNode("abilities", "SUPER_BREAKER", "increment").setValue(0.08);
-				config.getNode("abilities", "TREE_VELLER", "beginvalue").setValue(5.0);
-				config.getNode("abilities", "TREE_VELLER", "increment").setValue(0.08);
-				config.getNode("abilities", "GIGA_DRILL_BREAKER", "beginvalue").setValue(5.0);
-				config.getNode("abilities", "GIGA_DRILL_BREAKER", "increment").setValue(0.08);
-				config.getNode("abilities", "GREEN_TERRA", "beginvalue").setValue(5.0);
-				config.getNode("abilities", "GREEN_TERRA", "increment").setValue(0.08);
-				config.getNode("abilities", "MINING_DOUBLEDROP", "beginvalue").setValue(0.0);
-				config.getNode("abilities", "MINING_DOUBLEDROP", "increment").setValue(0.2);
-				config.getNode("abilities", "FARMING_DOUBLEDROP", "beginvalue").setValue(0.0);
-				config.getNode("abilities", "FARMING_DOUBLEDROP", "increment").setValue(0.2);
-				config.getNode("abilities", "EXCAVATION_DOUBLEDROP", "beginvalue").setValue(0);
-				config.getNode("abilities", "EXCAVATION_DOUBLEDROP", "increment").setValue(0.2);
-				config.getNode("abilities", "WOODCUTTING_DOUBLEDROP", "beginvalue").setValue(0.0);
-				config.getNode("abilities", "WOODCUTTING_DOUBLEDROP", "increment").setValue(0.2);
-				config.getNode("abilities", "ROLL", "beginvalue").setValue(0.0);
-				config.getNode("abilities", "ROLL", "increment").setValue(0.2);
-				config.getNode("abilities", "DODGE", "beginvalue").setValue(0.0);
-				config.getNode("abilities", "DODGE", "increment").setValue(0.1);
-				config.getNode("abilities", "SALVAGE", "beginvalue").setValue(20.0);
-				config.getNode("abilities", "SALVAGE", "increment").setValue(0.2);
-				config.getNode("abilities", "REPAIR", "beginvalue").setValue(10);
-				config.getNode("abilities", "REPAIR", "increment").setValue(0.12);
-				config.getNode("abilities", "TREASURE_HUNT", "beginvalue").setValue(2.0);
-				config.getNode("abilities", "TREASURE_HUNT", "increment").setValue(0.04);
-				config.getNode("abilities", "WATER_TREASURE", "beginvalue").setValue(8);
-				config.getNode("abilities", "WATER_TREASURE", "increment").setValue(0.2);
-				config.getNode("abilities", "SUMMON_WOLF", "beginvalue").setValue(1000.0);
-				config.getNode("abilities", "SUMMON_WOLF", "increment").setComment("SUMMON_WOLF increment must have a negative value");
-				config.getNode("abilities", "SUMMON_WOLF", "increment").setValue(-2.0);
-				config.getNode("abilities", "SUMMON_OCELOT", "beginvalue").setValue(1500.0);
-				config.getNode("abilities", "SUMMON_OCELOT", "increment").setComment("SUMMON_OCELOT increment must have a negative value");
-				config.getNode("abilities", "SUMMON_OCELOT", "increment").setValue(-2.0);
-				config.getNode("abilities", "SUMMON_HORSE", "beginvalue").setValue(2000.0);
-				config.getNode("abilities", "SUMMON_HORSE", "increment").setComment("SUMMON_HORSE increment must have a negative value");
-				config.getNode("abilities", "SUMMON_HORSE", "increment").setValue(-2.0);
-				manager.save(config);
+	        if (!config.getChildrenMap().values().contains(config.getNode("abilities"))) {
+	        	file.delete();
+	        	setup();
 	        }
 	        
 	        ImmutableMap.Builder<BlockType, Integer> b = ImmutableMap.builder();

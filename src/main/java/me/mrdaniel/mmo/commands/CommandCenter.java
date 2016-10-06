@@ -9,6 +9,7 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
 import me.mrdaniel.mmo.enums.Ability;
+import me.mrdaniel.mmo.enums.Setting;
 import me.mrdaniel.mmo.enums.SkillType;
 import me.mrdaniel.mmo.io.Config;
 import me.mrdaniel.mmo.io.players.MMOPlayer;
@@ -26,7 +27,8 @@ public class CommandCenter {
 		
 		MMOPlayer mmop = MMOPlayerDatabase.getInstance().getOrCreatePlayer(p.getUniqueId().toString());
 		
-		Menus.sendMainInfo(p, p.getName(), mmop, false);
+		if (mmop.getSettings().getSetting(Setting.SCOREBOARD)) { BoardMenus.sendMainInfo(p, p.getName(), mmop); }
+		else { ChatMenus.sendMainInfo(p, p.getName(), mmop, false); }
 	}
 	
 	public static void sendSkillInfo(CommandSource sender, String arguments) {
@@ -43,15 +45,16 @@ public class CommandCenter {
 		if (mmop == null) { p.sendMessage(Text.of(TextColors.RED, "You don't have permission to view others skills")); return; }
 		
 		SkillType type = SkillType.match(args[0]);
-		if (type == null) { p.sendMessage(Config.getInstance().PREFIX().concat(Text.of(TextColors.RED, "Invalid Skill Type"))); return; }
+		if (type == null) { p.sendMessage(Config.getInstance().PREFIX.concat(Text.of(TextColors.RED, "Invalid Skill Type"))); return; }
 		Skill skill = mmop.getSkills().getSkill(type);
 		ArrayList<Ability> abilities = new ArrayList<Ability>();
 		for (Ability ability : Ability.values()) { if (ability.skillType.equals(type)) { abilities.add(ability); } }
-		Menus.sendSkillInfo(p, mmop, type, skill, abilities);
+		if (mmop.getSettings().getSetting(Setting.SCOREBOARD)) { BoardMenus.sendSkillInfo(p, mmop, type, skill, abilities); }
+		else { ChatMenus.sendSkillInfo(p, mmop, type, skill, abilities); }
 		return;
 	}
 	public static void sendAdminInfo(CommandSource sender) {
-		Menus.sendAdminInfo(sender);
+		ChatMenus.sendAdminInfo(sender);
 	}
 	public static List<String> getSkillSuggesions(String arguments) {
 		String[] args = arguments.split(" ");

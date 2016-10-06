@@ -19,7 +19,7 @@ import org.spongepowered.api.event.cause.entity.damage.DamageTypes;
 import org.spongepowered.api.event.cause.entity.damage.source.DamageSource;
 import org.spongepowered.api.event.entity.DamageEntityEvent;
 import org.spongepowered.api.event.entity.TameEntityEvent;
-import org.spongepowered.api.event.filter.cause.First;
+import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.ItemStack;
@@ -51,7 +51,7 @@ public class PlayerListener {
 	private ArrayList<String> delays;
 	
 	@Listener(order = Order.LAST)
-	public void onInteractRight(InteractBlockEvent.Secondary e, @First Player p) {
+	public void onInteractRight(InteractBlockEvent.Secondary e, @Root Player p) {
 		if (e.isCancelled()) { return; }
 		BlockSnapshot bss = e.getTargetBlock();
 		BlockState bs = bss.getState();
@@ -89,7 +89,7 @@ public class PlayerListener {
 					ItemUtils.drop(item, dropLoc);
 					mmop.process(new SkillAction(SkillType.SALVAGE, ir.exp));
 				}
-				else { p.sendMessage(Config.getInstance().PREFIX().concat(Text.of(TextColors.GREEN, "Click the Gold Block with an item to salvage it"))); }
+				else { p.sendMessage(Config.getInstance().PREFIX.concat(Text.of(TextColors.GREEN, "Click the Gold Block with an item to salvage it"))); }
 			}
 			else if (bs.getType() == BlockTypes.IRON_BLOCK) {
 				if (p.getItemInHand(HandTypes.MAIN_HAND).isPresent() && p.getItemInHand(HandTypes.MAIN_HAND).get() != ItemTypes.NONE) {
@@ -139,7 +139,7 @@ public class PlayerListener {
 		Ability ability = Ability.DODGE;
 		if (ability.getValue(skill.level) > Math.random()*100.0) {
 			e.setCancelled(true);
-			p.sendMessage(Config.getInstance().PREFIX().concat(Text.of(TextColors.GREEN, "*You dodged to avoid taking damage*")));
+			p.sendMessage(Config.getInstance().PREFIX.concat(Text.of(TextColors.GREEN, "*You dodged to avoid taking damage*")));
 		}
 		Optional<DamageSource> sourceOpt = e.getCause().first(DamageSource.class);
 		if (sourceOpt.isPresent()) {
@@ -149,13 +149,13 @@ public class PlayerListener {
 				ability = Ability.ROLL;
 				if (ability.getValue(skill.level) > Math.random()*100.0) {
 					e.setCancelled(true);
-					p.sendMessage(Config.getInstance().PREFIX().concat(Text.of(TextColors.GREEN, "*You rolled to avoid taking damage*")));
+					p.sendMessage(Config.getInstance().PREFIX.concat(Text.of(TextColors.GREEN, "*You rolled to avoid taking damage*")));
 				}
 			}
 		}
 	}
 	@Listener(order = Order.LAST)
-	public void onFishing(FishingEvent.Stop e, @First Player p) {
+	public void onFishing(FishingEvent.Stop e, @Root Player p) {
 		if (e.isCancelled()) { return; }
 		if (e.getItemStackTransaction() != null) {
 			if (e.getItemStackTransaction().get(0).getFinal() != null && e.getItemStackTransaction().get(0).getFinal().getType() != ItemTypes.NONE) {
@@ -166,7 +166,7 @@ public class PlayerListener {
 		}
 	}
 	@Listener(order = Order.LAST)
-	public void onTaming(TameEntityEvent e, @First Player p) {
+	public void onTaming(TameEntityEvent e, @Root Player p) {
 		if (e.isCancelled()) { return; }
 		MMOPlayer mmop = MMOPlayerDatabase.getInstance().getOrCreatePlayer(p.getUniqueId().toString());
 		mmop.process(new SkillAction(SkillType.TAMING, AdvancedConfig.getInstance().skillExps.get(SkillType.TAMING)));

@@ -26,7 +26,7 @@ public class ModdedBlocks {
 	private ArrayList<ModdedBlock> blocks;
 	
 	private ModdedBlocks() {
-		file = Main.getInstance().getFile().toPath().resolve("moddedblocks.conf").toFile();
+		file = Main.getInstance().getPath().resolve("moddedblocks.conf").toFile();
 		manager = HoconConfigurationLoader.builder().setFile(file).build();
 		config = manager.createEmptyNode(ConfigurationOptions.defaults());
 		blocks = new ArrayList<ModdedBlock>();

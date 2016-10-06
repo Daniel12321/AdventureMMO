@@ -21,7 +21,7 @@ import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.block.InteractBlockEvent;
 import org.spongepowered.api.event.entity.ConstructEntityEvent;
-import org.spongepowered.api.event.filter.cause.First;
+import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.item.inventory.ClickInventoryEvent;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.inventory.ItemStack;
@@ -59,7 +59,7 @@ public class AbilityListener {
 	
 	//Handles readying and lowering of tools
 	@Listener
-	public void onRightClick(InteractBlockEvent.Secondary e, @First Player p) {
+	public void onRightClick(InteractBlockEvent.Secondary e, @Root Player p) {
 				
 		if (!(p.getItemInHand(HandTypes.MAIN_HAND).isPresent())) { return; }
 		if (clickDelays.containsKey(p.getName())) {
@@ -85,7 +85,7 @@ public class AbilityListener {
 		
 		if (players.containsKey(p.getName())) {
 			if (ability == players.get(p.getName())) {
-				p.sendMessage(Config.getInstance().PREFIX().concat(Text.of(TextColors.RED, "*You lower your " + toolType.name + "*")));
+				p.sendMessage(Config.getInstance().PREFIX.concat(Text.of(TextColors.RED, "*You lower your " + toolType.name + "*")));
 				players.remove(p.getName());
 				return;
 			}
@@ -100,28 +100,28 @@ public class AbilityListener {
 					}
 					else {
 						int seconds = (int) ((wrapper.expires - System.currentTimeMillis()) / 1000);
-						p.sendMessage(Config.getInstance().PREFIX().concat(Text.of(TextColors.RED, "*Ability is recharging (" + seconds + "s)*")));
+						p.sendMessage(Config.getInstance().PREFIX.concat(Text.of(TextColors.RED, "*Ability is recharging (" + seconds + "s)*")));
 						return;
 					}
 				}
 			}
 		}
 		
-		p.sendMessage(Config.getInstance().PREFIX().concat(Text.of(TextColors.GREEN, "*You ready your " + toolType.name + "*")));
+		p.sendMessage(Config.getInstance().PREFIX.concat(Text.of(TextColors.GREEN, "*You ready your " + toolType.name + "*")));
 		players.put(p.getName(), ability);
 		
 		Main.getInstance().getGame().getScheduler().createTaskBuilder()
 		.delay(4, TimeUnit.SECONDS)
 		.execute(()-> {
 			if (players.containsKey(p.getName())) {
-				p.sendMessage(Config.getInstance().PREFIX().concat(Text.of(TextColors.RED, "*You lower your " + toolType.name + "*"))); players.remove(p.getName());
+				p.sendMessage(Config.getInstance().PREFIX.concat(Text.of(TextColors.RED, "*You lower your " + toolType.name + "*"))); players.remove(p.getName());
 			}
 		}).submit(Main.getInstance());
 	}
 	
 	//Handles activating abilities
 	@Listener
-	public void onLeftClick(InteractBlockEvent.Primary e, @First Player p) {
+	public void onLeftClick(InteractBlockEvent.Primary e, @Root Player p) {
 		
 		if (!(p.getItemInHand(HandTypes.MAIN_HAND).isPresent())) { return; }
 		ItemStack hand = p.getItemInHand(HandTypes.MAIN_HAND).get();
@@ -146,7 +146,7 @@ public class AbilityListener {
 		}
 	}
 	@Listener(order = Order.LAST)
-	public void onTreeVeller(ChangeBlockEvent.Break e, @First Player p) {
+	public void onTreeVeller(ChangeBlockEvent.Break e, @Root Player p) {
 		if (e.isCancelled()) { return; }
 		BlockSnapshot bss = e.getTransactions().get(0).getOriginal();
 		BlockType type = bss.getState().getType();
@@ -161,7 +161,7 @@ public class AbilityListener {
 		}
 	}
 	@Listener(order = Order.LAST)
-	public void onGreenTerra(InteractBlockEvent.Secondary e, @First Player p) {
+	public void onGreenTerra(InteractBlockEvent.Secondary e, @Root Player p) {
 		if (e.isCancelled()) { return; }
 		if (Abilities.getInstance().active.containsKey(p.getName())) {
 			if (Abilities.getInstance().active.get(p.getName()) == Ability.GREEN_TERRA) {
@@ -179,7 +179,7 @@ public class AbilityListener {
 		}
 	}
 	@Listener(order = Order.LAST)
-	public void onItemClick(ClickInventoryEvent e, @First Player p) {
+	public void onItemClick(ClickInventoryEvent e, @Root Player p) {
 		if (Abilities.getInstance().active.containsKey(p.getName())) { 
 			if (Abilities.getInstance().active.get(p.getName()).equals(Ability.SUPER_BREAKER)
 			|| Abilities.getInstance().active.get(p.getName()).equals(Ability.GIGA_DRILL_BREAKER)) {
@@ -187,7 +187,6 @@ public class AbilityListener {
 			}
 		}
 	}
-	
 	@Listener(order = Order.LAST)
 	public void onEntitySpawn(ConstructEntityEvent.Post e) {
 		//TODO find a better way to do this

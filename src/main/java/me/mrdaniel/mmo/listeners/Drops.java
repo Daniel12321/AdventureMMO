@@ -96,10 +96,10 @@ public class Drops {
 		else if (level >= 80 && r.nextInt(10001) > 92_50) { return ItemUtils.build(ItemTypes.DYE, 1, 3); }
 		else if (level >= 60 && r.nextInt(10001) > 91_25) { return ItemUtils.build(ItemTypes.SLIME_BALL, 1, 0); }
 		else if (level >= 55 && r.nextInt(10001) > 90_00) { return ItemUtils.build(ItemTypes.SPIDER_EYE, 1, 0); }
-		else if (level >= 50 && r.nextInt(10001) > 80_00) { return ItemUtils.build(ItemTypes.GOLD_NUGGET, 1, 0); }
-		else if (level >= 35 && r.nextInt(10001) > 75_00) { return ItemUtils.build(ItemTypes.BONE, 1, 0); }
-		else if (level >= 25 && r.nextInt(10001) > 70_00) { return ItemUtils.build(ItemTypes.FLINT, 1, 0); }
-		else if (level >= 20 && r.nextInt(10001) > 65_00) { return ItemUtils.build(ItemTypes.GUNPOWDER, 1, 0); }
+		else if (level >= 50 && r.nextInt(10001) > 85_00) { return ItemUtils.build(ItemTypes.GOLD_NUGGET, 1, 0); }
+		else if (level >= 35 && r.nextInt(10001) > 80_00) { return ItemUtils.build(ItemTypes.BONE, 1, 0); }
+		else if (level >= 25 && r.nextInt(10001) > 75_00) { return ItemUtils.build(ItemTypes.FLINT, 1, 0); }
+		else if (level >= 20 && r.nextInt(10001) > 70_00) { return ItemUtils.build(ItemTypes.GUNPOWDER, 1, 0); }
 		return ItemUtils.build(ItemTypes.GLOWSTONE_DUST, 1, 0);
 	}
 	
@@ -125,15 +125,15 @@ public class Drops {
 		else if (level >= 300 && r.nextInt(10001) > 99_00) { return addRandomEnchantment(ItemUtils.build(ItemTypes.IRON_SHOVEL, 1, r.nextInt(251))); }
 		else if (level >= 300 && r.nextInt(10001) > 99_00) { return addRandomEnchantment(ItemUtils.build(ItemTypes.IRON_HOE, 1, r.nextInt(251))); }
 		
-		else if (level >= 200 && r.nextInt(10001) > 98_00) { return addRandomEnchantment(ItemUtils.build(ItemTypes.GOLDEN_HELMET, 1, r.nextInt(78))); }
-		else if (level >= 200 && r.nextInt(10001) > 98_00) { return addRandomEnchantment(ItemUtils.build(ItemTypes.GOLDEN_CHESTPLATE, 1, r.nextInt(113))); }
-		else if (level >= 200 && r.nextInt(10001) > 98_00) { return addRandomEnchantment(ItemUtils.build(ItemTypes.GOLDEN_LEGGINGS, 1, r.nextInt(106))); }
-		else if (level >= 200 && r.nextInt(10001) > 98_00) { return addRandomEnchantment(ItemUtils.build(ItemTypes.GOLDEN_BOOTS, 1, r.nextInt(92))); }
-		else if (level >= 200 && r.nextInt(10001) > 98_00) { return addRandomEnchantment(ItemUtils.build(ItemTypes.GOLDEN_SWORD, 1, r.nextInt(33))); }
-		else if (level >= 200 && r.nextInt(10001) > 98_00) { return addRandomEnchantment(ItemUtils.build(ItemTypes.GOLDEN_AXE, 1, r.nextInt(33))); }
-		else if (level >= 200 && r.nextInt(10001) > 98_00) { return addRandomEnchantment(ItemUtils.build(ItemTypes.GOLDEN_PICKAXE, 1, r.nextInt(33))); }
-		else if (level >= 200 && r.nextInt(10001) > 98_00) { return addRandomEnchantment(ItemUtils.build(ItemTypes.GOLDEN_SHOVEL, 1, r.nextInt(33))); }
-		else if (level >= 200 && r.nextInt(10001) > 98_00) { return addRandomEnchantment(ItemUtils.build(ItemTypes.GOLDEN_HOE, 1, r.nextInt(33))); }
+		else if (level >= 200 && r.nextInt(10001) > 98_50) { return addRandomEnchantment(ItemUtils.build(ItemTypes.GOLDEN_HELMET, 1, r.nextInt(78))); }
+		else if (level >= 200 && r.nextInt(10001) > 98_50) { return addRandomEnchantment(ItemUtils.build(ItemTypes.GOLDEN_CHESTPLATE, 1, r.nextInt(113))); }
+		else if (level >= 200 && r.nextInt(10001) > 98_50) { return addRandomEnchantment(ItemUtils.build(ItemTypes.GOLDEN_LEGGINGS, 1, r.nextInt(106))); }
+		else if (level >= 200 && r.nextInt(10001) > 98_50) { return addRandomEnchantment(ItemUtils.build(ItemTypes.GOLDEN_BOOTS, 1, r.nextInt(92))); }
+		else if (level >= 200 && r.nextInt(10001) > 98_50) { return addRandomEnchantment(ItemUtils.build(ItemTypes.GOLDEN_SWORD, 1, r.nextInt(33))); }
+		else if (level >= 200 && r.nextInt(10001) > 98_50) { return addRandomEnchantment(ItemUtils.build(ItemTypes.GOLDEN_AXE, 1, r.nextInt(33))); }
+		else if (level >= 200 && r.nextInt(10001) > 98_50) { return addRandomEnchantment(ItemUtils.build(ItemTypes.GOLDEN_PICKAXE, 1, r.nextInt(33))); }
+		else if (level >= 200 && r.nextInt(10001) > 98_50) { return addRandomEnchantment(ItemUtils.build(ItemTypes.GOLDEN_SHOVEL, 1, r.nextInt(33))); }
+		else if (level >= 200 && r.nextInt(10001) > 98_50) { return addRandomEnchantment(ItemUtils.build(ItemTypes.GOLDEN_HOE, 1, r.nextInt(33))); }
 		
 		else if (level >= 150 && r.nextInt(10001) > 98_00) { return addRandomEnchantment(ItemUtils.build(ItemTypes.BOW, 1, r.nextInt(385))); }
 		

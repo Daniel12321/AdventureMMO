@@ -27,7 +27,7 @@ public class SkillTop {
 	
 	public void setup() {
 		
-		File folder = Main.getInstance().getFile().toPath().resolve("top").toFile();
+		File folder = Main.getInstance().getPath().resolve("top").toFile();
 		if (!folder.exists()) folder.mkdir();
 		Path path = folder.toPath();
 		
