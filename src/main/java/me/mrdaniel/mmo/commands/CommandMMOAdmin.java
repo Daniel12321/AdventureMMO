@@ -15,7 +15,6 @@ import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
 import me.mrdaniel.mmo.Main;
-import me.mrdaniel.mmo.enums.Setting;
 import me.mrdaniel.mmo.enums.SkillType;
 import me.mrdaniel.mmo.io.Config;
 import me.mrdaniel.mmo.io.players.MMOPlayer;
@@ -68,8 +67,7 @@ public class CommandMMOAdmin implements CommandCallable {
 			Player other = otherOpt.get();
 			
 			MMOPlayer mmop = MMOPlayerDatabase.getInstance().getOrCreatePlayer(other.getUniqueId().toString());
-			if (mmop.getSettings().getSetting(Setting.SCOREBOARD)) { BoardMenus.sendMainInfo(p, other.getName(), mmop); }
-			else { ChatMenus.sendMainInfo(p, other.getName(), mmop, true); }
+			ChatMenus.sendMainInfo(p, other.getName(), mmop, true);
 			
 		}
 		else { ChatMenus.sendAdminInfo(p); return CommandResult.success(); }

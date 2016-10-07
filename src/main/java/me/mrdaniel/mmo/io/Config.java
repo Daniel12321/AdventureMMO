@@ -38,6 +38,7 @@ public class Config {
 				
 				config.getNode("prefix").setValue("&7[&9MMO&7]");
 				config.getNode("recharge_millis").setValue(200000);
+				config.getNode("scoreboard_active_seconds").setValue(12);
 				
 				config.getNode("economy", "enabled").setValue(false);
 				config.getNode("economy", "startAmount").setComment("The money a player gets for gaining 1 level is the level * incrementAmount + startAmount");
@@ -64,8 +65,20 @@ public class Config {
 	        	instance.setup();
 	        	return;
 	        }
+	        if (!config.getChildrenMap().values().contains(config.getNode("scoreboard_active_seconds"))) {
+	        	try {
+	        		config.getNode("scoreboard_active_seconds").setValue(12);
+	        		manager.save(config);
+	        	}
+	        	catch (IOException exc) {
+	    			Main.getInstance().getLogger().error("Error while saving Config file");
+	    			exc.printStackTrace();
+	    			return;
+	    		}
+	        }
 	        PREFIX = TextUtils.color(config.getNode("prefix").getString() + " ");
 	        RECHARGE_MILLIS = config.getNode("recharge_millis").getLong();
+	        SCOREBOARD_ACTIVE_SECONDS = config.getNode("scoreboard_active_seconds").getInt();
 	        ECONENABLED = config.getNode("economy", "enabled").getBoolean();
 	        START = config.getNode("economy", "startAmount").getDouble();
 	        INCREMENT = config.getNode("economy", "incrementAmount").getDouble();
@@ -91,6 +104,7 @@ public class Config {
 	}
 	public Text PREFIX;
 	public long RECHARGE_MILLIS;
+	public int SCOREBOARD_ACTIVE_SECONDS;
 	public boolean ECONENABLED;
 	public double START;
 	public double INCREMENT;

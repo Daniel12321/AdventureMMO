@@ -27,8 +27,7 @@ public class CommandCenter {
 		
 		MMOPlayer mmop = MMOPlayerDatabase.getInstance().getOrCreatePlayer(p.getUniqueId().toString());
 		
-		if (mmop.getSettings().getSetting(Setting.SCOREBOARD)) { BoardMenus.sendMainInfo(p, p.getName(), mmop); }
-		else { ChatMenus.sendMainInfo(p, p.getName(), mmop, false); }
+		ChatMenus.sendMainInfo(p, p.getName(), mmop, false);
 	}
 	
 	public static void sendSkillInfo(CommandSource sender, String arguments) {

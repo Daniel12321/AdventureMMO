@@ -34,7 +34,7 @@ import me.mrdaniel.mmo.listeners.BlockListener;
 import me.mrdaniel.mmo.listeners.PlayerListener;
 import me.mrdaniel.mmo.listeners.WorldListener;
 
-@Plugin(id = "adventuremmo", name = "AdventureMMO", version = "1.5.3")
+@Plugin(id = "adventuremmo", name = "AdventureMMO", version = "1.5.4")
 public class Main {
 
 	@Inject

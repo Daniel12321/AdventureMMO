@@ -1,11 +1,9 @@
 package me.mrdaniel.mmo.commands;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.TreeMap;
 
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.scoreboard.Scoreboard;
 
 import me.mrdaniel.mmo.enums.Ability;
 import me.mrdaniel.mmo.enums.SkillType;
@@ -15,49 +13,30 @@ import me.mrdaniel.mmo.utils.TopInfo;
 
 public class BoardMenus {
 	
-	public static void sendMainInfo(Player p, String name, MMOPlayer mmop) {
-		
-		HashMap<Integer, String> lines = new HashMap<Integer, String>();
-		lines.put(mmop.getSkills().getSkill(SkillType.MINING).level, "&bMining &7- ");
-		lines.put(mmop.getSkills().getSkill(SkillType.WOODCUTTING).level, "&bWoodcutting &7- ");
-		lines.put(mmop.getSkills().getSkill(SkillType.EXCAVATION).level, "&bExcavation &7- ");
-		lines.put(mmop.getSkills().getSkill(SkillType.FISHING).level, "&bFishing &7- ");
-		lines.put(mmop.getSkills().getSkill(SkillType.FARMING).level, "&bFarming &7- ");
-		lines.put(mmop.getSkills().getSkill(SkillType.ACROBATICS).level, "&bAcrobatics &7- ");
-		lines.put(mmop.getSkills().getSkill(SkillType.TAMING).level, "&bTaming &7- ");
-		lines.put(mmop.getSkills().getSkill(SkillType.SALVAGE).level, "&bSalvage &7- ");
-		lines.put(mmop.getSkills().getSkill(SkillType.REPAIR).level, "&bRepair &7- ");
-		lines.put(mmop.totalLevels(), "&bTotal &7- ");
-		
-		Scoreboard board = ScoreboardManager.getScoreboard(lines, "&c}--=== &b" + name + " &c==---{");
-		p.setScoreboard(board);
-	}
 	public static void sendSkillInfo(Player p, MMOPlayer mmop, SkillType type, Skill skill, ArrayList<Ability> abilities) {
 		int level = skill.level;
 		
 		int c = 2 + (abilities.size()*4);
-		HashMap<Integer, String> lines = new HashMap<Integer, String>();
-		lines.put(c, "&aLevel: " + String.valueOf(level)); c--;
-		lines.put(c, "&aEXP: " + String.valueOf(skill.exp) + "/" + String.valueOf(mmop.getSkills().expTillNextLevel(skill.level))); c--;
+		ArrayList<BoardLine> lines = new ArrayList<BoardLine>();
+		lines.add(new BoardLine("&aLevel: " + String.valueOf(level), c)); c--;
+		lines.add(new BoardLine("&aEXP: " + String.valueOf(skill.exp) + "/" + String.valueOf(mmop.getSkills().expTillNextLevel(skill.level)), c)); c--;
 		
 		for (int i = 0; i < abilities.size(); i++) {
 			Ability ability = abilities.get(i);
-			lines.put(c, ""); c--;
-			lines.put(c, "&c-= &e" + ability.name + " &c=-"); c--;
-			lines.put(c, "&2" + ability.desc); c--;
-			lines.put(c, "&2" + ability.showState.create(ability.getValue(level))); c--;
+			lines.add(new BoardLine("", c)); c--;
+			lines.add(new BoardLine("&c}-= &e" + ability.name + " &c=-{", c)); c--;
+			lines.add(new BoardLine("&2" + ability.desc, c)); c--;
+			lines.add(new BoardLine("&2" + ability.showState.create(ability.getValue(level)), c)); c--;
 		}
-		Scoreboard board = ScoreboardManager.getScoreboard(lines, "&c}--=== &b" + type.name + " &c==---{");
-		p.setScoreboard(board);
+		ScoreboardManager.getInstance().setScoreboard(p, lines, "&c}--=== &b" + type.name + " &c==---{");
 	}
 	public static void sendTop(Player p, TreeMap<Integer, TopInfo> top, String title) {
 		
-		HashMap<Integer, String> lines = new HashMap<Integer, String>();
+		ArrayList<BoardLine> lines = new ArrayList<BoardLine>();
 		for (int i : top.keySet()) {
 			TopInfo topInfo = top.get(i);
-			lines.put(topInfo.level, "&b" + topInfo.name + " &7- ");
+			lines.add(new BoardLine("&b" + topInfo.name + " &7- ", topInfo.level));
 		}
-		Scoreboard board = ScoreboardManager.getScoreboard(lines, "&c}--=== &b" + title + " &c==---{");
-		p.setScoreboard(board);
+		ScoreboardManager.getInstance().setScoreboard(p, lines, "&c}--=== &b" + title + " &c==---{");
 	}
 }
