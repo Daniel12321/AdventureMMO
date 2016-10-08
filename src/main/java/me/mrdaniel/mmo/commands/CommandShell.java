@@ -30,12 +30,11 @@ public class CommandShell implements CommandCallable {
 	private final Text usage = Text.of(TextColors.BLUE, "Usage: /skills [skill]");
 	private final Text description = Text.of(TextColors.BLUE, "MMO | Skills Command");
 	private List<String> suggestions = new ArrayList<String>();
-	private String permission = "";
 	
 	public Text getUsage(CommandSource sender) { return usage; }
 	public Optional<Text> getHelp(CommandSource sender) { return Optional.of(usage); }
 	public Optional<Text> getShortDescription(CommandSource sender) { return Optional.of(description); }
 	public List<String> getSuggestions(CommandSource sender, String arguments) throws CommandException { return suggestions; }
 	public List<String> getSuggestions(CommandSource sender, String arguments, Location<World> loc) throws CommandException { return suggestions; }
-	public boolean testPermission(CommandSource sender) { return permission.equals("") ? true : sender.hasPermission(permission); }
+	public boolean testPermission(CommandSource sender) { return true; }
 }

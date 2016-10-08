@@ -4,7 +4,8 @@ public enum Setting {
 	
 	SOUNDS("Sounds"),
 	EFFECTS("Effects"),
-	SCOREBOARD("Scoreboard");
+	SCOREBOARD("Scoreboard"),
+	SCOREBOARDPERMANENT("ScoreboardPermanent");
 	
 	public String name;
 	

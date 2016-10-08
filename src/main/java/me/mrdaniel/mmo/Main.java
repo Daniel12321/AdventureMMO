@@ -34,7 +34,7 @@ import me.mrdaniel.mmo.listeners.BlockListener;
 import me.mrdaniel.mmo.listeners.PlayerListener;
 import me.mrdaniel.mmo.listeners.WorldListener;
 
-@Plugin(id = "adventuremmo", name = "AdventureMMO", version = "1.5.4")
+@Plugin(id = "adventuremmo", name = "AdventureMMO", version = "1.5.5")
 public class Main {
 
 	@Inject
@@ -60,8 +60,8 @@ public class Main {
 		if (!path.toFile().exists()) { path.toFile().mkdir(); }
 
         MMOPlayerDatabase.getInstance().setPlayersPath(path.resolve("players"));
-		Config.getInstance().setup();
 		AdvancedConfig.getInstance().setup();
+		Config.getInstance().setup();
 		SkillTop.getInstance().setup();
 		ModdedBlocks.getInstance().setup();
 		ModdedTools.getInstance().setup();

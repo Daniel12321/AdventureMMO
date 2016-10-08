@@ -76,11 +76,11 @@ public class CommandMMOAdmin implements CommandCallable {
 	private final Text usage = Text.of(TextColors.BLUE, "Usage: /mmoadmin");
 	private final Text description = Text.of(TextColors.BLUE, "MMO | Admin Command");
 	private final List<String> suggestions = new ArrayList<String>();
-	private String permission = "";
 	
 	public Text getUsage(CommandSource sender) { return usage; }
 	public Optional<Text> getHelp(CommandSource sender) { return Optional.of(usage); }
 	public Optional<Text> getShortDescription(CommandSource sender) { return Optional.of(description); }
+	public boolean testPermission(CommandSource sender) { return true; }
 	public List<String> getSuggestions(CommandSource sender, String arguments, Location<World> loc) throws CommandException { return getSuggestions(sender, arguments); }
 	public List<String> getSuggestions(CommandSource sender, String arguments) throws CommandException {
 		String[] args = arguments.split(" ");
@@ -109,5 +109,4 @@ public class CommandMMOAdmin implements CommandCallable {
 		}
 		return suggestions;
 	}
-	public boolean testPermission(CommandSource sender) { return permission.equals("") ? true : sender.hasPermission(permission); }
 }

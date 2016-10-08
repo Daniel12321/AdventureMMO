@@ -13,7 +13,7 @@ import me.mrdaniel.mmo.utils.TopInfo;
 
 public class BoardMenus {
 	
-	public static void sendSkillInfo(Player p, MMOPlayer mmop, SkillType type, Skill skill, ArrayList<Ability> abilities) {
+	public static void sendSkillInfo(Player p, MMOPlayer mmop, SkillType type, Skill skill, ArrayList<Ability> abilities, String cmd) {
 		int level = skill.level;
 		
 		int c = 2 + (abilities.size()*4);
@@ -28,15 +28,15 @@ public class BoardMenus {
 			lines.add(new BoardLine("&2" + ability.desc, c)); c--;
 			lines.add(new BoardLine("&2" + ability.showState.create(ability.getValue(level)), c)); c--;
 		}
-		ScoreboardManager.getInstance().setScoreboard(p, lines, "&c}--=== &b" + type.name + " &c==---{");
+		ScoreboardManager.getInstance().setScoreboard(p, mmop, lines, "&c}--=== &b" + type.name + " &c==---{", cmd);
 	}
-	public static void sendTop(Player p, TreeMap<Integer, TopInfo> top, String title) {
+	public static void sendTop(Player p, MMOPlayer mmop, TreeMap<Integer, TopInfo> top, String title, String cmd) {
 		
 		ArrayList<BoardLine> lines = new ArrayList<BoardLine>();
 		for (int i : top.keySet()) {
 			TopInfo topInfo = top.get(i);
 			lines.add(new BoardLine("&b" + topInfo.name + " &7- ", topInfo.level));
 		}
-		ScoreboardManager.getInstance().setScoreboard(p, lines, "&c}--=== &b" + title + " &c==---{");
+		ScoreboardManager.getInstance().setScoreboard(p, mmop, lines, "&c}--=== &b" + title + " &c==---{", cmd);
 	}
 }

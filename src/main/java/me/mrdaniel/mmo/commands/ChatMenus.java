@@ -59,15 +59,11 @@ public class ChatMenus {
 	public static void sendSettingsInfo(Player p, MMOPlayer mmop) {
 		p.sendMessage(Text.of(""));
 		p.sendMessage(Text.of(TextColors.RED, "}--=== ", TextColors.AQUA, p.getName(), TextColors.RED, " ==---{"));
-
-		if (mmop.getSettings().getSetting(Setting.SOUNDS)) { p.sendMessage(TextUtils.setCommandClick("&bSounds &7- &aEnabled", "/settings sounds false", "&cClick to Disable")); }
-		else { p.sendMessage(TextUtils.setCommandClick("&bSounds &7- &cDisabled", "/setting sounds true", "&aClick to Enable")); }
 		
-		if (mmop.getSettings().getSetting(Setting.EFFECTS)) { p.sendMessage(TextUtils.setCommandClick("&bEffects &7- &aEnabled", "/settings effects false", "&cClick to Disable")); }
-		else { p.sendMessage(TextUtils.setCommandClick("&bEffects &7- &cDisabled", "/setting effects true", "&aClick to Enable")); }
-		
-		if (mmop.getSettings().getSetting(Setting.SCOREBOARD)) { p.sendMessage(TextUtils.setCommandClick("&bScoreboard &7- &aEnabled", "/settings scoreboard false", "&cClick to Disable")); }
-		else { p.sendMessage(TextUtils.setCommandClick("&bScoreboard &7- &cDisabled", "/setting scoreboard true", "&aClick to Enable")); }
+		for (Setting s : Setting.values()) {
+			if (mmop.getSettings().getSetting(s)) { p.sendMessage(TextUtils.setCommandClick("&b" + s.name +" &7- &aEnabled", "/settings " + s.name + " false", "&cClick to Disable")); }
+			else { p.sendMessage(TextUtils.setCommandClick("&b" + s.name +" &7- &cDisabled", "/settings " + s.name + " true", "&aClick to Enable")); }
+		}
 	}
 	public static void sendTop(Player p, TreeMap<Integer, TopInfo> top, String title) {
 		p.sendMessage(Text.of(""));

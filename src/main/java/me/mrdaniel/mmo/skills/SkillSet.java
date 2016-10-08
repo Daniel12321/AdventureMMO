@@ -119,7 +119,7 @@ public class SkillSet {
 	 * Returns the serialized SkillSet.
 	 */
 	public int[][] serialize() {
-		int[][] sRaw = new int[SkillType.MAXNUMBER()][2];
+		int[][] sRaw = new int[SkillType.values().length][2];
 		for (SkillType type : SkillType.values()) {
 			Skill s = getSkill(type);
 			int id = type.id;
@@ -130,27 +130,27 @@ public class SkillSet {
 	
 	/**
 	 * Deserialize the int[][] into an SkillSet.
+	 * Automatically updates SkillSet's from old versions.
 	 * 
 	 * @return SkillSet deserialized int[][].
 	 * Returns the deserialized int[][].
 	 */
 	public static SkillSet deserialize(int[][] sRaw) {
-		if (sRaw.length != SkillType.MAXNUMBER()) { return update(sRaw); }
+		if (sRaw.length != SkillType.values().length) { return update(sRaw); }
 		
-		Skill mining = new Skill(sRaw[SkillType.MINING.id][0], sRaw[SkillType.MINING.id][1]);
-		Skill woodcutting = new Skill(sRaw[SkillType.WOODCUTTING.id][0], sRaw[SkillType.WOODCUTTING.id][1]);
-		Skill excavation = new Skill(sRaw[SkillType.EXCAVATION.id][0], sRaw[SkillType.EXCAVATION.id][1]);
-		Skill fishing = new Skill(sRaw[SkillType.FISHING.id][0], sRaw[SkillType.FISHING.id][1]);
-		Skill farming = new Skill(sRaw[SkillType.FARMING.id][0], sRaw[SkillType.FARMING.id][1]);
-		Skill acrobatics = new Skill(sRaw[SkillType.ACROBATICS.id][0], sRaw[SkillType.ACROBATICS.id][1]);
-		Skill taming = new Skill(sRaw[SkillType.TAMING.id][0], sRaw[SkillType.TAMING.id][1]);
-		Skill salvage = new Skill(sRaw[SkillType.SALVAGE.id][0], sRaw[SkillType.SALVAGE.id][1]);
-		Skill repair = new Skill(sRaw[SkillType.REPAIR.id][0], sRaw[SkillType.REPAIR.id][1]);
-		
-		return new SkillSet(mining, woodcutting, excavation, fishing, farming, acrobatics, taming, salvage, repair);
+		return new SkillSet(
+				new Skill(sRaw[SkillType.MINING.id][0], sRaw[SkillType.MINING.id][1]),
+				new Skill(sRaw[SkillType.WOODCUTTING.id][0], sRaw[SkillType.WOODCUTTING.id][1]),
+				new Skill(sRaw[SkillType.EXCAVATION.id][0], sRaw[SkillType.EXCAVATION.id][1]),
+				new Skill(sRaw[SkillType.FISHING.id][0], sRaw[SkillType.FISHING.id][1]),
+				new Skill(sRaw[SkillType.FARMING.id][0], sRaw[SkillType.FARMING.id][1]),
+				new Skill(sRaw[SkillType.ACROBATICS.id][0], sRaw[SkillType.ACROBATICS.id][1]),
+				new Skill(sRaw[SkillType.TAMING.id][0], sRaw[SkillType.TAMING.id][1]),
+				new Skill(sRaw[SkillType.SALVAGE.id][0], sRaw[SkillType.SALVAGE.id][1]),
+				new Skill(sRaw[SkillType.REPAIR.id][0], sRaw[SkillType.REPAIR.id][1]));
 	}
 	private static SkillSet update(int[][] sRawOld) {
-		int[][] sRaw = new int[SkillType.MAXNUMBER()][2];
+		int[][] sRaw = new int[SkillType.values().length][2];
 		
 		int lowest = (sRaw.length > sRawOld.length) ? sRawOld.length : sRaw.length;
 		

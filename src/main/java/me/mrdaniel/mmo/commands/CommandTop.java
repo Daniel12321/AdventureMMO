@@ -32,12 +32,12 @@ public class CommandTop  implements CommandCallable {
 		
 		MMOPlayer mmop = MMOPlayerDatabase.getInstance().getOrCreatePlayer(p.getUniqueId());
 		
-		if (arguments.equals("")) { sendTop(p, SkillTop.getInstance().getTop(null).getTop(), "Total", mmop); return CommandResult.success(); }
+		if (arguments.equals("")) { sendTop(p, SkillTop.getInstance().getTop(null).getTop(), "Total", mmop, arguments); return CommandResult.success(); }
 		
 		SkillType type = SkillType.match(arguments);
-		if (type == null) { sendTop(p, SkillTop.getInstance().getTop(null).getTop(), "Total", mmop);  return CommandResult.success();  }
+		if (type == null) { sendTop(p, SkillTop.getInstance().getTop(null).getTop(), "Total", mmop, arguments);  return CommandResult.success();  }
 		
-		sendTop(p, SkillTop.getInstance().getTop(type).getTop(), type.name, mmop);
+		sendTop(p, SkillTop.getInstance().getTop(type).getTop(), type.name, mmop, arguments);
 		return CommandResult.success();
 	}
 	private final Text usage = Text.of(TextColors.BLUE, "Usage: /skilltop [stat]");
@@ -49,8 +49,8 @@ public class CommandTop  implements CommandCallable {
 	public List<String> getSuggestions(CommandSource sender, String arguments, Location<World> loc) throws CommandException { return getSuggestions(sender, arguments); }
 	public List<String> getSuggestions(CommandSource sender, String arguments) throws CommandException {  return CommandCenter.getSkillSuggesions(arguments); }
 	public boolean testPermission(CommandSource sender) { return true; }
-	private void sendTop(Player p, TreeMap<Integer, TopInfo> top, String title, MMOPlayer mmop) {
-		if (mmop.getSettings().getSetting(Setting.SCOREBOARD)) { BoardMenus.sendTop(p, top, title); }
+	private void sendTop(Player p, TreeMap<Integer, TopInfo> top, String title, MMOPlayer mmop, String arguments) {
+		if (mmop.getSettings().getSetting(Setting.SCOREBOARD)) { BoardMenus.sendTop(p, mmop, top, title, "skilltop " + arguments); }
 		else { ChatMenus.sendTop(p, top, title); }
 	}
 }

@@ -73,6 +73,7 @@ public class AbilityListener {
 		if (toolType == null) { return; }
 		Ability ability = toolType.getAbility();
 		if (ability == null) { return; }
+		if (Config.getInstance().BLOCKEDABILITYIES.contains(ability)) { return; }
 		
 		if (BlackList.getInstance().blacklist.contains(hand.getItem().getId().toLowerCase())) { return; }
 		
@@ -134,6 +135,7 @@ public class AbilityListener {
 			
 			Ability ability = toolType.getAbility();
 			if (ability == null) { return; }
+			if (Config.getInstance().BLOCKEDABILITYIES.contains(ability)) { return; }
 			
 			if (ability.requiresSneaking) {
 				if (!p.get(Keys.IS_SNEAKING).isPresent()) { return; }	

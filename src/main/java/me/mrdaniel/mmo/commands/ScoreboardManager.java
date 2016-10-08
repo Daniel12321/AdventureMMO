@@ -15,7 +15,9 @@ import org.spongepowered.api.scoreboard.objective.Objective;
 import org.spongepowered.api.text.Text;
 
 import me.mrdaniel.mmo.Main;
+import me.mrdaniel.mmo.enums.Setting;
 import me.mrdaniel.mmo.io.Config;
+import me.mrdaniel.mmo.io.players.MMOPlayer;
 import me.mrdaniel.mmo.utils.TextUtils;
 
 public class ScoreboardManager {
@@ -26,9 +28,11 @@ public class ScoreboardManager {
 		return instance;
 	}
 	private HashMap<String, Long> delays;
+	public HashMap<String, String> updates;
 	
 	private ScoreboardManager() { 
 		this.delays = new HashMap<String, Long>();
+		this.updates = new HashMap<String, String>();
 		
 		Main.getInstance().getGame().getScheduler().createTaskBuilder()
 		.name("MMO Scoreboard Task")
@@ -42,10 +46,15 @@ public class ScoreboardManager {
 					delays.remove(name);
 				} 
 			}
+			for (String name : updates.keySet()) {
+				Optional<Player> p = Main.getInstance().getGame().getServer().getPlayer(name);
+				if (p.isPresent()) { Main.getInstance().getGame().getCommandManager().process(p.get(), updates.get(name)); }
+				else { updates.remove(name); }
+			}
 		})
 		.submit(Main.getInstance());
 	}
-	public void setScoreboard(Player p, ArrayList<BoardLine> lines, String title) {
+	public void setScoreboard(Player p, MMOPlayer mmop, ArrayList<BoardLine> lines, String title, String cmd) {
 		Scoreboard board = Scoreboard.builder().build();
 		
 		List<Score> scoreLines = new ArrayList<>();
@@ -63,6 +72,7 @@ public class ScoreboardManager {
 		board.updateDisplaySlot(obj, DisplaySlots.SIDEBAR);
 		p.setScoreboard(board);
 		
-		delays.put(p.getName(), System.currentTimeMillis() + 1000*Config.getInstance().SCOREBOARD_ACTIVE_SECONDS);
+		if (mmop.getSettings().getSetting(Setting.SCOREBOARDPERMANENT)) { updates.put(p.getName(), cmd); }
+		else { delays.put(p.getName(), System.currentTimeMillis() + 1000*Config.getInstance().SCOREBOARD_ACTIVE_SECONDS); }
 	}
 }

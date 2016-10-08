@@ -15,6 +15,8 @@ public enum ShowState {
 		this.post = post;
 	}
 	public String create(double value) {
-		return pre + value + post;
+		String str = String.valueOf(value);
+		if (str.length() > 5) { str = str.substring(0, 6); }
+		return pre + str + post;
 	}
 }

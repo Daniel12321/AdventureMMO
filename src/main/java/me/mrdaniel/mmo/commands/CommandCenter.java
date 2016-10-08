@@ -48,7 +48,7 @@ public class CommandCenter {
 		Skill skill = mmop.getSkills().getSkill(type);
 		ArrayList<Ability> abilities = new ArrayList<Ability>();
 		for (Ability ability : Ability.values()) { if (ability.skillType.equals(type)) { abilities.add(ability); } }
-		if (mmop.getSettings().getSetting(Setting.SCOREBOARD)) { BoardMenus.sendSkillInfo(p, mmop, type, skill, abilities); }
+		if (mmop.getSettings().getSetting(Setting.SCOREBOARD)) { BoardMenus.sendSkillInfo(p, mmop, type, skill, abilities, "skills " + arguments); }
 		else { ChatMenus.sendSkillInfo(p, mmop, type, skill, abilities); }
 		return;
 	}
