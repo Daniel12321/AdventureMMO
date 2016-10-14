@@ -25,10 +25,11 @@ public class ItemUtils {
 		return stack;
 	}
 	
-	public static void drop(ItemStack item, Location<World> loc) {
+	public static Item drop(ItemStack item, Location<World> loc) {
 		Entity e = loc.getExtent().createEntity(EntityTypes.ITEM, loc.getPosition());
 		Item i = (Item) e;
 		i.offer(Keys.REPRESENTED_ITEM, item.createSnapshot());
 		loc.getExtent().spawnEntity(i, Cause.source(Sponge.getRegistry().createBuilder(Builder.class).entity(i).type(SpawnTypes.PLUGIN).build()).build());  
+		return i;
 	}
 }

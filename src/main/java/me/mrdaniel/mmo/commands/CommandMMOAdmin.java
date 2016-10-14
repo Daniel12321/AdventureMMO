@@ -28,7 +28,7 @@ public class CommandMMOAdmin implements CommandCallable {
 	
 	public CommandResult process(CommandSource sender, String arguments) throws CommandException {
 		
-		if (!(sender instanceof Player)) { return CommandResult.success(); }
+		if (!(sender instanceof Player)) { sender.sendMessage(Text.of(TextColors.RED, "This command is for players only")); return CommandResult.success(); }
 		Player p = (Player) sender;
 		if (!p.hasPermission(Permissions.MMO_ADMIN())) { p.sendMessage(Text.of(TextColors.RED, "You don't have permission to use this command")); return CommandResult.success(); }
 		

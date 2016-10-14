@@ -1,5 +1,7 @@
 package me.mrdaniel.mmo.enums;
 
+import org.spongepowered.api.block.BlockType;
+import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.ItemTypes;
 
@@ -8,25 +10,28 @@ import me.mrdaniel.mmo.io.ModdedTools;
 
 public enum ToolType {
 	
-	PICKAXE("Pickaxe"),
-	AXE("Axe"),
-	SHOVEL("Shovel"),
-	HOE("Hoe"),
-	BONE("Bone"),
-	APPLE("Apple"),
-	FISH("Fish"),
-	SWORD("Sword"),
-	ROD("Fishingrod"),
-	BOOTS("Boots"),
-	LEGGINGS("Leggings"),
-	CHESTPLATE("Chestplate"),
-	HELMET("Helmet"),
-	BOW("Bow");
+	PICKAXE("Pickaxe", true, false),
+	AXE("Axe", true, false),
+	SHOVEL("Shovel", true, false),
+	HOE("Hoe", true, false),
+	BONE("Bone", true, true),
+	APPLE("Apple", true, true),
+	FISH("Fish", true, true),
+	SWORD("Sword", true, false),
+	ROD("Fishingrod", false, false),
+	BOOTS("Boots", false, false),
+	LEGGINGS("Leggings", false, false),
+	CHESTPLATE("Chestplate", false, false),
+	HELMET("Helmet", false, false),
+	BOW("Bow", false, false),
+	HAND("Hand", true, false);
 	
 	public String name;
+	public boolean activeAbility;
+	public boolean requiresSneaking;
 	
-	ToolType(String name) {
-		this.name = name;
+	ToolType(String name, boolean activeAbility, boolean requiresSneaking) {
+		this.name = name; this.activeAbility = activeAbility; this.requiresSneaking = requiresSneaking;
 	}
 	
 	public static ToolType matchName(String name) {
@@ -37,17 +42,23 @@ public enum ToolType {
 		}
 		return null;
 	}
-	public Ability getAbility() {
+	public Ability getAbility(BlockType bType) {
+		if (!activeAbility) { return null; }
 		if (name.equals("Pickaxe")) { return Ability.SUPER_BREAKER; }
-		else if (name.equals("Axe")) { return Ability.TREE_VELLER; }
 		else if (name.equals("Shovel")) { return Ability.GIGA_DRILL_BREAKER; }
 		else if (name.equals("Hoe")) { return Ability.GREEN_TERRA; }
 		else if (name.equals("Bone")) { return Ability.SUMMON_WOLF; }
 		else if (name.equals("Apple")) { return Ability.SUMMON_HORSE; }
 		else if (name.equals("Fish")) { return Ability.SUMMON_OCELOT; }
+		else if (name.equals("Sword")) { return Ability.BLOODSHED; }
+		else if (name.equals("Hand")) { return Ability.SAITAMA_PUNCH; }
+		else if (name.equals("Axe")) {
+			if (bType == BlockTypes.LOG || bType == BlockTypes.LOG2) { return Ability.TREE_VELLER; }
+			else { return Ability.SLAUGHTER; }
+		}
 		return null;
 	}
-	public static ToolType matchID(ItemType type, String id) {
+	public static ToolType matchID(ItemType type) {
 		if (type == ItemTypes.WOODEN_SWORD
 				|| type == ItemTypes.STONE_SWORD
 				|| type == ItemTypes.IRON_SWORD
@@ -127,8 +138,11 @@ public enum ToolType {
 		else if (type == ItemTypes.FISHING_ROD) {
 			return ToolType.ROD;
 		}
+		else if (type == ItemTypes.NONE) {
+			return ToolType.HAND;
+		}
 		else {
-			ModdedTool tool = ModdedTools.getInstance().getToolType(id);
+			ModdedTool tool = ModdedTools.getInstance().getToolType(type.getId());
 			if (tool == null) return null;
 			return tool.type;
 		}

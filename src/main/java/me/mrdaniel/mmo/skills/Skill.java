@@ -8,4 +8,7 @@ public class Skill {
 		this.level = level;
 		this.exp = exp;
 	}
+	public int[] serialize() {
+		return new int[]{level,exp};
+	}
 }

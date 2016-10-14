@@ -177,7 +177,7 @@ public class Drops {
 	private ItemStack addRandomEnchantment(ItemStack stack) {
 		EnchantmentData data = stack.getOrCreate(EnchantmentData.class).get();
 		List<ItemEnchantment> ench = new ArrayList<ItemEnchantment>();
-		ToolType type = ToolType.matchID(stack.getItem().getType(), stack.getItem().getId());
+		ToolType type = ToolType.matchID(stack.getItem());
 		
 		if (type == ToolType.SWORD) {
 			if (r.nextInt(101) > 70) { ench.add(new ItemEnchantment(Enchantments.SHARPNESS, r.nextInt(5)+1)); }

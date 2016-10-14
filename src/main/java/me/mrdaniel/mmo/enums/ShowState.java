@@ -2,7 +2,7 @@ package me.mrdaniel.mmo.enums;
 
 public enum ShowState {
 	DURATION("Duration: ", "s"),
-	CHANCE("Change: ", "%"),
+	CHANCE("Chance: ", "%"),
 	DELAY("Delay: ", "s"),
 	RETRIEVE("Retrieve: ", "%"),
 	REPAIR("Repair: ", "%");

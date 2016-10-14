@@ -25,7 +25,7 @@ public class CommandTop  implements CommandCallable {
 	
 	public CommandResult process(CommandSource sender, String arguments) throws CommandException {
 		
-		if (!(sender instanceof Player)) { sender.sendMessage(Text.of(TextColors.RED, "This command is for players only")); }
+		if (!(sender instanceof Player)) { sender.sendMessage(Text.of(TextColors.RED, "This command is for players only")); return CommandResult.success(); }
 		Player p = (Player) sender;
 		
 		if (arguments.contains(" ")) { sender.sendMessage(usage); return CommandResult.success(); }

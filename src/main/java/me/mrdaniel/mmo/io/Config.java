@@ -42,7 +42,7 @@ public class Config {
 				file.createNewFile();
 				
 				config.getNode("prefix").setValue("&7[&9MMO&7]");
-				config.getNode("recharge_millis").setValue(200000);
+				config.getNode("recharge_millis").setValue(250000);
 				config.getNode("scoreboard_active_seconds").setValue(12);
 				
 				config.getNode("economy", "enabled").setValue(false);
@@ -69,6 +69,10 @@ public class Config {
 				config.getNode("commands", "/taming").setValue(true);
 				config.getNode("commands", "/salvage").setValue(true);
 				config.getNode("commands", "/repair").setValue(true);
+				config.getNode("commands", "/swords").setValue(true);
+				config.getNode("commands", "/axes").setValue(true);
+				config.getNode("commands", "/unarmed").setValue(true);
+				config.getNode("commands", "/archery").setValue(true);
 				
 				config.getNode("abilities", "superbreaker", "blocked").setValue(false);
 				config.getNode("abilities", "treeveller", "blocked").setValue(false);
@@ -88,11 +92,18 @@ public class Config {
 				config.getNode("abilities", "summonocelot", "blocked").setValue(false);
 				config.getNode("abilities", "summonhorse", "blocked").setValue(false);
 				
+				config.getNode("abilities", "slaughter", "blocked").setValue(false);
+				config.getNode("abilities", "bloodshed", "blocked").setValue(false);
+				config.getNode("abilities", "saitama_punch", "blocked").setValue(false);
+				config.getNode("abilities", "decapitation", "blocked").setValue(false);
+				config.getNode("abilities", "arrowrain", "blocked").setValue(false);
+				config.getNode("abilities", "disarm", "blocked").setValue(false);
+				
 		        manager.save(config);
 			}
 	        config = manager.load();
 	        
-	        if (!config.getChildrenMap().values().contains(config.getNode("personal_settings"))) {
+	        if (!config.getNode("abilities").getChildrenMap().values().contains(config.getNode("abilities", "disarm"))) {
 	        	file.delete();
 	        	instance = new Config();
 	        	instance.setup();

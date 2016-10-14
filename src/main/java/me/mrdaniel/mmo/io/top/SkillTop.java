@@ -24,6 +24,10 @@ public class SkillTop {
 	private Top taming;
 	private Top salvage;
 	private Top repair;
+	private Top swords;
+	private Top axes;
+	private Top unarmed;
+	private Top archery;
 	
 	public void setup() {
 		
@@ -41,6 +45,10 @@ public class SkillTop {
 		taming = new Top(path.resolve("tamingtop.conf").toFile());
 		salvage = new Top(path.resolve("salvagetop.conf").toFile());
 		repair = new Top(path.resolve("repairtop.conf").toFile());
+		swords = new Top(path.resolve("swordstop.conf").toFile());
+		axes = new Top(path.resolve("axestop.conf").toFile());
+		unarmed = new Top(path.resolve("unarmedtop.conf").toFile());
+		archery = new Top(path.resolve("archerystop.conf").toFile());
 		
 		total.setup();
 		mining.setup();
@@ -52,6 +60,10 @@ public class SkillTop {
 		taming.setup();
 		salvage.setup();
 		repair.setup();
+		swords.setup();
+		axes.setup();
+		unarmed.setup();
+		archery.setup();
 	}
 	public void update(String name, MMOPlayer mmop) {
 		SkillSet skills = mmop.getSkills();
@@ -66,6 +78,10 @@ public class SkillTop {
 		taming.update(name, skills.getSkill(SkillType.TAMING).level);
 		salvage.update(name, skills.getSkill(SkillType.SALVAGE).level);
 		repair.update(name, skills.getSkill(SkillType.REPAIR).level);
+		swords.update(name, skills.getSkill(SkillType.SWORDS).level);
+		axes.update(name, skills.getSkill(SkillType.AXES).level);
+		unarmed.update(name, skills.getSkill(SkillType.UNARMED).level);
+		archery.update(name, skills.getSkill(SkillType.ARCHERY).level);
 	}
 	public Top getTop(SkillType type) {
 		if (type == null) { return total; }
@@ -78,6 +94,10 @@ public class SkillTop {
 		else if (type == SkillType.TAMING) { return taming; }
 		else if (type == SkillType.SALVAGE) { return salvage; }
 		else if (type == SkillType.REPAIR) { return repair; }
+		else if (type == SkillType.SWORDS) { return swords; }
+		else if (type == SkillType.AXES) { return axes; }
+		else if (type == SkillType.UNARMED) { return unarmed; }
+		else if (type == SkillType.ARCHERY) { return archery; }
 		return total;
 	}
 }

@@ -52,8 +52,8 @@ public class CommandCenter {
 		else { ChatMenus.sendSkillInfo(p, mmop, type, skill, abilities); }
 		return;
 	}
-	public static void sendAdminInfo(CommandSource sender) {
-		ChatMenus.sendAdminInfo(sender);
+	public static void sendAdminInfo(Player p) {
+		ChatMenus.sendAdminInfo(p);
 	}
 	public static List<String> getSkillSuggesions(String arguments) {
 		String[] args = arguments.split(" ");

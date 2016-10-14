@@ -3,7 +3,6 @@ package me.mrdaniel.mmo.io.players;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.nio.file.Path;
@@ -110,7 +109,7 @@ public class MMOPlayerDatabase {
 	 */
 	public synchronized void save(MMOPlayer mmoplayer) {
 		try {
-			File file = getPlayerFile(UUID.fromString(mmoplayer.getUUID()));
+			File file = playersPath.resolve(mmoplayer.getUUID() + ".dat").toFile();
 			if (!file.exists()) { file.createNewFile(); }
 			
 			FileOutputStream fos = new FileOutputStream(file);
@@ -130,7 +129,7 @@ public class MMOPlayerDatabase {
 	}
 	private MMOPlayer load(UUID playerUUID) {
 		try {
-			File file = getPlayerFile(playerUUID);
+			File file = playersPath.resolve(playerUUID.toString() + ".dat").toFile();
 			if (!file.exists()) { return new MMOPlayer(playerUUID.toString(), new SkillSet(), new Settings()); }
 			FileInputStream fis = new FileInputStream(file);
 			ObjectInputStream ois = new ObjectInputStream(fis);
@@ -142,20 +141,12 @@ public class MMOPlayerDatabase {
 			
 			if (raw instanceof int[][]) { return new MMOPlayer(playerUUID.toString(), SkillSet.deserialize((int[][])raw), new Settings()); }
 			MMOPlayerData data = (MMOPlayerData) raw;
-			
-			return new MMOPlayer(playerUUID.toString(), SkillSet.deserialize(data.skills), Settings.deserialize(data.settings));
+			return new MMOPlayer(playerUUID.toString(), SkillSet.deserialize(data.skills), new Settings(data.settings));
 		}
 		catch (Exception exc) {
 			Main.getInstance().getLogger().error("Error while loading player file");
 			exc.printStackTrace();
 			return new MMOPlayer(playerUUID.toString(), new SkillSet(), new Settings());
 		}
-	}
-	private File getPlayerFile(UUID playerUUID) throws IOException {
-		File folder = playersPath.toFile();
-		if (!folder.exists()) folder.mkdir();
-		
-		File file = playersPath.resolve(playerUUID.toString() + ".dat").toFile();
-		return file;
 	}
 }

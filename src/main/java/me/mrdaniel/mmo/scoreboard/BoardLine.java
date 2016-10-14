@@ -1,4 +1,4 @@
-package me.mrdaniel.mmo.commands;
+package me.mrdaniel.mmo.scoreboard;
 
 public class BoardLine {
 	public String line;

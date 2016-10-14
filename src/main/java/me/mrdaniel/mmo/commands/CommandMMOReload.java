@@ -13,13 +13,8 @@ import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
-import me.mrdaniel.mmo.io.AdvancedConfig;
-import me.mrdaniel.mmo.io.BlackList;
+import me.mrdaniel.mmo.Main;
 import me.mrdaniel.mmo.io.Config;
-import me.mrdaniel.mmo.io.ModdedBlocks;
-import me.mrdaniel.mmo.io.ModdedTools;
-import me.mrdaniel.mmo.io.players.MMOPlayerDatabase;
-import me.mrdaniel.mmo.io.top.SkillTop;
 import me.mrdaniel.mmo.utils.Permissions;
 
 public class CommandMMOReload implements CommandCallable {
@@ -30,17 +25,9 @@ public class CommandMMOReload implements CommandCallable {
 		
 		sender.sendMessage(Config.getInstance().PREFIX.concat(Text.of(TextColors.GOLD, "Reloading AdventureMMO")));
 		
-		Config.getInstance().setup();
-		AdvancedConfig.getInstance().setup();
-		MMOPlayerDatabase.getInstance().saveAll();
-		MMOPlayerDatabase.getInstance().unloadAll();
-		SkillTop.getInstance().setup();
-		ModdedBlocks.getInstance().setup();
-		ModdedTools.getInstance().setup();
-		BlackList.getInstance().setup();
+		Main.getInstance().reload(null);
 		
 		sender.sendMessage(Config.getInstance().PREFIX.concat(Text.of(TextColors.GOLD, "AdventureMMO reloaded succesfully")));
-		
 		return CommandResult.success();
 	}
 	private final Text usage = Text.of(TextColors.BLUE, "Usage: /mmoreload");

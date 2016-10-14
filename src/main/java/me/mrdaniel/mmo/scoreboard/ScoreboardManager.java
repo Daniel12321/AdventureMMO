@@ -1,8 +1,7 @@
-package me.mrdaniel.mmo.commands;
+package me.mrdaniel.mmo.scoreboard;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -29,6 +28,7 @@ public class ScoreboardManager {
 	}
 	private HashMap<String, Long> delays;
 	public HashMap<String, String> updates;
+	private int scoreSpaces;
 	
 	private ScoreboardManager() { 
 		this.delays = new HashMap<String, Long>();
@@ -56,17 +56,20 @@ public class ScoreboardManager {
 	}
 	public void setScoreboard(Player p, MMOPlayer mmop, ArrayList<BoardLine> lines, String title, String cmd) {
 		Scoreboard board = Scoreboard.builder().build();
-		
-		List<Score> scoreLines = new ArrayList<>();
 		Objective obj;
 		
 		obj = Objective.builder().name("MMO").criterion(Criteria.DUMMY).displayName(TextUtils.color(title)).build();
 		
 		for (BoardLine line : lines) {
-			Text text = TextUtils.color(line.line);
-			Score score = obj.getOrCreateScore(text);
-			score.setScore(line.location);
-			scoreLines.add(score);
+			if (line.line.equals("")) {
+				Score score = nextEmptyScore(obj);
+				score.setScore(line.location);
+			}
+			else {
+				Text text = TextUtils.color(line.line);
+				Score score = obj.getOrCreateScore(text);
+				score.setScore(line.location);
+			}
 		}
 		board.addObjective(obj);
 		board.updateDisplaySlot(obj, DisplaySlots.SIDEBAR);
@@ -74,5 +77,12 @@ public class ScoreboardManager {
 		
 		if (mmop.getSettings().getSetting(Setting.SCOREBOARDPERMANENT)) { updates.put(p.getName(), cmd); }
 		else { delays.put(p.getName(), System.currentTimeMillis() + 1000*Config.getInstance().SCOREBOARD_ACTIVE_SECONDS); }
+	}
+	private Score nextEmptyScore(Objective obj) {
+		String txt = "";
+		for (int i = 0; i < scoreSpaces; i++) { txt += " "; }
+		scoreSpaces++;
+		if (scoreSpaces >= 6) { scoreSpaces = 0; }
+		return obj.getOrCreateScore(Text.of(txt));
 	}
 }

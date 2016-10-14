@@ -15,9 +15,6 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.action.FishingEvent;
 import org.spongepowered.api.event.block.InteractBlockEvent;
-import org.spongepowered.api.event.cause.entity.damage.DamageTypes;
-import org.spongepowered.api.event.cause.entity.damage.source.DamageSource;
-import org.spongepowered.api.event.entity.DamageEntityEvent;
 import org.spongepowered.api.event.entity.TameEntityEvent;
 import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
@@ -38,7 +35,6 @@ import me.mrdaniel.mmo.io.AdvancedConfig;
 import me.mrdaniel.mmo.io.Config;
 import me.mrdaniel.mmo.io.players.MMOPlayer;
 import me.mrdaniel.mmo.io.players.MMOPlayerDatabase;
-import me.mrdaniel.mmo.skills.Skill;
 import me.mrdaniel.mmo.skills.SkillAction;
 import me.mrdaniel.mmo.utils.ItemInfo;
 import me.mrdaniel.mmo.utils.ItemUtils;
@@ -130,30 +126,6 @@ public class PlayerListener {
 			}
 		}
 	}
-	@Listener(order = Order.EARLY)
-	public void onFallDamage(DamageEntityEvent e) {
-		if (!(e.getTargetEntity() instanceof Player)) { return; }
-		Player p = (Player) e.getTargetEntity();
-		MMOPlayer mmop = MMOPlayerDatabase.getInstance().getOrCreatePlayer(p.getUniqueId().toString());
-		Skill skill = mmop.getSkills().getSkill(SkillType.ACROBATICS);
-		Ability ability = Ability.DODGE;
-		if (ability.getValue(skill.level) > Math.random()*100.0) {
-			e.setCancelled(true);
-			p.sendMessage(Config.getInstance().PREFIX.concat(Text.of(TextColors.GREEN, "*You dodged to avoid taking damage*")));
-		}
-		Optional<DamageSource> sourceOpt = e.getCause().first(DamageSource.class);
-		if (sourceOpt.isPresent()) {
-			DamageSource source = sourceOpt.get();
-			if (source.getType().equals(DamageTypes.FALL)) {
-				mmop.process(new SkillAction(SkillType.ACROBATICS, (int) (AdvancedConfig.getInstance().skillExps.get(SkillType.ACROBATICS)*e.getOriginalDamage())));
-				ability = Ability.ROLL;
-				if (ability.getValue(skill.level) > Math.random()*100.0) {
-					e.setCancelled(true);
-					p.sendMessage(Config.getInstance().PREFIX.concat(Text.of(TextColors.GREEN, "*You rolled to avoid taking damage*")));
-				}
-			}
-		}
-	}
 	@Listener(order = Order.LAST)
 	public void onFishing(FishingEvent.Stop e, @Root Player p) {
 		if (e.isCancelled()) { return; }
@@ -169,12 +141,11 @@ public class PlayerListener {
 	public void onTaming(TameEntityEvent e, @Root Player p) {
 		if (e.isCancelled()) { return; }
 		MMOPlayer mmop = MMOPlayerDatabase.getInstance().getOrCreatePlayer(p.getUniqueId().toString());
-		mmop.process(new SkillAction(SkillType.TAMING, AdvancedConfig.getInstance().skillExps.get(SkillType.TAMING)));
+		mmop.process(new SkillAction(SkillType.TAMING, AdvancedConfig.getInstance().skillExps.get(SkillType.TAMING)[0]));
 	}
 	@Listener
 	public void onPlayerJoin(ClientConnectionEvent.Join e) {
 		MMOPlayer mmop = MMOPlayerDatabase.getInstance().getOrCreatePlayer(e.getTargetEntity().getUniqueId().toString());
-		mmop.save();
 		mmop.updateTop(e.getTargetEntity().getName());
 	}
 	@Listener

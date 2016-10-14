@@ -18,6 +18,7 @@ import me.mrdaniel.mmo.enums.Setting;
 import me.mrdaniel.mmo.io.Config;
 import me.mrdaniel.mmo.io.players.MMOPlayer;
 import me.mrdaniel.mmo.io.players.MMOPlayerDatabase;
+import me.mrdaniel.mmo.scoreboard.ScoreboardManager;
 
 public class CommandSettings  implements CommandCallable {
 	

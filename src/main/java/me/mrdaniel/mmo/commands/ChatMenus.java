@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.TreeMap;
 
-import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
@@ -24,15 +23,19 @@ public class ChatMenus {
 		if (adminMode) { otherUUID = " " + mmop.getUUID(); }
 		p.sendMessage(Text.of(""));
 		p.sendMessage(Text.of(TextColors.RED, "}--=== ", TextColors.AQUA, name, TextColors.RED, " ==---{"));
-		p.sendMessage(TextUtils.setCommandClick("&bMining &7- &aLevel " + String.valueOf(mmop.getSkills().getSkill(SkillType.MINING).level), "/skills mining" + otherUUID, "&9Click to see more"));
-		p.sendMessage(TextUtils.setCommandClick("&bWoodcutting &7- &aLevel " + String.valueOf(mmop.getSkills().getSkill(SkillType.WOODCUTTING).level), "/skills woodcutting" + otherUUID, "&9Click to see more"));
-		p.sendMessage(TextUtils.setCommandClick("&bExcavation &7- &aLevel " + String.valueOf(mmop.getSkills().getSkill(SkillType.EXCAVATION).level), "/skills excavation" + otherUUID, "&9Click to see more"));
-		p.sendMessage(TextUtils.setCommandClick("&bFishing &7- &aLevel " + String.valueOf(mmop.getSkills().getSkill(SkillType.FISHING).level), "/skills fishing" + otherUUID, "&9Click to see more"));
-		p.sendMessage(TextUtils.setCommandClick("&bFarming &7- &aLevel " + String.valueOf(mmop.getSkills().getSkill(SkillType.FARMING).level), "/skills farming" + otherUUID, "&9Click to see more"));
-		p.sendMessage(TextUtils.setCommandClick("&bAcrobatics &7- &aLevel " + String.valueOf(mmop.getSkills().getSkill(SkillType.ACROBATICS).level), "/skills acrobatics" + otherUUID, "&9Click to see more"));
-		p.sendMessage(TextUtils.setCommandClick("&bTaming &7- &aLevel " + String.valueOf(mmop.getSkills().getSkill(SkillType.TAMING).level), "/skills taming" + otherUUID, "&9Click to see more"));
-		p.sendMessage(TextUtils.setCommandClick("&bSalvage &7- &aLevel " + String.valueOf(mmop.getSkills().getSkill(SkillType.SALVAGE).level), "/skills salvage" + otherUUID, "&9Click to see more"));
-		p.sendMessage(TextUtils.setCommandClick("&bRepair &7- &aLevel " + String.valueOf(mmop.getSkills().getSkill(SkillType.REPAIR).level), "/skills repair" + otherUUID, "&9Click to see more"));
+		p.sendMessage(TextUtils.setCommandClick("&bMining &7- &aLevel " + String.valueOf(mmop.getSkills().getSkill(SkillType.MINING).level), "/skills mining " + otherUUID, "&9Click to see more"));
+		p.sendMessage(TextUtils.setCommandClick("&bWoodcutting &7- &aLevel " + String.valueOf(mmop.getSkills().getSkill(SkillType.WOODCUTTING).level), "/skills woodcutting " + otherUUID, "&9Click to see more"));
+		p.sendMessage(TextUtils.setCommandClick("&bExcavation &7- &aLevel " + String.valueOf(mmop.getSkills().getSkill(SkillType.EXCAVATION).level), "/skills excavation " + otherUUID, "&9Click to see more"));
+		p.sendMessage(TextUtils.setCommandClick("&bFishing &7- &aLevel " + String.valueOf(mmop.getSkills().getSkill(SkillType.FISHING).level), "/skills fishing " + otherUUID, "&9Click to see more"));
+		p.sendMessage(TextUtils.setCommandClick("&bFarming &7- &aLevel " + String.valueOf(mmop.getSkills().getSkill(SkillType.FARMING).level), "/skills farming " + otherUUID, "&9Click to see more"));
+		p.sendMessage(TextUtils.setCommandClick("&bAcrobatics &7- &aLevel " + String.valueOf(mmop.getSkills().getSkill(SkillType.ACROBATICS).level), "/skills acrobatics " + otherUUID, "&9Click to see more"));
+		p.sendMessage(TextUtils.setCommandClick("&bTaming &7- &aLevel " + String.valueOf(mmop.getSkills().getSkill(SkillType.TAMING).level), "/skills taming " + otherUUID, "&9Click to see more"));
+		p.sendMessage(TextUtils.setCommandClick("&bSalvage &7- &aLevel " + String.valueOf(mmop.getSkills().getSkill(SkillType.SALVAGE).level), "/skills salvage " + otherUUID, "&9Click to see more"));
+		p.sendMessage(TextUtils.setCommandClick("&bRepair &7- &aLevel " + String.valueOf(mmop.getSkills().getSkill(SkillType.REPAIR).level), "/skills repair " + otherUUID, "&9Click to see more"));
+		p.sendMessage(TextUtils.setCommandClick("&bSwords &7- &aLevel " + String.valueOf(mmop.getSkills().getSkill(SkillType.SWORDS).level), "/skills swords " + otherUUID, "&9Click to see more"));
+		p.sendMessage(TextUtils.setCommandClick("&bAxes &7- &aLevel " + String.valueOf(mmop.getSkills().getSkill(SkillType.AXES).level), "/skills axes " + otherUUID, "&9Click to see more"));
+		p.sendMessage(TextUtils.setCommandClick("&bUnarmed &7- &aLevel " + String.valueOf(mmop.getSkills().getSkill(SkillType.UNARMED).level), "/skills unarmed " + otherUUID, "&9Click to see more"));
+		p.sendMessage(TextUtils.setCommandClick("&bArchery &7- &aLevel " + String.valueOf(mmop.getSkills().getSkill(SkillType.ARCHERY).level), "/skills archery " + otherUUID, "&9Click to see more"));
 		p.sendMessage(Text.of(TextColors.AQUA, "Total", TextColors.GRAY, " - ", TextColors.GREEN, "Level ", mmop.totalLevels()));
 	}
 	public static void sendSkillInfo(Player p, MMOPlayer mmop, SkillType type, Skill skill, ArrayList<Ability> abilitys) {
@@ -50,7 +53,7 @@ public class ChatMenus {
 			p.sendMessage(Text.of(TextColors.DARK_GREEN, ability.showState.create(ability.getValue(level))));
 		}
 	}
-	public static void sendAdminInfo(CommandSource p) {
+	public static void sendAdminInfo(Player p) {
 		p.sendMessage(Text.of(""));
 		p.sendMessage(Text.of(TextColors.RED, "}--=== ", TextColors.AQUA, "MMO Admin", TextColors.RED, " ==---{"));
 		p.sendMessage(Text.of(TextColors.GREEN, "/mmoadmin set <player> <skill> <level>"));

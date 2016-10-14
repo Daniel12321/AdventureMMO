@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.game.GameReloadEvent;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePostInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStoppingEvent;
@@ -34,9 +35,9 @@ import me.mrdaniel.mmo.listeners.BlockListener;
 import me.mrdaniel.mmo.listeners.PlayerListener;
 import me.mrdaniel.mmo.listeners.WorldListener;
 
-@Plugin(id = "adventuremmo", name = "AdventureMMO", version = "1.5.5")
+@Plugin(id = "adventuremmo", name = "AdventureMMO", version = "1.6.0")
 public class Main {
-
+	
 	@Inject
 	private Logger logger;
 	@Inject
@@ -58,7 +59,7 @@ public class Main {
 		logger.info("Preparing plugin");
 		Main.instance = this;
 		if (!path.toFile().exists()) { path.toFile().mkdir(); }
-
+		
         MMOPlayerDatabase.getInstance().setPlayersPath(path.resolve("players"));
 		AdvancedConfig.getInstance().setup();
 		Config.getInstance().setup();
@@ -69,8 +70,8 @@ public class Main {
 		
 		ChunkManager.getInstance().setup();
 		
-		game.getCommandManager().register(this, new CommandSkills(), "skill", "skills", "stat", "stats", "mmoskills", "mmostats");
-		game.getCommandManager().register(this, new CommandTop(), "skilltop", "skillstop", "stattop", "statstop", "mmoskillstop", "mmostatstop");
+		game.getCommandManager().register(this, new CommandSkills(), "skill", "skills", "mmoskills", "mmoskill");
+		game.getCommandManager().register(this, new CommandTop(), "skilltop", "skillstop", "mmoskillstop", "mmoskillstop");
 		
 		game.getCommandManager().register(this, new CommandMMOAdmin(), "mmoadmin");
 		game.getCommandManager().register(this, new CommandMMOReload(), "mmoreload");
@@ -85,6 +86,10 @@ public class Main {
 		if (Config.getInstance().config.getNode("commands", "/taming").getBoolean()) { game.getCommandManager().register(this, new CommandShell("taming"), "taming"); }
 		if (Config.getInstance().config.getNode("commands", "/woodcutting").getBoolean()) { game.getCommandManager().register(this, new CommandShell("woodcutting"), "woodcutting"); }
 		if (Config.getInstance().config.getNode("commands", "/repair").getBoolean()) { game.getCommandManager().register(this, new CommandShell("repair"), "repair"); }
+		if (Config.getInstance().config.getNode("commands", "/swords").getBoolean()) { game.getCommandManager().register(this, new CommandShell("swords"), "swords"); }
+		if (Config.getInstance().config.getNode("commands", "/axes").getBoolean()) { game.getCommandManager().register(this, new CommandShell("axes"), "axes"); }
+		if (Config.getInstance().config.getNode("commands", "/unarmed").getBoolean()) { game.getCommandManager().register(this, new CommandShell("unarmed"), "unarmed"); }
+		if (Config.getInstance().config.getNode("commands", "/archery").getBoolean()) { game.getCommandManager().register(this, new CommandShell("archery"), "archery"); }
 		
 		game.getEventManager().registerListeners(this, new WorldListener());
 		game.getEventManager().registerListeners(this, new PlayerListener());
@@ -113,5 +118,16 @@ public class Main {
 		MMOPlayerDatabase.getInstance().saveAll();
 		ChunkManager.getInstance().writeAll();
 		logger.info("All Data Was Saved");
+	}
+	@Listener
+	public void reload(GameReloadEvent e) {
+		Config.getInstance().setup();
+		AdvancedConfig.getInstance().setup();
+		MMOPlayerDatabase.getInstance().saveAll();
+		MMOPlayerDatabase.getInstance().unloadAll();
+		SkillTop.getInstance().setup();
+		ModdedBlocks.getInstance().setup();
+		ModdedTools.getInstance().setup();
+		BlackList.getInstance().setup();
 	}
 }
