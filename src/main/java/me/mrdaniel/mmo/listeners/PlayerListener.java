@@ -19,6 +19,7 @@ import org.spongepowered.api.event.entity.TameEntityEvent;
 import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.item.ItemTypes;
+import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.entity.Hotbar;
 import org.spongepowered.api.item.inventory.property.SlotIndex;
@@ -93,7 +94,7 @@ public class PlayerListener {
 					if (!RepairStore.getInstance().items.containsKey(hand.getItem().getType())) { return; }
 					
 					ItemInfo ir = RepairStore.getInstance().items.get(hand.getItem().getType());
-					if (!hand.get(Keys.ITEM_DURABILITY).isPresent()) { return; }	
+					if (!hand.get(Keys.ITEM_DURABILITY).isPresent()) { return; }
 					if (hand.get(Keys.ITEM_DURABILITY).get() >= ir.maxDura-1) { return; }
 					e.setCancelled(true);
 					
@@ -106,11 +107,16 @@ public class PlayerListener {
 						Optional<ItemStack> itemOpt = p.getInventory().query(Hotbar.class).query(new SlotIndex(i)).peek();
 						if (itemOpt.isPresent() && itemOpt.get().getItem().getType() == ir.type) {
 							ItemStack item = itemOpt.get();
-							
-							item.setQuantity(item.getQuantity()-1);
-							p.getInventory().query(Hotbar.class).query(new SlotIndex(i)).set(item);
-							if (item.getQuantity() < 1) { p.getInventory().query(Hotbar.class).query(new SlotIndex(i)).set(ItemUtils.build(ItemTypes.NONE, 1, 0)); }
-							
+
+							// If we have only one of the item, then clear the slot. Otherwise, reduce the quantity by one.
+							Inventory inventorySlot = p.getInventory().query(Hotbar.class).query(new SlotIndex(i));
+							if (item.getQuantity() > 1) {
+								item.setQuantity(item.getQuantity() - 1);
+								inventorySlot.set(item);
+							} else {
+								inventorySlot.clear();
+							}
+
 							DurabilityData data = hand.getOrCreate(DurabilityData.class).get();
 							
 							int extra = (int) ((Ability.REPAIR.getValue(mmop.getSkills().getSkill(SkillType.REPAIR).level)/100.0)*ir.maxDura);
