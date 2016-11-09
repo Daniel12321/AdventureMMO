@@ -4,8 +4,6 @@ import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.spongepowered.api.effect.particle.ParticleTypes;
-import org.spongepowered.api.effect.sound.SoundTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.economy.EconomyService;
 import org.spongepowered.api.service.economy.account.UniqueAccount;
@@ -30,8 +28,7 @@ public class SkillManager {
 		Player p = pOpt.get();
 		p.sendMessage(Config.getInstance().PREFIX.concat(Text.of(TextColors.AQUA, "Your " + type.name + " Skill went up to " + String.valueOf(mmop.getSkills().getSkill(type).level) + "!")));
 		
-		if (mmop.getSettings().getSetting(Setting.EFFECTS)) { EffectUtils.sendEffects(p, ParticleTypes.FIREWORKS_SPARK, 50); }
-		if (mmop.getSettings().getSetting(Setting.SOUNDS)) { EffectUtils.sendSound(p, SoundTypes.ENTITY_FIREWORK_TWINKLE); }
+		if (mmop.getSettings().getSetting(Setting.EFFECTS)) { EffectUtils.LEVELUP.send(p.getLocation()); }
 		
 		if (Config.getInstance().ECONENABLED) {
 			BigDecimal money = new BigDecimal(Config.getInstance().INCREMENT * ((double)mmop.getSkills().getSkill(type).level) + Config.getInstance().START);

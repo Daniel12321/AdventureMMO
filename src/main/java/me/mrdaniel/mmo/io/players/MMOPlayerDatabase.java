@@ -37,6 +37,7 @@ public class MMOPlayerDatabase {
 	 */
 	public void setPlayersPath(Path playersPath) {
 		this.playersPath = playersPath;
+		if (!playersPath.toFile().exists()) { playersPath.toFile().mkdir(); }
 	}
 	
 	/**

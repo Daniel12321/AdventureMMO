@@ -25,7 +25,7 @@ public class CommandMMOReload implements CommandCallable {
 		
 		sender.sendMessage(Config.getInstance().PREFIX.concat(Text.of(TextColors.GOLD, "Reloading AdventureMMO")));
 		
-		Main.getInstance().reload(null);
+		Main.getInstance().onReload(null);
 		
 		sender.sendMessage(Config.getInstance().PREFIX.concat(Text.of(TextColors.GOLD, "AdventureMMO reloaded succesfully")));
 		return CommandResult.success();

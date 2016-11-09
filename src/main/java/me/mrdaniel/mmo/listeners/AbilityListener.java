@@ -17,8 +17,6 @@ import org.spongepowered.api.data.type.SkeletonTypes;
 import org.spongepowered.api.data.type.TreeType;
 import org.spongepowered.api.data.type.TreeTypes;
 import org.spongepowered.api.data.value.immutable.ImmutableValue;
-import org.spongepowered.api.effect.particle.ParticleTypes;
-import org.spongepowered.api.effect.sound.SoundTypes;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.Living;
 import org.spongepowered.api.entity.living.complex.EnderDragon;
@@ -56,12 +54,14 @@ import org.spongepowered.api.world.World;
 import com.flowpowered.math.vector.Vector3d;
 
 import me.mrdaniel.mmo.Main;
+import me.mrdaniel.mmo.data.MMOData;
 import me.mrdaniel.mmo.enums.Ability;
 import me.mrdaniel.mmo.enums.SkillType;
 import me.mrdaniel.mmo.enums.ToolType;
-import me.mrdaniel.mmo.io.AdvancedConfig;
+import me.mrdaniel.mmo.io.AbilitiesConfig;
 import me.mrdaniel.mmo.io.BlackList;
 import me.mrdaniel.mmo.io.Config;
+import me.mrdaniel.mmo.io.ValuesConfig;
 import me.mrdaniel.mmo.io.blocktracking.WatchList;
 import me.mrdaniel.mmo.io.players.MMOPlayer;
 import me.mrdaniel.mmo.io.players.MMOPlayerDatabase;
@@ -79,10 +79,11 @@ public class AbilityListener {
 	private List<EntityInfo> bleeding;
 	
 	public AbilityListener() {
+
 		raised = new HashMap<String, ToolType>();
 		clickDelays = new HashMap<String, Long>();
 		bleeding = new ArrayList<EntityInfo>();
-		
+
 		Main.getInstance().getGame().getScheduler().createTaskBuilder()
 		.delayTicks(30)
 		.intervalTicks(30)
@@ -93,8 +94,7 @@ public class AbilityListener {
 				if (Main.getInstance().getGame().getServer().getWorld(eInfo.world).get().getEntity(UUID.fromString(eInfo.uuid)).isPresent()) {
 					Entity ent = Main.getInstance().getGame().getServer().getWorld(eInfo.world).get().getEntity(UUID.fromString(eInfo.uuid)).get();
 					ent.damage(1, DamageSource.builder().type(DamageTypes.MAGIC).bypassesArmor().build());
-					EffectUtils.sendEffects(ent, ParticleTypes.REDSTONE, 100);
-					EffectUtils.sendSound(ent, SoundTypes.ENTITY_MAGMACUBE_HURT);
+					EffectUtils.BLEEDING.send(ent.getLocation());
 					eInfo.bleeding--;
 					if (eInfo.bleeding <= 0) bleeding.remove(i);
 				}
@@ -104,7 +104,7 @@ public class AbilityListener {
 			}
 		}).submit(Main.getInstance());
 	}
-	
+
 	//Handles readying and lowering of tools
 	@Listener
 	public void onRightClick(InteractBlockEvent.Secondary e, @Root Player p) {
@@ -152,25 +152,25 @@ public class AbilityListener {
 	//Handles activating abilities
 	@Listener
 	public void onLeftClick(InteractBlockEvent.Primary e, @Root Player p) {
-		
+
 		ItemType hand = p.getItemInHand(HandTypes.MAIN_HAND).isPresent() ? p.getItemInHand(HandTypes.MAIN_HAND).get().getItem() : ItemTypes.NONE;
-		
+
 		if (raised.containsKey(p.getName())) {
 			if (!(p.gameMode().get() == GameModes.SURVIVAL)) { return; }
-			
+
 			ToolType toolType = ToolType.matchID(hand.getType());
 			if (toolType == null) { return; }
 			if (!toolType.activeAbility) { return; }
-			
+
 			Ability ability = toolType.getAbility(e.getTargetBlock().getState().getType());
 			if (ability == null) { return; }
 			if (Config.getInstance().BLOCKEDABILITYIES.contains(ability)) { return; }
-			
+
 			if (toolType.requiresSneaking) {
 				if (!p.get(Keys.IS_SNEAKING).isPresent()) { return; }	
 				if (p.get(Keys.IS_SNEAKING).get().booleanValue() == false) { return; }
 			}
-			
+
 			if (Abilities.getInstance().delays.containsKey(p.getName())) {
 				for (DelayInfo delayInfo : Abilities.getInstance().delays.get(p.getName())) {
 					if (delayInfo.ability == ability) {
@@ -209,6 +209,7 @@ public class AbilityListener {
 			}
 		}
 	}
+
 	@Listener(order = Order.LAST)
 	public void onGreenTerra(InteractBlockEvent.Secondary e, @Root Player p) {
 		if (e.isCancelled()) { return; }
@@ -227,16 +228,13 @@ public class AbilityListener {
 			}
 		}
 	}
+
 	@Listener(order = Order.LAST)
 	public void onItemClick(ClickInventoryEvent e, @Root Player p) {
 		if (e.isCancelled()) { return; }
-		if (Abilities.getInstance().active.containsKey(p.getName())) { 
-			if (Abilities.getInstance().active.get(p.getName()).equals(Ability.SUPER_BREAKER)
-			|| Abilities.getInstance().active.get(p.getName()).equals(Ability.GIGA_DRILL_BREAKER)) {
-				e.setCancelled(true); 
-			}
-		}
+		if (e.getTransactions().get(0).getOriginal().createStack().get(MMOData.class).isPresent()) { e.setCancelled(true); }
 	}
+
 	@Listener(order = Order.LAST)
 	public void onFallDamage(DamageEntityEvent e) {
 		if (e.isCancelled()) { return; }
@@ -253,7 +251,7 @@ public class AbilityListener {
 		Optional<DamageSource> source = e.getCause().first(DamageSource.class);
 		if (source.isPresent()) {
 			if (source.get().getType() == DamageTypes.FALL) {
-				mmohurt.process(new SkillAction(SkillType.ACROBATICS, (int) (AdvancedConfig.getInstance().skillExps.get(SkillType.ACROBATICS)[0]*e.getOriginalDamage())));
+				mmohurt.process(new SkillAction(SkillType.ACROBATICS, (int) (AbilitiesConfig.getInstance().skillExps.get(SkillType.ACROBATICS)[0]*e.getOriginalDamage())));
 				if (Ability.ROLL.getValue(level) > Math.random()*100.0) {
 					e.setCancelled(true);
 					hurt.sendMessage(Config.getInstance().PREFIX.concat(Text.of(TextColors.GREEN, "*You rolled to avoid taking damage*")));
@@ -273,9 +271,9 @@ public class AbilityListener {
 			MMOPlayer mmodamager = MMOPlayerDatabase.getInstance().getOrCreatePlayer(damager.getUniqueId());
 			ToolType tool = (damager.getItemInHand(HandTypes.MAIN_HAND).isPresent()) ? ToolType.matchID(damager.getItemInHand(HandTypes.MAIN_HAND).get().getItem()) : ToolType.HAND;
 			
-			if (tool == ToolType.SWORD) { mmodamager.process(new SkillAction(SkillType.SWORDS, AdvancedConfig.getInstance().skillExps.get(SkillType.SWORDS)[1])); }
-			else if (tool == ToolType.AXE) { mmodamager.process(new SkillAction(SkillType.AXES, AdvancedConfig.getInstance().skillExps.get(SkillType.AXES)[1])); }
-			else if (tool == ToolType.HAND) { mmodamager.process(new SkillAction(SkillType.UNARMED, AdvancedConfig.getInstance().skillExps.get(SkillType.UNARMED)[1])); }
+			if (tool == ToolType.SWORD) { mmodamager.process(new SkillAction(SkillType.SWORDS, AbilitiesConfig.getInstance().skillExps.get(SkillType.SWORDS)[1])); }
+			else if (tool == ToolType.AXE) { mmodamager.process(new SkillAction(SkillType.AXES, AbilitiesConfig.getInstance().skillExps.get(SkillType.AXES)[1])); }
+			else if (tool == ToolType.HAND) { mmodamager.process(new SkillAction(SkillType.UNARMED, AbilitiesConfig.getInstance().skillExps.get(SkillType.UNARMED)[1])); }
 			
 			if (Abilities.getInstance().active.containsKey(damager.getName())) {
 				Ability ability = Abilities.getInstance().active.get(damager.getName());
@@ -314,9 +312,10 @@ public class AbilityListener {
 			if (!(a.getShooter() instanceof Player)) { return; }
 			Player damager = (Player) a.getShooter();
 			MMOPlayer mmop = MMOPlayerDatabase.getInstance().getOrCreatePlayer(damager.getUniqueId());
-			mmop.process(new SkillAction(SkillType.ARCHERY, AdvancedConfig.getInstance().skillExps.get(SkillType.ARCHERY)[1]));
+			mmop.process(new SkillAction(SkillType.ARCHERY, AbilitiesConfig.getInstance().skillExps.get(SkillType.ARCHERY)[1]));
 		}
 	}
+
 	@Listener(order = Order.LAST)
 	public void onBowShoot(ConstructEntityEvent.Post e) {
 		if (e.getTargetEntity() instanceof Arrow) {
@@ -349,6 +348,7 @@ public class AbilityListener {
 			}
 		});
 	}
+
 	@Listener(order = Order.LAST)
 	public void onDeath(DestructEntityEvent.Death e, @First EntityDamageSource source) {
 		Living died = e.getTargetEntity();
@@ -360,9 +360,9 @@ public class AbilityListener {
 				MMOPlayer mmokiller = MMOPlayerDatabase.getInstance().getOrCreatePlayer(killer.getUniqueId());
 				ToolType tool = (killer.getItemInHand(HandTypes.MAIN_HAND).isPresent()) ? ToolType.matchID(killer.getItemInHand(HandTypes.MAIN_HAND).get().getItem()) : ToolType.HAND;
 				
-				if (tool == ToolType.SWORD) { mmokiller.process(new SkillAction(SkillType.SWORDS, AdvancedConfig.getInstance().skillExps.get(SkillType.SWORDS)[0])); }
-				else if (tool == ToolType.AXE) { mmokiller.process(new SkillAction(SkillType.AXES, AdvancedConfig.getInstance().skillExps.get(SkillType.AXES)[0])); }
-				else if (tool == ToolType.HAND) { mmokiller.process(new SkillAction(SkillType.UNARMED, AdvancedConfig.getInstance().skillExps.get(SkillType.UNARMED)[0])); }
+				if (tool == ToolType.SWORD) { mmokiller.process(new SkillAction(SkillType.SWORDS, AbilitiesConfig.getInstance().skillExps.get(SkillType.SWORDS)[0])); }
+				else if (tool == ToolType.AXE) { mmokiller.process(new SkillAction(SkillType.AXES, AbilitiesConfig.getInstance().skillExps.get(SkillType.AXES)[0])); }
+				else if (tool == ToolType.HAND) { mmokiller.process(new SkillAction(SkillType.UNARMED, AbilitiesConfig.getInstance().skillExps.get(SkillType.UNARMED)[0])); }
 				
 				if (tool != ToolType.SWORD) { return; }
 				
@@ -390,10 +390,10 @@ public class AbilityListener {
 			if (!(a.getShooter() instanceof Player)) { return; }
 			Player damager = (Player) a.getShooter();
 			MMOPlayer mmop = MMOPlayerDatabase.getInstance().getOrCreatePlayer(damager.getUniqueId());
-			mmop.process(new SkillAction(SkillType.ARCHERY, AdvancedConfig.getInstance().skillExps.get(SkillType.ARCHERY)[0]));
+			mmop.process(new SkillAction(SkillType.ARCHERY, AbilitiesConfig.getInstance().skillExps.get(SkillType.ARCHERY)[0]));
 		}
 	}
-	
+
 	private void breakNext(Location<World> loc, MMOPlayer jp) {
 		for (Direction dir : new Direction[]{Direction.UP, Direction.DOWN, Direction.NORTH,Direction.EAST, Direction.SOUTH, Direction.WEST}) {
 			Location<World> l = loc.getRelative(dir);
@@ -405,7 +405,7 @@ public class AbilityListener {
 					int dura = matchTree(l.getBlock().get(Keys.TREE_TYPE).get());
 					Skill skill = jp.getSkills().getSkill(SkillType.WOODCUTTING);
 					if (Ability.WOODCUTTING_DOUBLEDROP.getValue(skill.level) > Math.random()*100.0) { amount = 2; }
-					jp.process(new SkillAction(SkillType.WOODCUTTING, AdvancedConfig.getInstance().blockExps.get(l.getBlock().getType())));
+					jp.process(new SkillAction(SkillType.WOODCUTTING, ValuesConfig.getInstance().blockExps.get(l.getBlock().getType())));
 					ItemStack stack = ItemUtils.build(type, amount, dura);
 					ItemUtils.drop(stack, l);
 					l.removeBlock(ServerUtils.getCause());
@@ -414,6 +414,7 @@ public class AbilityListener {
 			}
 		}
 	}
+
 	private int matchTree(TreeType treeType) {
 		if (treeType == TreeTypes.SPRUCE) { return 1; }
 		else if (treeType == TreeTypes.BIRCH) { return 2; }

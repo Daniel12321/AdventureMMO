@@ -1,6 +1,6 @@
 package me.mrdaniel.mmo.enums;
 
-import me.mrdaniel.mmo.io.AdvancedConfig;
+import me.mrdaniel.mmo.io.AbilitiesConfig;
 
 public enum Ability {
 	
@@ -38,21 +38,18 @@ public enum Ability {
 	public ShowState showState;
 	public String name;
 	public String desc;
-	public double increase;
-	public double start;
-	public double max;
-	
+
+
 	Ability(SkillType skillType, ShowState showState, String name, String desc) {
 		this.skillType = skillType;
 		this.showState = showState;
 		this.name = name;
 		this.desc = desc;
-		this.increase = AdvancedConfig.getInstance().abilities.get(name)[1];
-		this.start = AdvancedConfig.getInstance().abilities.get(name)[0];
-		this.max = AdvancedConfig.getInstance().abilities.get(name)[2];
 	}
+
 	public double getValue(double level) {
-		double pre = start + (level * increase);
-		return (pre > max) ? max : pre;
+		double[] values = AbilitiesConfig.getInstance().abilities.get(this);
+		double pre = values[0] + (level * values[1]);
+		return (pre > values[2]) ? values[2] : pre;
 	}
 }

@@ -14,20 +14,14 @@
   </build>
   <modelVersion>4.0.0</modelVersion>
   <groupId>me.mrdaniel</groupId>
-  <artifactId>mmo1.10</artifactId>
-  <version>1.6.0</version>
-  <name>mmo1.10</name>
+  <artifactId>mmo</artifactId>
+  <version>1.6.1</version>
+  <name>mmo</name>
+  
   <repositories>
     <repository>
-      <id>sponge-maven-repo</id>
-      <name>Sponge maven repo</name>
+      <id>sponge</id>
       <url>http://repo.spongepowered.org/maven</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
     </repository>
   </repositories>
 
@@ -35,7 +29,7 @@
     <dependency>
       <groupId>org.spongepowered</groupId>
       <artifactId>spongeapi</artifactId>
-      <version>5.0.0-SNAPSHOT</version>
+      <version>5.1.0-20161023.181826-1</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>

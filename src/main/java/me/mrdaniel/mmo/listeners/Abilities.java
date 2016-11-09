@@ -8,13 +8,10 @@ import java.util.concurrent.TimeUnit;
 
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.manipulator.mutable.item.EnchantmentData;
-import org.spongepowered.api.data.manipulator.mutable.item.LoreData;
 import org.spongepowered.api.data.meta.ItemEnchantment;
 import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.data.type.OcelotType;
 import org.spongepowered.api.data.type.OcelotTypes;
-import org.spongepowered.api.effect.particle.ParticleTypes;
-import org.spongepowered.api.effect.sound.SoundTypes;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.living.animal.Horse;
@@ -29,7 +26,10 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;
 
+import com.google.common.collect.Lists;
+
 import me.mrdaniel.mmo.Main;
+import me.mrdaniel.mmo.data.MMOData;
 import me.mrdaniel.mmo.enums.Ability;
 import me.mrdaniel.mmo.enums.Setting;
 import me.mrdaniel.mmo.io.Config;
@@ -59,8 +59,7 @@ public class Abilities {
 		if (ability == Ability.GIGA_DRILL_BREAKER || ability == Ability.SUPER_BREAKER) {
 			active.put(p.getName(), ability);
 			
-			if (mmop.getSettings().getSetting(Setting.EFFECTS)) { EffectUtils.sendEffects(p, ParticleTypes.VILLAGER_HAPPY, 100); }
-			if (mmop.getSettings().getSetting(Setting.SOUNDS)) { EffectUtils.sendSound(p, SoundTypes.ENTITY_FIREWORK_LAUNCH); }
+			if (mmop.getSettings().getSetting(Setting.EFFECTS)) { EffectUtils.ACTIVATEABILITY.send(p.getLocation()); }
 			
 			if (delays.containsKey(p.getName())) {
 				delays.get(p.getName()).add(new DelayInfo(System.currentTimeMillis() + Config.getInstance().RECHARGE_MILLIS, ability));
@@ -92,30 +91,28 @@ public class Abilities {
 				if (wepUp) { p.getInventory().query(Hotbar.class).query(new SlotIndex(slot)).set(item); }
 				active.remove(p.getName());
 				p.sendMessage(Config.getInstance().PREFIX.concat(Text.of(TextColors.RED, ability.name + " expired!")));
-				if (mmop.getSettings().getSetting(Setting.EFFECTS)) { EffectUtils.sendEffects(p, ParticleTypes.LAVA, 25); }
-				if (mmop.getSettings().getSetting(Setting.SOUNDS)) { EffectUtils.sendSound(p, SoundTypes.ENTITY_FIREWORK_LAUNCH); }
+				if (mmop.getSettings().getSetting(Setting.EFFECTS)) { EffectUtils.ENDABILITY.send(p.getLocation()); }
 			}).submit(Main.getInstance());
 		}
 		else if (ability == Ability.SUMMON_HORSE || ability == Ability.SUMMON_WOLF || ability == Ability.SUMMON_OCELOT) {
-			
+
 			Skill skill = mmop.getSkills().getSkill(ability.skillType);
-			
+
 			if (skill.level < 30 && ability == Ability.SUMMON_WOLF) { p.sendMessage(Config.getInstance().PREFIX.concat(Text.of(TextColors.RED, "You need to be level 30 or higher to summon wolfes"))); return; }
 			if (skill.level < 50 && ability == Ability.SUMMON_OCELOT) { p.sendMessage(Config.getInstance().PREFIX.concat(Text.of(TextColors.RED, "You need to be level 50 or higher to summon ocelot"))); return; }
 			if (skill.level < 100 && ability == Ability.SUMMON_HORSE) { p.sendMessage(Config.getInstance().PREFIX.concat(Text.of(TextColors.RED, "You need to be level 100 or higher to summon horses"))); return; }
-			
+
 			ItemStack hand = p.getItemInHand(HandTypes.MAIN_HAND).get().copy();
-			
+
 			if (hand.getQuantity() < 10 && ability == Ability.SUMMON_WOLF) { p.sendMessage(Config.getInstance().PREFIX.concat(Text.of(TextColors.RED, "You need 10 bones to summon a wolf"))); return; }
 			if (hand.getQuantity() < 10 && ability == Ability.SUMMON_OCELOT) { p.sendMessage(Config.getInstance().PREFIX.concat(Text.of(TextColors.RED, "You need 10 fish to summon a wolf"))); return; }
 			if (hand.getQuantity() < 10 && ability == Ability.SUMMON_HORSE) { p.sendMessage(Config.getInstance().PREFIX.concat(Text.of(TextColors.RED, "You need 10 apples to summon a horse"))); return; }
-			
+
 			if (hand.getQuantity() == 10) { p.setItemInHand(HandTypes.MAIN_HAND, null); }
 			else { hand.setQuantity(hand.getQuantity()-10); p.setItemInHand(HandTypes.MAIN_HAND, hand); }
-			
-			if (mmop.getSettings().getSetting(Setting.EFFECTS)) { EffectUtils.sendEffects(p, ParticleTypes.VILLAGER_HAPPY, 100); }
-			if (mmop.getSettings().getSetting(Setting.SOUNDS)) { EffectUtils.sendSound(p, SoundTypes.ENTITY_FIREWORK_LAUNCH); }
-			
+
+			if (mmop.getSettings().getSetting(Setting.EFFECTS)) { EffectUtils.ACTIVATEABILITY.send(p.getLocation()); }
+
 			if (delays.containsKey(p.getName())) {
 				delays.get(p.getName()).add(new DelayInfo(System.currentTimeMillis() + ((int) (ability.getValue(skill.level)*1000)), ability));
 			}
@@ -154,12 +151,12 @@ public class Abilities {
 				horse.addPassenger(p);
 			}
 		}
+
 		else if (ability == Ability.TREE_VELLER || ability == Ability.GREEN_TERRA || ability == Ability.SLAUGHTER || ability == Ability.BLOODSHED || ability == Ability.SAITAMA_PUNCH) {
 			
 			active.put(p.getName(), ability);
 			
-			if (mmop.getSettings().getSetting(Setting.EFFECTS)) { EffectUtils.sendEffects(p, ParticleTypes.VILLAGER_HAPPY, 100); }
-			if (mmop.getSettings().getSetting(Setting.SOUNDS)) { EffectUtils.sendSound(p, SoundTypes.ENTITY_FIREWORK_LAUNCH); }
+			if (mmop.getSettings().getSetting(Setting.EFFECTS)) { EffectUtils.ACTIVATEABILITY.send(p.getLocation()); }
 			
 			if (delays.containsKey(p.getName())) {
 				delays.get(p.getName()).add(new DelayInfo(System.currentTimeMillis() + Config.getInstance().RECHARGE_MILLIS, ability));
@@ -171,8 +168,7 @@ public class Abilities {
 			Main.getInstance().getGame().getScheduler().createTaskBuilder().delay((long) time*1000, TimeUnit.MILLISECONDS).execute(()-> {
 				active.remove(p.getName());
 				p.sendMessage(Config.getInstance().PREFIX.concat(Text.of(TextColors.RED, ability.name + " expired!")));
-				if (mmop.getSettings().getSetting(Setting.EFFECTS)) { EffectUtils.sendEffects(p, ParticleTypes.LAVA, 25); }
-				if (mmop.getSettings().getSetting(Setting.SOUNDS)) { EffectUtils.sendSound(p, SoundTypes.ENTITY_FIREWORK_LAUNCH); }
+				if (mmop.getSettings().getSetting(Setting.EFFECTS)) { EffectUtils.ENDABILITY.send(p.getLocation()); }
 			}).submit(Main.getInstance());
 		}
 	}
@@ -182,19 +178,14 @@ public class Abilities {
 		EnchantmentData ench = superItem.getOrCreate(EnchantmentData.class).get();
 		int lvl = 5;
 		for (ItemEnchantment itemEnch : ench.getListValue()) {
-			if (itemEnch.getEnchantment() == Enchantments.EFFICIENCY) {
-				lvl += itemEnch.getLevel();
-				break;
-			}
+			if (itemEnch.getEnchantment() == Enchantments.EFFICIENCY) { lvl += itemEnch.getLevel(); break; }
 		}
 		ench.set(ench.enchantments().add(new ItemEnchantment(Enchantments.EFFICIENCY, lvl)));
 		superItem.offer(ench);
 		superItem.offer(Keys.UNBREAKABLE, true);
-		LoreData lore = superItem.getOrCreate(LoreData.class).get();
-		lore.removeAll(lore.asList());
-		lore.addElement(Text.of(TextColors.RED, "MMO Item"));
-		superItem.offer(lore);
+		superItem.offer(Keys.ITEM_LORE, Lists.newArrayList(Text.of(TextColors.RED, "MMO Item")));
 		superItem.offer(Keys.DISPLAY_NAME, Text.of(TextColors.DARK_RED, TextStyles.BOLD, "Super Tool"));
+		superItem.offer(new MMOData(true));
 		p.setItemInHand(HandTypes.MAIN_HAND, superItem);
 	}
 	private OcelotType getRandomOcelotType() {

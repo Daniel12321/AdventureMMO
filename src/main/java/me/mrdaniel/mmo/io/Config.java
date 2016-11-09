@@ -40,16 +40,16 @@ public class Config {
 		try {
 			if (!file.exists()) {
 				file.createNewFile();
-				
+
 				config.getNode("prefix").setValue("&7[&9MMO&7]");
 				config.getNode("recharge_millis").setValue(250000);
 				config.getNode("scoreboard_active_seconds").setValue(12);
-				
+
 				config.getNode("economy", "enabled").setValue(false);
 				config.getNode("economy", "startAmount").setComment("The money a player gets for gaining 1 level is the level * incrementAmount + startAmount");
 				config.getNode("economy", "startAmount").setValue(15.0);
 				config.getNode("economy", "incrementAmount").setValue(0.5);
-				
+
 				config.getNode("personal_settings").setComment("Here you can force all players to have certain personal settings");
 				config.getNode("personal_settings", "sounds", "force").setValue(false);
 				config.getNode("personal_settings", "sounds", "forced_value").setValue(true);
@@ -59,7 +59,7 @@ public class Config {
 				config.getNode("personal_settings", "scoreboard", "forced_value").setValue(false);
 				config.getNode("personal_settings", "scoreboardpermanent", "force").setValue(false);
 				config.getNode("personal_settings", "scoreboardpermanent", "forced_value").setValue(false);
-				
+
 				config.getNode("commands", "/mining").setValue(true);
 				config.getNode("commands", "/excavation").setValue(true);
 				config.getNode("commands", "/woodcutting").setValue(true);
@@ -73,7 +73,7 @@ public class Config {
 				config.getNode("commands", "/axes").setValue(true);
 				config.getNode("commands", "/unarmed").setValue(true);
 				config.getNode("commands", "/archery").setValue(true);
-				
+
 				config.getNode("abilities", "superbreaker", "blocked").setValue(false);
 				config.getNode("abilities", "treeveller", "blocked").setValue(false);
 				config.getNode("abilities", "gigadrillbreaker", "blocked").setValue(false);
@@ -91,24 +91,25 @@ public class Config {
 				config.getNode("abilities", "summonwolf", "blocked").setValue(false);
 				config.getNode("abilities", "summonocelot", "blocked").setValue(false);
 				config.getNode("abilities", "summonhorse", "blocked").setValue(false);
-				
+
 				config.getNode("abilities", "slaughter", "blocked").setValue(false);
 				config.getNode("abilities", "bloodshed", "blocked").setValue(false);
 				config.getNode("abilities", "saitama_punch", "blocked").setValue(false);
 				config.getNode("abilities", "decapitation", "blocked").setValue(false);
 				config.getNode("abilities", "arrowrain", "blocked").setValue(false);
 				config.getNode("abilities", "disarm", "blocked").setValue(false);
-				
+
 		        manager.save(config);
 			}
 	        config = manager.load();
-	        
+
 	        if (!config.getNode("abilities").getChildrenMap().values().contains(config.getNode("abilities", "disarm"))) {
 	        	file.delete();
 	        	instance = new Config();
 	        	instance.setup();
 	        	return;
 	        }
+
 	        PREFIX = TextUtils.color(config.getNode("prefix").getString() + " ");
 	        RECHARGE_MILLIS = config.getNode("recharge_millis").getLong();
 	        SCOREBOARD_ACTIVE_SECONDS = config.getNode("scoreboard_active_seconds").getInt();
@@ -117,6 +118,7 @@ public class Config {
 	        INCREMENT = config.getNode("economy", "incrementAmount").getDouble();
 	        BLOCKEDABILITYIES = new ArrayList<Ability>();
 	        FORCEDSETTINGS = new HashMap<Setting, Boolean>();
+
 	        for (ConfigurationNode abilityNode : config.getNode("abilities").getChildrenMap().values()) {
 	        	if (abilityNode.getNode("blocked").getBoolean()) {
 	        		abilityLoop: for (Ability ab : Ability.values()) {

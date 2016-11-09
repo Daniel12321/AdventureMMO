@@ -32,7 +32,7 @@ import me.mrdaniel.mmo.Main;
 import me.mrdaniel.mmo.enums.Ability;
 import me.mrdaniel.mmo.enums.RepairStore;
 import me.mrdaniel.mmo.enums.SkillType;
-import me.mrdaniel.mmo.io.AdvancedConfig;
+import me.mrdaniel.mmo.io.AbilitiesConfig;
 import me.mrdaniel.mmo.io.Config;
 import me.mrdaniel.mmo.io.players.MMOPlayer;
 import me.mrdaniel.mmo.io.players.MMOPlayerDatabase;
@@ -107,16 +107,17 @@ public class PlayerListener {
 						Optional<ItemStack> itemOpt = p.getInventory().query(Hotbar.class).query(new SlotIndex(i)).peek();
 						if (itemOpt.isPresent() && itemOpt.get().getItem().getType() == ir.type) {
 							ItemStack item = itemOpt.get();
-
+							
 							// If we have only one of the item, then clear the slot. Otherwise, reduce the quantity by one.
 							Inventory inventorySlot = p.getInventory().query(Hotbar.class).query(new SlotIndex(i));
 							if (item.getQuantity() > 1) {
 								item.setQuantity(item.getQuantity() - 1);
 								inventorySlot.set(item);
-							} else {
+							}
+							else {
 								inventorySlot.clear();
 							}
-
+							
 							DurabilityData data = hand.getOrCreate(DurabilityData.class).get();
 							
 							int extra = (int) ((Ability.REPAIR.getValue(mmop.getSkills().getSkill(SkillType.REPAIR).level)/100.0)*ir.maxDura);
@@ -132,28 +133,32 @@ public class PlayerListener {
 			}
 		}
 	}
+
 	@Listener(order = Order.LAST)
 	public void onFishing(FishingEvent.Stop e, @Root Player p) {
 		if (e.isCancelled()) { return; }
 		if (e.getItemStackTransaction() != null) {
 			if (e.getItemStackTransaction().get(0).getFinal() != null && e.getItemStackTransaction().get(0).getFinal().getType() != ItemTypes.NONE) {
 				MMOPlayer mmop = MMOPlayerDatabase.getInstance().getOrCreatePlayer(p.getUniqueId().toString());
-				mmop.process(new SkillAction(SkillType.FISHING, 450));
+				mmop.process(new SkillAction(SkillType.FISHING, AbilitiesConfig.getInstance().skillExps.get(SkillType.FISHING)[0]));
 				Drops.getInstance().FishingTreasure(p, mmop);
 			}
 		}
 	}
+
 	@Listener(order = Order.LAST)
 	public void onTaming(TameEntityEvent e, @Root Player p) {
 		if (e.isCancelled()) { return; }
 		MMOPlayer mmop = MMOPlayerDatabase.getInstance().getOrCreatePlayer(p.getUniqueId().toString());
-		mmop.process(new SkillAction(SkillType.TAMING, AdvancedConfig.getInstance().skillExps.get(SkillType.TAMING)[0]));
+		mmop.process(new SkillAction(SkillType.TAMING, AbilitiesConfig.getInstance().skillExps.get(SkillType.TAMING)[0]));
 	}
+
 	@Listener
 	public void onPlayerJoin(ClientConnectionEvent.Join e) {
 		MMOPlayer mmop = MMOPlayerDatabase.getInstance().getOrCreatePlayer(e.getTargetEntity().getUniqueId().toString());
 		mmop.updateTop(e.getTargetEntity().getName());
 	}
+
 	@Listener
 	public void onPlayerQuit(ClientConnectionEvent.Disconnect e) {
 		MMOPlayer mmop = MMOPlayerDatabase.getInstance().getOrCreatePlayer(e.getTargetEntity().getUniqueId().toString());
