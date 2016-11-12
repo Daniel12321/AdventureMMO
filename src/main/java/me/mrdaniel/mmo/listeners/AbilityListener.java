@@ -45,6 +45,8 @@ import org.spongepowered.api.event.item.inventory.ClickInventoryEvent;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.item.inventory.ItemStackSnapshot;
+import org.spongepowered.api.item.inventory.transaction.SlotTransaction;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.util.Direction;
@@ -232,7 +234,11 @@ public class AbilityListener {
 	@Listener(order = Order.LAST)
 	public void onItemClick(ClickInventoryEvent e, @Root Player p) {
 		if (e.isCancelled()) { return; }
-		if (e.getTransactions().get(0).getOriginal().createStack().get(MMOData.class).isPresent()) { e.setCancelled(true); }
+		for (SlotTransaction trans : e.getTransactions()) {
+			if (trans.getOriginal().createStack().get(MMOData.class).isPresent()) {
+				trans.setCustom(ItemStackSnapshot.NONE);
+			}
+		}
 	}
 
 	@Listener(order = Order.LAST)
