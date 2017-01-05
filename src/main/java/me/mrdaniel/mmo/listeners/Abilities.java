@@ -1,10 +1,11 @@
 package me.mrdaniel.mmo.listeners;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+
+import javax.annotation.Nonnull;
 
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.manipulator.mutable.item.EnchantmentData;
@@ -12,7 +13,6 @@ import org.spongepowered.api.data.meta.ItemEnchantment;
 import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.data.type.OcelotType;
 import org.spongepowered.api.data.type.OcelotTypes;
-import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.living.animal.Horse;
 import org.spongepowered.api.entity.living.animal.Ocelot;
@@ -22,158 +22,112 @@ import org.spongepowered.api.item.Enchantments;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.entity.Hotbar;
 import org.spongepowered.api.item.inventory.property.SlotIndex;
+import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 import me.mrdaniel.mmo.Main;
+import me.mrdaniel.mmo.data.DelayData;
 import me.mrdaniel.mmo.data.MMOData;
 import me.mrdaniel.mmo.enums.Ability;
 import me.mrdaniel.mmo.enums.Setting;
-import me.mrdaniel.mmo.io.Config;
 import me.mrdaniel.mmo.io.players.MMOPlayer;
-import me.mrdaniel.mmo.io.players.MMOPlayerDatabase;
 import me.mrdaniel.mmo.skills.Skill;
-import me.mrdaniel.mmo.utils.DelayInfo;
 import me.mrdaniel.mmo.utils.EffectUtils;
 import me.mrdaniel.mmo.utils.ServerUtils;
 
 public class Abilities {
-	
-	public HashMap<String, Ability> active;
-	public HashMap<String, ArrayList<DelayInfo>> delays;
-	
+
+	@Nonnull public final HashMap<UUID, Ability> active;
+
 	private static Abilities instance = null;
-	public static Abilities getInstance() { if (instance == null) { instance = new Abilities(); } return instance; }
-	private Abilities() { this.active = new HashMap<String, Ability>(); this.delays = new HashMap<String, ArrayList<DelayInfo>>(); }
-	
-	public void activate(Player p, Ability ability) {
-		
-		p.sendMessage(Config.getInstance().PREFIX.concat(Text.of(TextColors.GREEN, "Activated " + ability.name + "!")));
-		
-		MMOPlayer mmop = MMOPlayerDatabase.getInstance().getOrCreatePlayer(p.getUniqueId().toString());
-		double time = ability.getValue(mmop.getSkills().getSkill(ability.skillType).level);
-		
-		if (ability == Ability.GIGA_DRILL_BREAKER || ability == Ability.SUPER_BREAKER) {
-			active.put(p.getName(), ability);
-			
-			if (mmop.getSettings().getSetting(Setting.EFFECTS)) { EffectUtils.ACTIVATEABILITY.send(p.getLocation()); }
-			
-			if (delays.containsKey(p.getName())) {
-				delays.get(p.getName()).add(new DelayInfo(System.currentTimeMillis() + Config.getInstance().RECHARGE_MILLIS, ability));
-			}
-			else {
-				delays.put(p.getName(), new ArrayList<DelayInfo>());
-				delays.get(p.getName()).add(new DelayInfo(System.currentTimeMillis() + Config.getInstance().RECHARGE_MILLIS, ability));
-			}
-			
-			final ItemStack item = p.getItemInHand(HandTypes.MAIN_HAND).get().copy();
-			int slotPre = 0;
-			
-			for (int i = 0; i <= 8; i++) {
-				if (p.getInventory().query(Hotbar.class).query(new SlotIndex(i)) != null) {
-					if (p.getInventory().query(Hotbar.class).query(new SlotIndex(i)).peek().isPresent()) {
-						if (p.getInventory().query(Hotbar.class).query(new SlotIndex(i)).peek().get().equalTo(p.getItemInHand(HandTypes.MAIN_HAND).get())) {
-							slotPre = i;
-							break;
-						}
-					}
-				}
-			}
-			final int slot = slotPre;
-			
-			final boolean wepUp = (ability == Ability.SUPER_BREAKER || ability == Ability.GIGA_DRILL_BREAKER);
-			if (wepUp) { addEffi5(p); }
-			
-			Main.getInstance().getGame().getScheduler().createTaskBuilder().delay((long) time*1000, TimeUnit.MILLISECONDS).execute(()-> {
-				if (wepUp) { p.getInventory().query(Hotbar.class).query(new SlotIndex(slot)).set(item); }
-				active.remove(p.getName());
-				p.sendMessage(Config.getInstance().PREFIX.concat(Text.of(TextColors.RED, ability.name + " expired!")));
-				if (mmop.getSettings().getSetting(Setting.EFFECTS)) { EffectUtils.ENDABILITY.send(p.getLocation()); }
-			}).submit(Main.getInstance());
-		}
-		else if (ability == Ability.SUMMON_HORSE || ability == Ability.SUMMON_WOLF || ability == Ability.SUMMON_OCELOT) {
+	public static Abilities getInstance() {
+		if (instance == null) { instance = new Abilities(); }
+		return instance;
+	}
 
-			Skill skill = mmop.getSkills().getSkill(ability.skillType);
+	private Abilities() {
+		this.active = Maps.newHashMap();
+	}
 
-			if (skill.level < 30 && ability == Ability.SUMMON_WOLF) { p.sendMessage(Config.getInstance().PREFIX.concat(Text.of(TextColors.RED, "You need to be level 30 or higher to summon wolfes"))); return; }
-			if (skill.level < 50 && ability == Ability.SUMMON_OCELOT) { p.sendMessage(Config.getInstance().PREFIX.concat(Text.of(TextColors.RED, "You need to be level 50 or higher to summon ocelot"))); return; }
-			if (skill.level < 100 && ability == Ability.SUMMON_HORSE) { p.sendMessage(Config.getInstance().PREFIX.concat(Text.of(TextColors.RED, "You need to be level 100 or higher to summon horses"))); return; }
+	public void activate(@Nonnull final Player p, @Nonnull final Ability ability) {
 
-			ItemStack hand = p.getItemInHand(HandTypes.MAIN_HAND).get().copy();
+		p.sendMessage(Main.getInstance().getConfig().PREFIX.concat(Text.of(TextColors.GREEN, "Activated " + ability.getName() + "!")));
 
-			if (hand.getQuantity() < 10 && ability == Ability.SUMMON_WOLF) { p.sendMessage(Config.getInstance().PREFIX.concat(Text.of(TextColors.RED, "You need 10 bones to summon a wolf"))); return; }
-			if (hand.getQuantity() < 10 && ability == Ability.SUMMON_OCELOT) { p.sendMessage(Config.getInstance().PREFIX.concat(Text.of(TextColors.RED, "You need 10 fish to summon a wolf"))); return; }
-			if (hand.getQuantity() < 10 && ability == Ability.SUMMON_HORSE) { p.sendMessage(Config.getInstance().PREFIX.concat(Text.of(TextColors.RED, "You need 10 apples to summon a horse"))); return; }
+		MMOPlayer mmop = Main.getInstance().getMMOPlayerDatabase().getOrCreatePlayer(p.getUniqueId());
+		Skill skill = mmop.getSkills().getSkill(ability.getSkillType());
+		double time = Main.getInstance().getValueStore().getAbility(ability).getSecond().getValue(mmop.getSkills().getSkill(ability.getSkillType()).level);
+
+		if (ability == Ability.SUMMON_HORSE || ability == Ability.SUMMON_WOLF || ability == Ability.SUMMON_OCELOT) {
+
+			if (skill.level < 30 && ability == Ability.SUMMON_WOLF) { p.sendMessage(Main.getInstance().getConfig().PREFIX.concat(Text.of(TextColors.RED, "You need to be level 30 or higher to summon wolfes"))); return; }
+			if (skill.level < 50 && ability == Ability.SUMMON_OCELOT) { p.sendMessage(Main.getInstance().getConfig().PREFIX.concat(Text.of(TextColors.RED, "You need to be level 50 or higher to summon ocelot"))); return; }
+			if (skill.level < 100 && ability == Ability.SUMMON_HORSE) { p.sendMessage(Main.getInstance().getConfig().PREFIX.concat(Text.of(TextColors.RED, "You need to be level 100 or higher to summon horses"))); return; }
+
+			ItemStack hand = p.getItemInHand(HandTypes.MAIN_HAND).get();
+
+			if (hand.getQuantity() < 10 && ability == Ability.SUMMON_WOLF) { p.sendMessage(Main.getInstance().getConfig().PREFIX.concat(Text.of(TextColors.RED, "You need 10 bones to summon a wolf"))); return; }
+			if (hand.getQuantity() < 10 && ability == Ability.SUMMON_OCELOT) { p.sendMessage(Main.getInstance().getConfig().PREFIX.concat(Text.of(TextColors.RED, "You need 10 fish to summon a wolf"))); return; }
+			if (hand.getQuantity() < 10 && ability == Ability.SUMMON_HORSE) { p.sendMessage(Main.getInstance().getConfig().PREFIX.concat(Text.of(TextColors.RED, "You need 10 apples to summon a horse"))); return; }
 
 			if (hand.getQuantity() == 10) { p.setItemInHand(HandTypes.MAIN_HAND, null); }
 			else { hand.setQuantity(hand.getQuantity()-10); p.setItemInHand(HandTypes.MAIN_HAND, hand); }
+		}
 
-			if (mmop.getSettings().getSetting(Setting.EFFECTS)) { EffectUtils.ACTIVATEABILITY.send(p.getLocation()); }
+		if (mmop.getSettings().getSetting(Setting.EFFECTS)) { EffectUtils.ACTIVATEABILITY.send(p.getLocation()); }
 
-			if (delays.containsKey(p.getName())) {
-				delays.get(p.getName()).add(new DelayInfo(System.currentTimeMillis() + ((int) (ability.getValue(skill.level)*1000)), ability));
-			}
-			else {
-				delays.put(p.getName(), new ArrayList<DelayInfo>());
-				delays.get(p.getName()).add(new DelayInfo(System.currentTimeMillis() + ((int) (ability.getValue(skill.level)*1000)), ability));
-			}
+		DelayData data = p.get(DelayData.class).orElse(new DelayData(Maps.newHashMap()));
+		if (ability.getDelay() != null) { data.add(ability.getDelay(), System.currentTimeMillis() + (long) (Main.getInstance().getValueStore().getAbility(ability).getSecond().getValue(skill.level)*1000)); }
+		p.offer(data);
+
+		final boolean wepup = (ability == Ability.GIGA_DRILL_BREAKER || ability == Ability.SUPER_BREAKER);
+		final int slot = (wepup) ? ((Hotbar) p.getInventory().query(Hotbar.class)).getSelectedSlotIndex() : 0;
+		final ItemStack item = (wepup) ? p.getItemInHand(HandTypes.MAIN_HAND).get().copy() : null;
+
+		if (wepup) { addEffi5(p); }
+		if (ability == Ability.SUMMON_HORSE || ability == Ability.SUMMON_WOLF || ability == Ability.SUMMON_OCELOT) {
+
 			p.offer(Keys.IS_SNEAKING, false);
-			
+
 			if (ability == Ability.SUMMON_WOLF) {
-				Entity e = ServerUtils.spawn(p.getLocation(), EntityTypes.WOLF);
-				Wolf wolf = (Wolf) e;
-				Optional<UUID> uuid = Optional.of(p.getUniqueId());
-				wolf.offer(Keys.TAMED_OWNER, uuid);
+				Wolf wolf = (Wolf) ServerUtils.spawn(p.getLocation(), EntityTypes.WOLF);
+				wolf.offer(Keys.TAMED_OWNER, Optional.of(p.getUniqueId()));
 				wolf.setCreator(p.getUniqueId());
 				wolf.setNotifier(p.getUniqueId());
 				wolf.addPassenger(p);
 			}
 			else if (ability == Ability.SUMMON_OCELOT) {
-				Entity e = ServerUtils.spawn(p.getLocation(), EntityTypes.OCELOT);
-				Ocelot ocelot = (Ocelot) e;
-				Optional<UUID> uuid = Optional.of(p.getUniqueId());
+				Ocelot ocelot = (Ocelot) ServerUtils.spawn(p.getLocation(), EntityTypes.OCELOT);
 				ocelot.offer(Keys.OCELOT_TYPE, getRandomOcelotType());
-				ocelot.offer(Keys.TAMED_OWNER, uuid);
+				ocelot.offer(Keys.TAMED_OWNER, Optional.of(p.getUniqueId()));
 				ocelot.setCreator(p.getUniqueId());
 				ocelot.setNotifier(p.getUniqueId());
 				ocelot.addPassenger(p);
 			}
 			else if (ability == Ability.SUMMON_HORSE) {
-				Entity e = ServerUtils.spawn(p.getLocation(), EntityTypes.HORSE);
-				Horse horse = (Horse) e;
-				Optional<UUID> uuid = Optional.of(p.getUniqueId());
-				horse.offer(Keys.TAMED_OWNER, uuid);
+				Horse horse = (Horse) ServerUtils.spawn(p.getLocation(), EntityTypes.HORSE);
+				horse.offer(Keys.TAMED_OWNER, Optional.of(p.getUniqueId()));
 				horse.setCreator(p.getUniqueId());
 				horse.setNotifier(p.getUniqueId());
 				horse.addPassenger(p);
 			}
+			return;
 		}
+		this.active.put(p.getUniqueId(), ability);
 
-		else if (ability == Ability.TREE_VELLER || ability == Ability.GREEN_TERRA || ability == Ability.SLAUGHTER || ability == Ability.BLOODSHED || ability == Ability.SAITAMA_PUNCH) {
-			
-			active.put(p.getName(), ability);
-			
-			if (mmop.getSettings().getSetting(Setting.EFFECTS)) { EffectUtils.ACTIVATEABILITY.send(p.getLocation()); }
-			
-			if (delays.containsKey(p.getName())) {
-				delays.get(p.getName()).add(new DelayInfo(System.currentTimeMillis() + Config.getInstance().RECHARGE_MILLIS, ability));
-			}
-			else {
-				delays.put(p.getName(), new ArrayList<DelayInfo>());
-				delays.get(p.getName()).add(new DelayInfo(System.currentTimeMillis() + Config.getInstance().RECHARGE_MILLIS, ability));
-			}
-			Main.getInstance().getGame().getScheduler().createTaskBuilder().delay((long) time*1000, TimeUnit.MILLISECONDS).execute(()-> {
-				active.remove(p.getName());
-				p.sendMessage(Config.getInstance().PREFIX.concat(Text.of(TextColors.RED, ability.name + " expired!")));
-				if (mmop.getSettings().getSetting(Setting.EFFECTS)) { EffectUtils.ENDABILITY.send(p.getLocation()); }
-			}).submit(Main.getInstance());
-		}
+		Task.builder().delay((long) time*1000, TimeUnit.MILLISECONDS).execute(() -> {
+			this.active.remove(p.getUniqueId());
+			if (wepup) { p.getInventory().query(Hotbar.class).query(new SlotIndex(slot)).set(item); }
+			p.sendMessage(Main.getInstance().getConfig().PREFIX.concat(Text.of(TextColors.RED, ability.getName() + " expired!")));
+			if (mmop.getSettings().getSetting(Setting.EFFECTS)) { EffectUtils.ENDABILITY.send(p.getLocation()); }
+		}).submit(Main.getInstance());
 	}
-	
-	private void addEffi5(Player p) {
+
+	private void addEffi5(@Nonnull final Player p) {
 		ItemStack superItem = p.getItemInHand(HandTypes.MAIN_HAND).get();
 		EnchantmentData ench = superItem.getOrCreate(EnchantmentData.class).get();
 		int lvl = 5;
@@ -188,6 +142,7 @@ public class Abilities {
 		superItem.offer(new MMOData(true));
 		p.setItemInHand(HandTypes.MAIN_HAND, superItem);
 	}
+
 	private OcelotType getRandomOcelotType() {
 		int r = (int) (Math.random()*3);
 		if (r == 0) { return OcelotTypes.BLACK_CAT; }

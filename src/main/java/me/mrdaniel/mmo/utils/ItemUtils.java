@@ -1,6 +1,5 @@
 package me.mrdaniel.mmo.utils;
 
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.data.MemoryDataContainer;
 import org.spongepowered.api.data.key.Keys;
@@ -8,7 +7,7 @@ import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.Item;
 import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.entity.spawn.EntitySpawnCause.Builder;
+import org.spongepowered.api.event.cause.entity.spawn.EntitySpawnCause;
 import org.spongepowered.api.event.cause.entity.spawn.SpawnTypes;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.inventory.ItemStack;
@@ -24,12 +23,12 @@ public class ItemUtils {
 		ItemStack stack = Main.getInstance().getGame().getRegistry().createBuilder(ItemStack.Builder.class).fromContainer(container).build();
 		return stack;
 	}
-	
+
 	public static Item drop(ItemStack item, Location<World> loc) {
 		Entity e = loc.getExtent().createEntity(EntityTypes.ITEM, loc.getPosition());
 		Item i = (Item) e;
 		i.offer(Keys.REPRESENTED_ITEM, item.createSnapshot());
-		loc.getExtent().spawnEntity(i, Cause.source(Sponge.getRegistry().createBuilder(Builder.class).entity(i).type(SpawnTypes.PLUGIN).build()).build());  
+		loc.getExtent().spawnEntity(i, Cause.source(Main.getInstance().getGame().getRegistry().createBuilder(EntitySpawnCause.Builder.class).entity(i).type(SpawnTypes.PLUGIN).build()).build());  
 		return i;
 	}
 }

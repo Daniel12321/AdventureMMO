@@ -13,19 +13,20 @@ import me.mrdaniel.mmo.Main;
 import me.mrdaniel.mmo.enums.SkillType;
 import me.mrdaniel.mmo.io.players.MMOPlayer;
 
-public class CommandShell implements CommandExecutor {
+public class CommandAdminView implements CommandExecutor {
 
-	private SkillType type;
-
-	public CommandShell(SkillType type) {
-		this.type = type;
-	}
-
+	@Override
 	public CommandResult execute(CommandSource sender, CommandContext args) throws CommandException {
 		if (!(sender instanceof Player)) { sender.sendMessage(Text.of(TextColors.RED, "This command is for players only")); return CommandResult.success(); }
 		Player p = (Player) sender;
-		MMOPlayer mmop = Main.getInstance().getMMOPlayerDatabase().getOrCreatePlayer(p.getUniqueId());
-		CommandCenter.getInstance().sendSkill(p, mmop, this.type);
+
+		if (!args.<Player>getOne("other").isPresent()) { sender.sendMessage(Text.of(TextColors.RED, "Player not found")); }
+		Player other = args.<Player>getOne("other").get();
+		MMOPlayer mmop = Main.getInstance().getMMOPlayerDatabase().getOrCreatePlayer(other.getUniqueId());
+
+		if (args.<SkillType>getOne("type").isPresent()) { CommandCenter.getInstance().sendSkill(p, mmop, args.<SkillType>getOne("type").get()); }
+		else { CommandCenter.getInstance().sendMain(p, mmop, other.getName()); }
+
 		return CommandResult.success();
 	}
 }

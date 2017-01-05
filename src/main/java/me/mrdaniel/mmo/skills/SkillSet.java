@@ -12,7 +12,7 @@ public class SkillSet {
 		skills = new ConcurrentHashMap<SkillType, Skill>();
 		loadDefaults();
 		for (int i = 0; i < values.length; i++) {
-			setSkill(SkillType.get(i), values[i]);
+			setSkill(SkillType.of(i), values[i]);
 		}
 	}
 	private void loadDefaults() {
@@ -88,7 +88,7 @@ public class SkillSet {
 	 */	
 	public synchronized int[][] serialize() {
 		int[][] sRaw = new int[SkillType.values().length][2];
-		for (SkillType t : SkillType.values()) sRaw[t.id] = getSkill(t).serialize();
+		for (SkillType t : SkillType.values()) sRaw[t.getId()] = getSkill(t).serialize();
 		return sRaw;
 	}
 	

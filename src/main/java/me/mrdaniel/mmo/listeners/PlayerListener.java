@@ -2,6 +2,7 @@ package me.mrdaniel.mmo.listeners;
 
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import org.spongepowered.api.block.BlockSnapshot;
@@ -32,10 +33,7 @@ import me.mrdaniel.mmo.Main;
 import me.mrdaniel.mmo.enums.Ability;
 import me.mrdaniel.mmo.enums.RepairStore;
 import me.mrdaniel.mmo.enums.SkillType;
-import me.mrdaniel.mmo.io.AbilitiesConfig;
-import me.mrdaniel.mmo.io.Config;
 import me.mrdaniel.mmo.io.players.MMOPlayer;
-import me.mrdaniel.mmo.io.players.MMOPlayerDatabase;
 import me.mrdaniel.mmo.skills.SkillAction;
 import me.mrdaniel.mmo.utils.ItemInfo;
 import me.mrdaniel.mmo.utils.ItemUtils;
@@ -71,13 +69,13 @@ public class PlayerListener {
 					delays.add(p.getName());
 					Main.getInstance().getGame().getScheduler().createTaskBuilder().delay(100, TimeUnit.MILLISECONDS).execute(()-> { if (delays.contains(p.getName())) { delays.remove(p.getName()); } }).submit(Main.getInstance());
 					
-					MMOPlayer mmop = MMOPlayerDatabase.getInstance().getOrCreatePlayer(p.getUniqueId().toString());
+					MMOPlayer mmop = Main.getInstance().getMMOPlayerDatabase().getOrCreatePlayer(p.getUniqueId());
 					p.setItemInHand(HandTypes.MAIN_HAND, null);
 					Location<World> dropLoc = new Location<World>(loc.getExtent(), loc.getX(), loc.getY()+1, loc.getZ());
 					
 					double maxItems = ir.amount;
 					int level = mmop.getSkills().getSkill(SkillType.SALVAGE).level;
-					double percent = Ability.SALVAGE.getValue(level);
+					double percent = Main.getInstance().getValueStore().getAbility(Ability.SALVAGE).getSecond().getValue(level);
 					if (percent > 100) { percent = 100; }
 					int amount = (int) (maxItems * (percent/100.0));
 					if (amount < 1) { amount = 1; }
@@ -86,7 +84,7 @@ public class PlayerListener {
 					ItemUtils.drop(item, dropLoc);
 					mmop.process(new SkillAction(SkillType.SALVAGE, ir.exp));
 				}
-				else { p.sendMessage(Config.getInstance().PREFIX.concat(Text.of(TextColors.GREEN, "Click the Gold Block with an item to salvage it"))); }
+				else { p.sendMessage(Main.getInstance().getConfig().PREFIX.concat(Text.of(TextColors.GREEN, "Click the Gold Block with an item to salvage it"))); }
 			}
 			else if (bs.getType() == BlockTypes.IRON_BLOCK) {
 				if (p.getItemInHand(HandTypes.MAIN_HAND).isPresent() && p.getItemInHand(HandTypes.MAIN_HAND).get() != ItemTypes.NONE) {
@@ -101,7 +99,7 @@ public class PlayerListener {
 					delays.add(p.getName());
 					Main.getInstance().getGame().getScheduler().createTaskBuilder().delay(100, TimeUnit.MILLISECONDS).execute(()-> { if (delays.contains(p.getName())) { delays.remove(p.getName()); } }).submit(Main.getInstance());
 					
-					MMOPlayer mmop = MMOPlayerDatabase.getInstance().getOrCreatePlayer(p.getUniqueId().toString());
+					MMOPlayer mmop = Main.getInstance().getMMOPlayerDatabase().getOrCreatePlayer(p.getUniqueId());
 					
 					for (int i = 0; i < 9; i++) {
 						Optional<ItemStack> itemOpt = p.getInventory().query(Hotbar.class).query(new SlotIndex(i)).peek();
@@ -120,7 +118,7 @@ public class PlayerListener {
 							
 							DurabilityData data = hand.getOrCreate(DurabilityData.class).get();
 							
-							int extra = (int) ((Ability.REPAIR.getValue(mmop.getSkills().getSkill(SkillType.REPAIR).level)/100.0)*ir.maxDura);
+							int extra = (int) ((Main.getInstance().getValueStore().getAbility(Ability.REPAIR).getSecond().getValue(mmop.getSkills().getSkill(SkillType.REPAIR).level)/100.0)*ir.maxDura);
 							int newDura = data.durability().get() + extra;
 							if (newDura > ir.maxDura) { newDura = ir.maxDura; }
 							hand.offer(Keys.ITEM_DURABILITY, newDura);
@@ -139,8 +137,8 @@ public class PlayerListener {
 		if (e.isCancelled()) { return; }
 		if (e.getItemStackTransaction() != null) {
 			if (e.getItemStackTransaction().get(0).getFinal() != null && e.getItemStackTransaction().get(0).getFinal().getType() != ItemTypes.NONE) {
-				MMOPlayer mmop = MMOPlayerDatabase.getInstance().getOrCreatePlayer(p.getUniqueId().toString());
-				mmop.process(new SkillAction(SkillType.FISHING, AbilitiesConfig.getInstance().skillExps.get(SkillType.FISHING)[0]));
+				MMOPlayer mmop = Main.getInstance().getMMOPlayerDatabase().getOrCreatePlayer(p.getUniqueId());
+				mmop.process(new SkillAction(SkillType.FISHING, Main.getInstance().getValueStore().getFishing()));
 				Drops.getInstance().FishingTreasure(p, mmop);
 			}
 		}
@@ -149,21 +147,21 @@ public class PlayerListener {
 	@Listener(order = Order.LAST)
 	public void onTaming(TameEntityEvent e, @Root Player p) {
 		if (e.isCancelled()) { return; }
-		MMOPlayer mmop = MMOPlayerDatabase.getInstance().getOrCreatePlayer(p.getUniqueId().toString());
-		mmop.process(new SkillAction(SkillType.TAMING, AbilitiesConfig.getInstance().skillExps.get(SkillType.TAMING)[0]));
+		MMOPlayer mmop = Main.getInstance().getMMOPlayerDatabase().getOrCreatePlayer(p.getUniqueId());
+		mmop.process(new SkillAction(SkillType.TAMING, Main.getInstance().getValueStore().getTaming()));
 	}
 
 	@Listener
 	public void onPlayerJoin(ClientConnectionEvent.Join e) {
-		MMOPlayer mmop = MMOPlayerDatabase.getInstance().getOrCreatePlayer(e.getTargetEntity().getUniqueId().toString());
+		MMOPlayer mmop = Main.getInstance().getMMOPlayerDatabase().getOrCreatePlayer(e.getTargetEntity().getUniqueId());
 		mmop.updateTop(e.getTargetEntity().getName());
 	}
 
 	@Listener
 	public void onPlayerQuit(ClientConnectionEvent.Disconnect e) {
-		MMOPlayer mmop = MMOPlayerDatabase.getInstance().getOrCreatePlayer(e.getTargetEntity().getUniqueId().toString());
+		MMOPlayer mmop = Main.getInstance().getMMOPlayerDatabase().getOrCreatePlayer(e.getTargetEntity().getUniqueId());
 		mmop.save();
 		mmop.updateTop(e.getTargetEntity().getName());
-		MMOPlayerDatabase.getInstance().unload(mmop.getUUID());
+		Main.getInstance().getMMOPlayerDatabase().unload(UUID.fromString(mmop.getUUID()));
 	}
 }

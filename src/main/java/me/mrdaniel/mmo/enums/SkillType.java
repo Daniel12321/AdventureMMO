@@ -1,5 +1,9 @@
 package me.mrdaniel.mmo.enums;
 
+import java.util.Optional;
+
+import javax.annotation.Nonnull;
+
 public enum SkillType {
 	
 	MINING("Mining", 0, true),
@@ -16,22 +20,27 @@ public enum SkillType {
 	UNARMED("Unarmed", 11, false),
 	ARCHERY("Archery", 12, false);
 	
-	public String name;
-	public int id;
-	public boolean doubleDrop;
+	private String name;
+	private int id;
+	private boolean doubleDrop;
 	
 	SkillType(String name, int id, boolean doubleDrop) {
 		this.name = name;
 		this.id = id;
 		this.doubleDrop = doubleDrop;
 	}
-	
-	public static SkillType match(String name) {
-		for (SkillType type : SkillType.values()) if (type.name.equalsIgnoreCase(name)) return type;
-		return null;
+
+	@Nonnull public String getName() { return this.name; }
+	public int getId() { return this.id; }
+	public boolean hasDoubleDrop() { return this.doubleDrop; }
+
+	public static Optional<SkillType> of(@Nonnull final String name) {
+		for (SkillType type : SkillType.values()) if (type.name.equalsIgnoreCase(name)) return Optional.of(type);
+		return Optional.empty();
 	}
-	public static SkillType get(int id) {
+
+	public static SkillType of(final int id) {
 		for (SkillType t : SkillType.values()) if (t.id == id) return t;
-		return null;
+		return MINING;
 	}
 }

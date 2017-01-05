@@ -3,6 +3,7 @@ package me.mrdaniel.mmo.skills;
 import me.mrdaniel.mmo.enums.SkillType;
 
 public class SkillAction {
+
 	private SkillType type;
 	private int exp;
 	

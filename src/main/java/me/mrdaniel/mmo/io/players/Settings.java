@@ -2,29 +2,28 @@ package me.mrdaniel.mmo.io.players;
 
 import java.util.concurrent.ConcurrentHashMap;
 
+import me.mrdaniel.mmo.Main;
 import me.mrdaniel.mmo.enums.Setting;
-import me.mrdaniel.mmo.io.Config;
 
 public class Settings {
 	
 	private ConcurrentHashMap<Setting, Boolean> settings;
-	
+
 	public Settings(boolean... values) {
 		settings = new ConcurrentHashMap<Setting, Boolean>();
 		loadDefaults();
-		for (int i = 0; i < values.length; i++) {
+		for (int i = 0; i < values.length && i < Setting.values().length; i++) {
 			settings.put(Setting.get(i), values[i]);
 		}
 	}
 	
 	private void loadDefaults() {
-		settings.put(Setting.SOUNDS, true);
 		settings.put(Setting.EFFECTS, true);
 		settings.put(Setting.SCOREBOARD, true);
 		settings.put(Setting.SCOREBOARDPERMANENT, false);
 		
 		for (Setting s : Setting.values()) {
-			if (Config.getInstance().FORCEDSETTINGS.containsKey(s)) settings.put(s, Config.getInstance().FORCEDSETTINGS.get(s));
+			if (Main.getInstance().getConfig().FORCEDSETTINGS.containsKey(s)) settings.put(s, Main.getInstance().getConfig().FORCEDSETTINGS.get(s));
 		}
 	}
 	
@@ -61,6 +60,6 @@ public class Settings {
 	 * Returns the serialized Settings.
 	 */
 	public synchronized boolean[] serialize() {
-		return new boolean[]{settings.get(Setting.SOUNDS), settings.get(Setting.EFFECTS), settings.get(Setting.SCOREBOARD), settings.get(Setting.SCOREBOARDPERMANENT)};
+		return new boolean[]{settings.get(Setting.EFFECTS), settings.get(Setting.SCOREBOARD), settings.get(Setting.SCOREBOARDPERMANENT)};
 	}
 }

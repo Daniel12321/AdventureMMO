@@ -1,11 +1,16 @@
 package me.mrdaniel.mmo.scoreboard;
 
+import javax.annotation.Nonnull;
+
+import org.spongepowered.api.text.Text;
+
 public class BoardLine {
-	public String line;
-	public int location;
-	
-	public BoardLine(String line, int location) {
+
+	@Nonnull public final Text line;
+	public final int loc;
+
+	public BoardLine(@Nonnull final Text line, final int loc) {
 		this.line = line;
-		this.location = location;
+		this.loc = loc;
 	}
 }

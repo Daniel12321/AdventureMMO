@@ -2,7 +2,10 @@ package me.mrdaniel.mmo.listeners;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
+
+import javax.annotation.Nonnull;
 
 import org.spongepowered.api.data.manipulator.mutable.item.EnchantmentData;
 import org.spongepowered.api.data.meta.ItemEnchantment;
@@ -15,6 +18,7 @@ import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
+import me.mrdaniel.mmo.Main;
 import me.mrdaniel.mmo.enums.Ability;
 import me.mrdaniel.mmo.enums.SkillType;
 import me.mrdaniel.mmo.enums.ToolType;
@@ -23,16 +27,16 @@ import me.mrdaniel.mmo.skills.Skill;
 import me.mrdaniel.mmo.utils.ItemUtils;
 
 public class Drops {
-	
+
 	private Random r;
-	
+
 	private static Drops instance = null;
 	public static Drops getInstance() { if (instance == null) { instance = new Drops(); } return instance; }
-			
-	private Drops() { r = new Random(); }
 	
-	public void DoubleDropOre(Player p, ItemType ore, ItemType drop, int amountDrop, int duraDrop, Ability ability, Skill skill, Location<World> loc, boolean ignoreFortune) {
-		if (ability.getValue(skill.level) > r.nextInt(101)) {
+	private Drops() { this.r = new Random(); }
+
+	public void DoubleDropOre(@Nonnull final Player p, @Nonnull final ItemType ore, @Nonnull final ItemType drop, int amountDrop, final int duraDrop, @Nonnull final Ability ability, @Nonnull final Skill skill, @Nonnull final Location<World> loc, final boolean ignoreFortune) {
+		if (Main.getInstance().getValueStore().getAbility(ability).getSecond().getValue(skill.level) > r.nextInt(101)) {
 			if (p.getItemInHand(HandTypes.MAIN_HAND).isPresent()) {
 				ItemStack hand = p.getItemInHand(HandTypes.MAIN_HAND).get();
 				if (hand.get(EnchantmentData.class).isPresent()) {
@@ -57,36 +61,40 @@ public class Drops {
 			ItemUtils.drop(stack, loc);
 		}
 	}
-	public void DoubleDrop(ItemType drop, int amount, int dura, Ability ability, Skill skill, Location<World> loc) {
-		if (ability.getValue(skill.level) > r.nextInt(101)) {
+
+	public void DoubleDrop(@Nonnull final ItemType drop, final int amount, final int dura, @Nonnull final Ability ability, @Nonnull final Skill skill, @Nonnull final Location<World> loc) {
+		if (Main.getInstance().getValueStore().getAbility(ability).getSecond().getValue(skill.level) > r.nextInt(101)) {
 			ItemStack stack = ItemUtils.build(drop, amount, dura);
 			ItemUtils.drop(stack, loc);
 		}
 	}
-	public void GreenTerraDrops(Player p, ItemType type, Location<World> loc, int amount) {
-		if (Abilities.getInstance().active.containsKey(p.getName())) {
-			if (Abilities.getInstance().active.get(p.getName()).equals(Ability.GREEN_TERRA)) {
+
+	public void GreenTerraDrops(@Nonnull final Player p, @Nonnull final ItemType type, @Nonnull final Location<World> loc, final int amount) {
+		if (Abilities.getInstance().active.containsKey(p.getUniqueId())) {
+			if (Abilities.getInstance().active.get(p.getUniqueId()).equals(Ability.GREEN_TERRA)) {
 				ItemStack stack = ItemUtils.build(type, amount, 0);
 				ItemUtils.drop(stack, loc);
 			}
 		}
 	}
-	public void FishingTreasure(Player p, MMOPlayer mmop) {
+
+	public void FishingTreasure(@Nonnull final Player p, @Nonnull final MMOPlayer mmop) {
 		Ability ability = Ability.WATER_TREASURE;
 		Skill skill = mmop.getSkills().getSkill(SkillType.FISHING);
-		if (ability.getValue(skill.level) < r.nextInt(101)) { return; }
+		if (Main.getInstance().getValueStore().getAbility(ability).getSecond().getValue(skill.level) < r.nextInt(101)) { return; }
 		ItemStack item = getFishingTreasure(skill.level);
 		ItemUtils.drop(item, p.getLocation());
 	}
-	public void DiggingTreasure(MMOPlayer mmop, Location<World> loc) {
+
+	public void DiggingTreasure(@Nonnull final MMOPlayer mmop, @Nonnull final Location<World> loc) {
 		Ability ability = Ability.TREASURE_HUNT;
 		Skill skill = mmop.getSkills().getSkill(SkillType.EXCAVATION);
-		if (ability.getValue(skill.level) < r.nextInt(101)) { return; }
+		if (Main.getInstance().getValueStore().getAbility(ability).getSecond().getValue(skill.level) < r.nextInt(101)) { return; }
 		ItemStack item = getDiggingTreasure(skill.level);
 		ItemUtils.drop(item, loc);
 	}
 	
-	private ItemStack getDiggingTreasure(int level) {
+	private ItemStack getDiggingTreasure(final int level) {
 		
 		if (level >= 400 && r.nextInt(10001) > 99_50) { return ItemUtils.build(ItemTypes.DRAGON_EGG, 1, 0); }
 		else if (level >= 300 && r.nextInt(10001) > 99_50) { return ItemUtils.build(ItemTypes.NETHER_STAR, 1, 0); }
@@ -103,7 +111,7 @@ public class Drops {
 		return ItemUtils.build(ItemTypes.GLOWSTONE_DUST, 1, 0);
 	}
 	
-	private ItemStack getFishingTreasure(int level) {
+	private ItemStack getFishingTreasure(final int level) {
 		
 		if (level >= 400 && r.nextInt(10001) > 99_50) { return addRandomEnchantment(ItemUtils.build(ItemTypes.DIAMOND_HELMET, 1, r.nextInt(364))); }
 		else if (level >= 400 && r.nextInt(10001) > 99_50) { return addRandomEnchantment(ItemUtils.build(ItemTypes.DIAMOND_CHESTPLATE, 1, r.nextInt(529))); }
@@ -174,12 +182,13 @@ public class Drops {
 		return ItemUtils.build(ItemTypes.DYE, r.nextInt(11)+10, 4);
 	}
 	
-	private ItemStack addRandomEnchantment(ItemStack stack) {
+	private ItemStack addRandomEnchantment(@Nonnull final ItemStack stack) {
 		EnchantmentData data = stack.getOrCreate(EnchantmentData.class).get();
 		List<ItemEnchantment> ench = new ArrayList<ItemEnchantment>();
-		ToolType type = ToolType.matchID(stack.getItem());
+		Optional<ToolType> type = ToolType.of(stack.getItem());
 		
-		if (type == ToolType.SWORD) {
+		if (!type.isPresent()) { return stack; }
+		if (type.get() == ToolType.SWORD) {
 			if (r.nextInt(101) > 70) { ench.add(new ItemEnchantment(Enchantments.SHARPNESS, r.nextInt(5)+1)); }
 			if (r.nextInt(101) > 70) { ench.add(new ItemEnchantment(Enchantments.BANE_OF_ARTHROPODS, r.nextInt(5)+1)); }
 			if (r.nextInt(101) > 70) { ench.add(new ItemEnchantment(Enchantments.SMITE, r.nextInt(5)+1)); }
@@ -188,7 +197,7 @@ public class Drops {
 			if (r.nextInt(101) > 70) { ench.add(new ItemEnchantment(Enchantments.KNOCKBACK, r.nextInt(2)+1)); }
 			if (r.nextInt(101) > 80) { ench.add(new ItemEnchantment(Enchantments.UNBREAKING, r.nextInt(3)+1)); }
 		}
-		else if (type == ToolType.AXE) {
+		else if (type.get() == ToolType.AXE) {
 			if (r.nextInt(101) > 80) { ench.add(new ItemEnchantment(Enchantments.SHARPNESS, r.nextInt(5)+1)); }
 			if (r.nextInt(101) > 80) { ench.add(new ItemEnchantment(Enchantments.BANE_OF_ARTHROPODS, r.nextInt(5)+1)); }
 			if (r.nextInt(101) > 80) { ench.add(new ItemEnchantment(Enchantments.SMITE, r.nextInt(5)+1)); }
@@ -197,25 +206,25 @@ public class Drops {
 			if (r.nextInt(101) > 70) { ench.add(new ItemEnchantment(Enchantments.SILK_TOUCH, 1)); }
 			if (r.nextInt(101) > 70) { ench.add(new ItemEnchantment(Enchantments.FORTUNE, r.nextInt(3)+1)); }
 		}
-		else if (type == ToolType.SHOVEL || type == ToolType.PICKAXE) {
+		else if (type.get() == ToolType.SHOVEL || type.get() == ToolType.PICKAXE) {
 			if (r.nextInt(101) > 70) { ench.add(new ItemEnchantment(Enchantments.EFFICIENCY, r.nextInt(5)+1)); }
 			if (r.nextInt(101) > 70) { ench.add(new ItemEnchantment(Enchantments.UNBREAKING, r.nextInt(3)+1)); }
 			if (r.nextInt(101) > 70) { ench.add(new ItemEnchantment(Enchantments.SILK_TOUCH, 1)); }
 			if (r.nextInt(101) > 70) { ench.add(new ItemEnchantment(Enchantments.FORTUNE, r.nextInt(3)+1)); }
 		}
-		else if (type == ToolType.ROD) {
+		else if (type.get() == ToolType.ROD) {
 			if (r.nextInt(101) > 70) { ench.add(new ItemEnchantment(Enchantments.LURE, r.nextInt(3)+1)); }
 			if (r.nextInt(101) > 70) { ench.add(new ItemEnchantment(Enchantments.LUCK_OF_THE_SEA, r.nextInt(3)+1)); }
 			if (r.nextInt(101) > 70) { ench.add(new ItemEnchantment(Enchantments.UNBREAKING, r.nextInt(3)+1)); }
 		}
-		else if (type == ToolType.BOW) {
+		else if (type.get() == ToolType.BOW) {
 			if (r.nextInt(101) > 70) { ench.add(new ItemEnchantment(Enchantments.POWER, r.nextInt(5)+1)); }
 			if (r.nextInt(101) > 70) { ench.add(new ItemEnchantment(Enchantments.FLAME, r.nextInt(2)+1)); }
 			if (r.nextInt(101) > 70) { ench.add(new ItemEnchantment(Enchantments.PUNCH, r.nextInt(2)+1)); }
 			if (r.nextInt(101) > 75) { ench.add(new ItemEnchantment(Enchantments.INFINITY, 1)); }
 			if (r.nextInt(101) > 80) { ench.add(new ItemEnchantment(Enchantments.UNBREAKING, r.nextInt(3)+1)); }
 		}
-		else if (type == ToolType.CHESTPLATE || type == ToolType.LEGGINGS) {
+		else if (type.get() == ToolType.CHESTPLATE || type.get() == ToolType.LEGGINGS) {
 			if (r.nextInt(101) > 70) { ench.add(new ItemEnchantment(Enchantments.PROTECTION, r.nextInt(4)+1)); }
 			if (r.nextInt(101) > 70) { ench.add(new ItemEnchantment(Enchantments.PROJECTILE_PROTECTION, r.nextInt(4)+1)); }
 			if (r.nextInt(101) > 70) { ench.add(new ItemEnchantment(Enchantments.FIRE_PROTECTION, r.nextInt(4)+1)); }
@@ -223,7 +232,7 @@ public class Drops {
 			if (r.nextInt(101) > 75) { ench.add(new ItemEnchantment(Enchantments.THORNS, r.nextInt(3)+1)); }
 			if (r.nextInt(101) > 80) { ench.add(new ItemEnchantment(Enchantments.UNBREAKING, r.nextInt(3)+1)); }
 		}
-		else if (type == ToolType.BOOTS) {
+		else if (type.get() == ToolType.BOOTS) {
 			if (r.nextInt(101) > 70) { ench.add(new ItemEnchantment(Enchantments.PROTECTION, r.nextInt(4)+1)); }
 			if (r.nextInt(101) > 70) { ench.add(new ItemEnchantment(Enchantments.PROJECTILE_PROTECTION, r.nextInt(4)+1)); }
 			if (r.nextInt(101) > 70) { ench.add(new ItemEnchantment(Enchantments.FIRE_PROTECTION, r.nextInt(4)+1)); }
@@ -232,7 +241,7 @@ public class Drops {
 			if (r.nextInt(101) > 75) { ench.add(new ItemEnchantment(Enchantments.THORNS, r.nextInt(3)+1)); }
 			if (r.nextInt(101) > 80) { ench.add(new ItemEnchantment(Enchantments.UNBREAKING, r.nextInt(3)+1)); }
 		}
-		else if (type == ToolType.HELMET) {
+		else if (type.get() == ToolType.HELMET) {
 			if (r.nextInt(101) > 70) { ench.add(new ItemEnchantment(Enchantments.PROTECTION, r.nextInt(4)+1)); }
 			if (r.nextInt(101) > 70) { ench.add(new ItemEnchantment(Enchantments.PROJECTILE_PROTECTION, r.nextInt(4)+1)); }
 			if (r.nextInt(101) > 70) { ench.add(new ItemEnchantment(Enchantments.FIRE_PROTECTION, r.nextInt(4)+1)); }

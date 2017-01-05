@@ -1,12 +1,16 @@
 package me.mrdaniel.mmo.enums;
 
+import java.util.Optional;
+
+import javax.annotation.Nonnull;
+
 import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.ItemTypes;
 
+import me.mrdaniel.mmo.Main;
 import me.mrdaniel.mmo.io.ModdedTool;
-import me.mrdaniel.mmo.io.ModdedTools;
 
 public enum ToolType {
 	
@@ -26,125 +30,129 @@ public enum ToolType {
 	BOW("Bow", false, false),
 	HAND("Hand", true, false);
 	
-	public String name;
-	public boolean activeAbility;
-	public boolean requiresSneaking;
+	private String name;
+	private boolean activeAbility;
+	private boolean requiresSneaking;
 	
 	ToolType(String name, boolean activeAbility, boolean requiresSneaking) {
 		this.name = name; this.activeAbility = activeAbility; this.requiresSneaking = requiresSneaking;
 	}
+
+	@Nonnull public String getName() { return this.name; }
+	public boolean isActivaAbility() { return this.activeAbility; }
+	public boolean requiresSneaking() { return this.requiresSneaking; }
 	
-	public static ToolType matchName(String name) {
-		for (ToolType type : values()) {
-			if (type.name.equalsIgnoreCase(name)) {
-				return type;
-			}
-		}
-		return null;
+	@Nonnull
+	public static Optional<ToolType> of(@Nonnull final String name) {
+		for (ToolType type : values()) { if (type.name.equalsIgnoreCase(name)) { return Optional.of(type); } }
+		return Optional.empty();
 	}
-	public Ability getAbility(BlockType bType) {
-		if (!activeAbility) { return null; }
-		if (name.equals("Pickaxe")) { return Ability.SUPER_BREAKER; }
-		else if (name.equals("Shovel")) { return Ability.GIGA_DRILL_BREAKER; }
-		else if (name.equals("Hoe")) { return Ability.GREEN_TERRA; }
-		else if (name.equals("Bone")) { return Ability.SUMMON_WOLF; }
-		else if (name.equals("Apple")) { return Ability.SUMMON_HORSE; }
-		else if (name.equals("Fish")) { return Ability.SUMMON_OCELOT; }
-		else if (name.equals("Sword")) { return Ability.BLOODSHED; }
-		else if (name.equals("Hand")) { return Ability.SAITAMA_PUNCH; }
-		else if (name.equals("Axe")) {
-			if (bType == BlockTypes.LOG || bType == BlockTypes.LOG2) { return Ability.TREE_VELLER; }
-			else { return Ability.SLAUGHTER; }
+
+	@Nonnull
+	public Optional<Ability> getAbility(@Nonnull final BlockType bType) {
+		if (!this.activeAbility) { return Optional.empty(); }
+		if (this == PICKAXE) { return Optional.of(Ability.SUPER_BREAKER); }
+		else if (this == SHOVEL) { return Optional.of(Ability.GIGA_DRILL_BREAKER); }
+		else if (this == HOE) { return Optional.of(Ability.GREEN_TERRA); }
+		else if (this == BONE) { return Optional.of(Ability.SUMMON_WOLF); }
+		else if (this == APPLE) { return Optional.of(Ability.SUMMON_HORSE); }
+		else if (this == FISH) { return Optional.of(Ability.SUMMON_OCELOT); }
+		else if (this == SWORD) { return Optional.of(Ability.BLOODSHED); }
+		else if (this == HAND) { return Optional.of(Ability.SAITAMA_PUNCH); }
+		else if (this == AXE) {
+			if (bType == BlockTypes.AIR) { return Optional.of(Ability.SLAUGHTER); }
+			else { return Optional.of(Ability.TREE_VELLER); }
 		}
-		return null;
+		return Optional.empty();
 	}
-	public static ToolType matchID(ItemType type) {
+
+	public static Optional<ToolType> of(@Nonnull final ItemType type) {
 		if (type == ItemTypes.WOODEN_SWORD
 				|| type == ItemTypes.STONE_SWORD
 				|| type == ItemTypes.IRON_SWORD
 				|| type == ItemTypes.GOLDEN_SWORD
 				|| type == ItemTypes.DIAMOND_SWORD) {
-			return ToolType.SWORD;
+			return Optional.of(SWORD);
 		}
 		else if (type == ItemTypes.WOODEN_AXE
 				|| type == ItemTypes.STONE_AXE
 				|| type == ItemTypes.IRON_AXE
 				|| type == ItemTypes.GOLDEN_AXE
 				|| type == ItemTypes.DIAMOND_AXE) {
-			return ToolType.AXE;
+			return Optional.of(AXE);
 		}
 		else if (type == ItemTypes.WOODEN_PICKAXE
 				|| type == ItemTypes.STONE_PICKAXE
 				|| type == ItemTypes.IRON_PICKAXE
 				|| type == ItemTypes.GOLDEN_PICKAXE
 				|| type == ItemTypes.DIAMOND_PICKAXE) {
-			return ToolType.PICKAXE;
+			return Optional.of(PICKAXE);
 		}
 		else if (type == ItemTypes.WOODEN_SHOVEL
 				|| type == ItemTypes.STONE_SHOVEL
 				|| type == ItemTypes.IRON_SHOVEL
 				|| type == ItemTypes.GOLDEN_SHOVEL
 				|| type == ItemTypes.DIAMOND_SHOVEL) {
-			return ToolType.SHOVEL;
+			return Optional.of(SHOVEL);
 		}
 		else if (type == ItemTypes.WOODEN_HOE
 				|| type == ItemTypes.STONE_HOE
 				|| type == ItemTypes.IRON_HOE
 				|| type == ItemTypes.GOLDEN_HOE
 				|| type == ItemTypes.DIAMOND_HOE) {
-			return ToolType.HOE;
+			return Optional.of(HOE);
 		}
 		else if (type == ItemTypes.LEATHER_BOOTS
 				|| type == ItemTypes.CHAINMAIL_BOOTS
 				|| type == ItemTypes.IRON_BOOTS
 				|| type == ItemTypes.GOLDEN_BOOTS
 				|| type == ItemTypes.DIAMOND_BOOTS) {
-			return ToolType.BOOTS;
+			return Optional.of(BOOTS);
 		}
 		else if (type == ItemTypes.LEATHER_LEGGINGS
 				|| type == ItemTypes.CHAINMAIL_LEGGINGS
 				|| type == ItemTypes.IRON_LEGGINGS
 				|| type == ItemTypes.GOLDEN_LEGGINGS
 				|| type == ItemTypes.DIAMOND_LEGGINGS) {
-			return ToolType.LEGGINGS;
+			return Optional.of(LEGGINGS);
 		}
 		else if (type == ItemTypes.LEATHER_CHESTPLATE
 				|| type == ItemTypes.CHAINMAIL_CHESTPLATE
 				|| type == ItemTypes.IRON_CHESTPLATE
 				|| type == ItemTypes.GOLDEN_CHESTPLATE
 				|| type == ItemTypes.DIAMOND_CHESTPLATE) {
-			return ToolType.CHESTPLATE;
+			return Optional.of(CHESTPLATE);
 		}
 		else if (type == ItemTypes.LEATHER_HELMET
 				|| type == ItemTypes.CHAINMAIL_HELMET
 				|| type == ItemTypes.IRON_HELMET
 				|| type == ItemTypes.GOLDEN_HELMET
 				|| type == ItemTypes.DIAMOND_HELMET) {
-			return ToolType.HELMET;
+			return Optional.of(HELMET);
 		}
 		else if (type == ItemTypes.BONE) {
-			return ToolType.BONE;
+			return Optional.of(BONE);
 		}
 		else if (type == ItemTypes.APPLE) {
-			return ToolType.APPLE;
+			return Optional.of(APPLE);
 		}
 		else if (type == ItemTypes.FISH
 				|| type == ItemTypes.COOKED_FISH) {
-			return ToolType.FISH;
+			return Optional.of(FISH);
 		}
 		else if (type == ItemTypes.BOW) {
-			return ToolType.BOW;
+			return Optional.of(BOW);
 		}
 		else if (type == ItemTypes.FISHING_ROD) {
-			return ToolType.ROD;
+			return Optional.of(ROD);
 		}
 		else if (type == ItemTypes.NONE) {
-			return ToolType.HAND;
+			return Optional.of(HAND);
 		}
 		else {
-			ModdedTool tool = ModdedTools.getInstance().getToolType(type.getId());
-			if (tool == null) return null;
-			return tool.type;
+			Optional<ModdedTool> tool = Main.getInstance().getModdedTools().getToolType(type.getId());
+			if (!tool.isPresent()) return Optional.empty();
+			return Optional.of(tool.get().type);
 		}
 	}
 }

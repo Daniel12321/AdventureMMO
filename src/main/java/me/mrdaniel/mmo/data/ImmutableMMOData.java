@@ -1,24 +1,16 @@
 package me.mrdaniel.mmo.data;
 
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.manipulator.immutable.common.AbstractImmutableData;
-import org.spongepowered.api.data.value.ValueFactory;
-import org.spongepowered.api.data.value.mutable.Value;
 
 public class ImmutableMMOData extends AbstractImmutableData<ImmutableMMOData, MMOData> {
-	
-    public static final ValueFactory VALUEFACTORY = Sponge.getRegistry().getValueFactory();
 
 	public ImmutableMMOData(boolean enabled) {
-
 		this.enabled = enabled;
+
 		registerGetters();
 	}
-
 	private boolean enabled;
-
-	public Value<Boolean> getEnabled() { return VALUEFACTORY.createValue(MMOKeys.MMOTOOL, this.enabled); }
 
     @Override
     protected void registerGetters() {

@@ -4,27 +4,23 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.Optional;
 
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataHolder;
 import org.spongepowered.api.data.DataView;
 import org.spongepowered.api.data.manipulator.mutable.common.AbstractData;
 import org.spongepowered.api.data.merge.MergeFunction;
-import org.spongepowered.api.data.value.ValueFactory;
 import org.spongepowered.api.data.value.mutable.Value;
 
 public class MMOData extends AbstractData<MMOData, ImmutableMMOData> {
 
-    public static final ValueFactory VALUEFACTORY = Sponge.getRegistry().getValueFactory();
-
 	public MMOData(boolean enabled) {
 		this.enabled = enabled;
+
 		registerGettersAndSetters();
 	}
-
 	private boolean enabled;
 
-	public Value<Boolean> getEnabledValue() { return VALUEFACTORY.createValue(MMOKeys.MMOTOOL, this.enabled); }
+	public Value<Boolean> getEnabledValue() { return MMOKeys.FACTORY.createValue(MMOKeys.MMOTOOL, this.enabled); }
 	public void setEnabled(boolean enabled) { this.enabled = enabled; }
 	public boolean getEnabled() { return this.enabled; }
 

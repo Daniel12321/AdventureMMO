@@ -1,65 +1,105 @@
 package me.mrdaniel.mmo.commands;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Optional;
+import java.util.UUID;
 
-import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.util.Tuple;
 
-import me.mrdaniel.mmo.enums.Ability;
+import com.google.common.collect.Maps;
+
+import me.mrdaniel.mmo.Main;
 import me.mrdaniel.mmo.enums.Setting;
 import me.mrdaniel.mmo.enums.SkillType;
-import me.mrdaniel.mmo.io.Config;
 import me.mrdaniel.mmo.io.players.MMOPlayer;
-import me.mrdaniel.mmo.io.players.MMOPlayerDatabase;
-import me.mrdaniel.mmo.skills.Skill;
-import me.mrdaniel.mmo.utils.Permissions;
+import me.mrdaniel.mmo.scoreboard.PlayerRunnable;
 import me.mrdaniel.mmo.utils.TextUtils;
 
 public class CommandCenter {
-		
-	public static void sendMainInfo(CommandSource sender, String arguments) {
-		
-		if (!(sender instanceof Player)) { sender.sendMessage(Text.of(TextColors.RED, "This command is for players only")); return; }
-		Player p = (Player) sender;
-		
-		MMOPlayer mmop = MMOPlayerDatabase.getInstance().getOrCreatePlayer(p.getUniqueId().toString());
-		
-		ChatMenus.sendMainInfo(p, p.getName(), mmop, false);
+
+	private static CommandCenter instance = null;
+	public static CommandCenter getInstance() {
+		if (instance == null) { instance = new CommandCenter(); }
+		return instance;
 	}
-	
-	public static void sendSkillInfo(CommandSource sender, String arguments) {
-		
-		if (!(sender instanceof Player)) { sender.sendMessage(Text.of(TextColors.RED, "This command is for players only")); return; }
-		Player p = (Player) sender;
-		
-		String[] args = arguments.split(" ");
-		if (args.length > 2) { p.sendMessage(Text.of(TextColors.BLUE, "Usage: /skills [skill]")); return; }
-		
-		MMOPlayer mmop = null;
-		if (args.length == 1) { mmop = MMOPlayerDatabase.getInstance().getOrCreatePlayer(p.getUniqueId().toString()); }
-		else if ((args.length == 2) && (p.hasPermission(Permissions.MMO_ADMIN_VIEW_OTHERS()))) { mmop = MMOPlayerDatabase.getInstance().getOrCreatePlayer(args[1]); }
-		if (mmop == null) { p.sendMessage(Text.of(TextColors.RED, "You don't have permission to view others skills")); return; }
-		
-		SkillType type = SkillType.match(args[0]);
-		if (type == null) { p.sendMessage(Config.getInstance().PREFIX.concat(Text.of(TextColors.RED, "Invalid Skill Type"))); return; }
-		Skill skill = mmop.getSkills().getSkill(type);
-		ArrayList<Ability> abilities = new ArrayList<Ability>();
-		for (Ability ability : Ability.values()) { if (ability.skillType.equals(type)) { abilities.add(ability); } }
-		if (mmop.getSettings().getSetting(Setting.SCOREBOARD)) { BoardMenus.sendSkillInfo(p, mmop, type, skill, abilities, "skills " + arguments); }
-		else { ChatMenus.sendSkillInfo(p, mmop, type, skill, abilities); }
-		return;
+
+	private final HashMap<UUID, PlayerRunnable> repeating;
+	private final HashMap<UUID, Tuple<Long, PlayerRunnable>> delays;
+
+	private CommandCenter() {
+		this.repeating = Maps.newHashMap();
+		this.delays = Maps.newHashMap();
+
+		Task.builder().name("MMO CommandCenter Task").delayTicks(40).intervalTicks(40).execute(() -> {
+			for (UUID uuid : this.repeating.keySet()) {
+				Optional<Player> player = Main.getInstance().getGame().getServer().getPlayer(uuid);
+				if (player.isPresent()) { this.repeating.get(uuid).run(player.get()); }
+				else { this.repeating.remove(uuid); }
+			}
+			for (UUID uuid : this.delays.keySet()) {
+				if (System.currentTimeMillis() > this.delays.get(uuid).getFirst()) {
+					Main.getInstance().getGame().getServer().getPlayer(uuid).ifPresent(player -> this.delays.get(uuid).getSecond().run(player));
+					this.delays.remove(uuid);
+				}
+			}
+		}).submit(Main.getInstance());
 	}
-	public static void sendAdminInfo(Player p) {
-		ChatMenus.sendAdminInfo(p);
+
+	public void removeRepeating(UUID uuid) {
+		if (this.repeating.containsKey(uuid)) { this.repeating.remove(uuid); }
 	}
-	public static List<String> getSkillSuggesions(String arguments) {
-		String[] args = arguments.split(" ");
-		if (arguments.equals("") || arguments.equals(" ")) { return TextUtils.getSkillsSuggestions(""); }
-		else if (args.length == 1) { return TextUtils.getSkillsSuggestions(args[0]); }
-		return suggestions;
+
+	public void sendMain(Player p, MMOPlayer mmop, String name) {
+
+		p.sendMessage(Text.of(""));
+		p.sendMessage(Text.of(TextColors.RED, "}--=== ", TextColors.AQUA, name, TextColors.RED, " ==---{"));
+
+		for (SkillType skill : SkillType.values()) {
+			p.sendMessage(TextUtils.setCommandClick(Text.of(TextColors.AQUA, skill.getName(), TextColors.GRAY, " - ", TextColors.GREEN, "Level ", mmop.getSkills().getSkill(skill).level), "/skill " + skill.getName().toLowerCase(), Text.of(TextColors.BLUE, "Click to see more")));
+		}
+
+		p.sendMessage(Text.of(TextColors.AQUA, "Total", TextColors.GRAY, " - ", TextColors.GREEN, "Level ", mmop.totalLevels()));
 	}
-	private final static List<String> suggestions = new ArrayList<String>();
+
+	public void sendSkill(Player p, MMOPlayer mmop, SkillType type) {
+		if (mmop.getSettings().getSetting(Setting.SCOREBOARD)) {
+			BoardMenus.sendSkill(p, mmop, type);
+			if (mmop.getSettings().getSetting(Setting.SCOREBOARDPERMANENT)) { this.repeating.put(p.getUniqueId(), player -> BoardMenus.sendSkill(player, mmop, type)); }
+			else { this.delays.put(p.getUniqueId(), new Tuple<Long, PlayerRunnable>(System.currentTimeMillis() + (1000 * Main.getInstance().getConfig().SCOREBOARD_ACTIVE_SECONDS), player -> player.setScoreboard(null))); }
+		}
+		else { ChatMenus.sendSkill(p, mmop, type); }
+	}
+
+	public void sendTop(Player p, SkillType type) {
+		MMOPlayer mmop = Main.getInstance().getMMOPlayerDatabase().getOrCreatePlayer(p.getUniqueId());
+		if (mmop.getSettings().getSetting(Setting.SCOREBOARD)) {
+			BoardMenus.sendTop(p, mmop, type);
+			if (mmop.getSettings().getSetting(Setting.SCOREBOARDPERMANENT)) { this.repeating.put(p.getUniqueId(), player -> BoardMenus.sendTop(player, mmop, type)); }
+			else { this.delays.put(p.getUniqueId(), new Tuple<Long, PlayerRunnable>(System.currentTimeMillis() + (1000 * Main.getInstance().getConfig().SCOREBOARD_ACTIVE_SECONDS), player -> player.setScoreboard(null))); }
+		}
+		else { ChatMenus.sendTop(p, mmop, type); }
+	}
+
+	public void sendAdmin(Player p) {
+		p.sendMessage(Text.of(""));
+		p.sendMessage(Text.of(TextColors.RED, "}--=== ", TextColors.AQUA, "MMO Admin", TextColors.RED, " ==---{"));
+		p.sendMessage(Text.of(TextColors.GREEN, "/mmoadmin set <player> <skill> <level>"));
+		p.sendMessage(Text.of(TextColors.GREEN, "/mmoadmin view <player>"));
+		p.sendMessage(Text.of(TextColors.GREEN, "/mmoadmin reload"));
+	}
+
+	public void sendSettings(Player p) {
+		MMOPlayer mmop = Main.getInstance().getMMOPlayerDatabase().getOrCreatePlayer(p.getUniqueId());
+		p.sendMessage(Text.of(""));
+		p.sendMessage(Text.of(TextColors.RED, "}--=== ", TextColors.AQUA, p.getName(), TextColors.RED, " ==---{"));
+
+		for (Setting s : Setting.values()) {
+			if (mmop.getSettings().getSetting(s)) { p.sendMessage(TextUtils.setCommandClick(Text.of(TextColors.AQUA, s.name, TextColors.GRAY, " - ", TextColors.GREEN, "Enabled"), "/settings " + s.name + " false", Text.of(TextColors.RED, "Click to Disable"))); }
+			else { p.sendMessage(TextUtils.setCommandClick(Text.of(TextColors.AQUA, s.name, TextColors.GRAY, " - ", TextColors.RED, "Disabled"), "/settings " + s.name + " true", Text.of(TextColors.GREEN, "Click to Enable"))); }
+		}
+	}
 }
