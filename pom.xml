@@ -14,10 +14,9 @@
   </build>
   <modelVersion>4.0.0</modelVersion>
   <groupId>me.mrdaniel</groupId>
-  <artifactId>mmo</artifactId>
-  <version>1.7.0</version>
-  <name>mmo</name>
-  
+  <artifactId>adventuremmo</artifactId>
+  <version>1.7</version>
+  <name>AdventureMMO</name>
   <repositories>
     <repository>
       <id>sponge</id>
@@ -29,7 +28,7 @@
     <dependency>
       <groupId>org.spongepowered</groupId>
       <artifactId>spongeapi</artifactId>
-      <version>6.0.0-20161223.142907-29</version>
+      <version>6.0.0-20170302.011334-51</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>
