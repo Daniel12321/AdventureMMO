@@ -16,7 +16,7 @@ public class SettingsDataBuilder extends AbstractDataBuilder<SettingsData> imple
 		super(SettingsData.class, 1);
 	}
 
-	@Override public SettingsData create() {  return new SettingsData(true, false); }
+	@Override public SettingsData create() {  return new SettingsData(); }
 	@Override public Optional<SettingsData> createFrom(@Nonnull DataHolder holder) { return create().fill(holder); }
 	@Override protected Optional<SettingsData> buildContent(@Nonnull DataView view) throws InvalidDataException { return create().from(view); }
 }

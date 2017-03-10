@@ -19,15 +19,16 @@ import org.spongepowered.api.event.game.GameReloadEvent;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePostInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
+import org.spongepowered.api.event.service.ChangeServiceProviderEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
-import me.mrdaniel.adventuremmo.commands.CommandSetting;
 import me.mrdaniel.adventuremmo.commands.CommandSettings;
 import me.mrdaniel.adventuremmo.commands.CommandSkill;
+import me.mrdaniel.adventuremmo.commands.CommandTop;
 import me.mrdaniel.adventuremmo.data.HoconPlayerDatabase;
 import me.mrdaniel.adventuremmo.data.ItemDatabase;
 import me.mrdaniel.adventuremmo.data.PlayerDatabase;
@@ -39,6 +40,9 @@ import me.mrdaniel.adventuremmo.data.manipulators.SettingsData;
 import me.mrdaniel.adventuremmo.data.manipulators.SettingsDataBuilder;
 import me.mrdaniel.adventuremmo.listeners.ClientListener;
 import me.mrdaniel.adventuremmo.listeners.PlayerListener;
+import me.mrdaniel.adventuremmo.listeners.WorldListener;
+import me.mrdaniel.adventuremmo.managers.MenuManager;
+import me.mrdaniel.adventuremmo.managers.TopManager;
 import me.mrdaniel.adventuremmo.utils.ChoiceMaps;
 
 @Plugin(id = "adventuremmo",
@@ -55,6 +59,8 @@ public class AdventureMMO {
 
 	private ItemDatabase itemdata;
 	private PlayerDatabase playerdata;
+	private MenuManager menus;
+	private TopManager tops;
 	private ChoiceMaps choices;
 
 	private UserStorageService users;
@@ -66,14 +72,10 @@ public class AdventureMMO {
 		this.configdir = path;
 		this.container = container;
 
-		this.logger.info("Initializing...");
-
 		if (!Files.exists(path)) {
 			try { Files.createDirectory(path); }
 			catch (final IOException exc) { this.logger.error("Failed to create main config directory: {}", exc); }
 		}
-
-		this.logger.info("Initialized successfully.");
 	}
 
 	@Listener
@@ -88,10 +90,12 @@ public class AdventureMMO {
 
 	@Listener
 	public void onInit(@Nullable final GameInitializationEvent e) {
-		this.logger.info("Loading...");
+		this.logger.info("Loading plugin...");
 
 		this.playerdata = new HoconPlayerDatabase(this, this.configdir.resolve("playerdata"));
 		this.itemdata = new ItemDatabase(this, this.configdir.resolve("itemdata.conf"));
+		this.menus = new MenuManager(this);
+		this.tops = new TopManager(this, this.configdir.resolve("tops.conf"));
 		this.choices = new ChoiceMaps();
 
 		CommandSpec skill = CommandSpec.builder().description(Text.of(TextColors.BLUE, "AdventureMMO | Skills Command"))
@@ -101,32 +105,34 @@ public class AdventureMMO {
 				.build();
 		this.game.getCommandManager().register(this, skill, "skill", "skills", "mmoskill", "mmoskills");
 
-		CommandSpec setting = CommandSpec.builder().description(Text.of(TextColors.BLUE, "AdventureMMO | Setting Command"))
-				.arguments(GenericArguments.choices(Text.of("setting"), this.choices.getSettings()), GenericArguments.bool(Text.of("value")))
-				.executor(new CommandSetting(this))
-				.permission("mmo.setting")
-				.build();
-		this.game.getCommandManager().register(this, setting, "setting", "mmosetting");
-
 		CommandSpec settings = CommandSpec.builder().description(Text.of(TextColors.BLUE, "AdventureMMO | Settings Command"))
-				.executor(new CommandSettings())
+				.executor(new CommandSettings(this))
 				.permission("mmo.settings")
 				.build();
-		this.game.getCommandManager().register(this, settings, "settings", "mmosettings");
+		this.game.getCommandManager().register(this, settings, "setting", "settings", "mmosetting", "mmosettings");
+
+		CommandSpec top = CommandSpec.builder().description(Text.of(TextColors.BLUE, "AdventureMMO | Top Command"))
+				.arguments(GenericArguments.optional(GenericArguments.choices(Text.of("skill"), this.choices.getSkills())))
+				.executor(new CommandTop(this))
+				.permission("mmo.top")
+				.build();
+		this.game.getCommandManager().register(this, top, "mmotop", "skilltop");
 
 		this.game.getEventManager().registerListeners(this, new ClientListener(this));
 		this.game.getEventManager().registerListeners(this, new PlayerListener(this));
+		this.game.getEventManager().registerListeners(this, new WorldListener());
 
-		this.logger.info("Loaded successfully.");
+		this.logger.info("Loaded plugin successfully.");
 	}
 
 	@Listener
 	public void onPostInit(@Nullable final GamePostInitializationEvent e) {
-		this.logger.info("Loading sercives...");
-
 		this.users = this.game.getServiceManager().provide(UserStorageService.class).get();
+	}
 
-		this.logger.info("Loaded successfully services.");
+	@Listener
+	public void onServiceChange(final ChangeServiceProviderEvent e) {
+		if (e.getNewProvider() instanceof UserStorageService) { this.users = (UserStorageService) e.getNewProvider(); }
 	}
 
 	@Listener
@@ -140,6 +146,8 @@ public class AdventureMMO {
 		this.onInit(null);
 		this.onPostInit(null);
 
+		this.game.getServer().getOnlinePlayers().forEach(p -> this.playerdata.load(p.getUniqueId()));
+
 		this.logger.info("Reloaded successfully.");
 	}
 
@@ -149,6 +157,8 @@ public class AdventureMMO {
 
 	@Nonnull public PlayerDatabase getPlayerDatabase() { return this.playerdata; }
 	@Nonnull public ItemDatabase getItemDatabase() { return this.itemdata; }
+	@Nonnull public MenuManager getMenus() { return this.menus; }
+	@Nonnull public TopManager getTops() { return this.tops; }
 	@Nonnull public ChoiceMaps getChoices() { return this.choices; }
 
 	@Nonnull public UserStorageService getUsers() { return this.users; }

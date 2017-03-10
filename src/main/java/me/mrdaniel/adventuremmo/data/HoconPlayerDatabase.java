@@ -33,18 +33,13 @@ public class HoconPlayerDatabase extends MMOObject implements PlayerDatabase {
 			try { Files.createDirectory(path); }
 			catch (final IOException exc) { this.logger.error("Failed to create main directory: {}", exc); }
 		}
+
+		super.getServer().getOnlinePlayers().forEach(p -> this.load(p.getUniqueId()));
 	}
 
 	@Override
 	public synchronized HoconPlayerData get(@Nonnull final UUID uuid) {
 		return this.data.get(uuid);
-	}
-
-	@Override
-	public Optional<PlayerData> getOffline(@Nonnull final String name) {
-		Optional<UUID> uuid = super.getGame().getServer().getGameProfileManager().getCache().getByName(name).map(gp -> gp.getUniqueId());
-		if (!uuid.isPresent()) { return Optional.empty(); }
-		return this.getOffline(uuid.get());
 	}
 
 	@Override

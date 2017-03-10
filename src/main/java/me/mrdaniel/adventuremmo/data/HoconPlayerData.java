@@ -56,7 +56,7 @@ public class HoconPlayerData extends MMOObject implements PlayerData {
 		int current_exp = this.getExp(skill);
 		int new_exp = current_exp + exp;
 		int exp_till_next_level = MathUtils.expTillNextLevel(current_level);
-		if (new_exp > exp_till_next_level) {
+		if (new_exp >= exp_till_next_level) {
 			LevelUpEvent e = new LevelUpEvent(p, super.getContainer(), skill, current_level, current_level + 1);
 			super.getGame().getEventManager().post(e);
 			if (!e.isCancelled()) {

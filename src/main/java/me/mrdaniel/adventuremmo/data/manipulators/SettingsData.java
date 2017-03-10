@@ -17,6 +17,7 @@ import me.mrdaniel.adventuremmo.data.MMOKeys;
 
 public class SettingsData extends AbstractData<SettingsData, ImmutableSettingsData> {
 
+	public SettingsData() { this(true, false); }
 	public SettingsData(final boolean scoreboard, final boolean scoreboard_permanent) {
 		this.scoreboard = scoreboard;
 		this.scoreboard_permanent = scoreboard_permanent;
