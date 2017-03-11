@@ -24,10 +24,6 @@ public class ServerUtils {
 		return Cause.source(root).addAll(Lists.newArrayList(causes)).build();
 	}
 
-	public static double between(final double value, final double min, final double max) {
-		return value < min ? min : value > max ? max : value;
-	}
-
 	public static void broadcast(@Nonnull final Server server, @Nonnull final Text message) {
 		server.getOnlinePlayers().forEach(p -> p.sendMessage(message));
 	}

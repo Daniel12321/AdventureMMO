@@ -6,8 +6,10 @@ import javax.annotation.Nonnull;
 
 import com.google.common.collect.Maps;
 
-import me.mrdaniel.adventuremmo.enums.Setting;
-import me.mrdaniel.adventuremmo.enums.SkillType;
+import me.mrdaniel.adventuremmo.catalogtypes.settings.Setting;
+import me.mrdaniel.adventuremmo.catalogtypes.settings.Settings;
+import me.mrdaniel.adventuremmo.catalogtypes.skills.SkillType;
+import me.mrdaniel.adventuremmo.catalogtypes.skills.SkillTypes;
 
 public class ChoiceMaps {
 
@@ -18,8 +20,8 @@ public class ChoiceMaps {
 		this.skills = Maps.newHashMap();
 		this.settings = Maps.newHashMap();
 
-		for (SkillType type : SkillType.values()) { skills.put(type.getID(), type); }
-		for (Setting s : Setting.values()) { this.settings.put(s.getID(), s); }
+		SkillTypes.getAll().forEach(type -> this.skills.put(type.getId(), type));
+		Settings.getAll().forEach(setting -> this.settings.put(setting.getId(), setting));
 	}
 
 	@Nonnull

@@ -1,4 +1,4 @@
-package me.mrdaniel.adventuremmo.data;
+package me.mrdaniel.adventuremmo.io;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -10,7 +10,7 @@ import org.spongepowered.api.entity.living.player.Player;
 
 import me.mrdaniel.adventuremmo.AdventureMMO;
 import me.mrdaniel.adventuremmo.MMOObject;
-import me.mrdaniel.adventuremmo.enums.SkillType;
+import me.mrdaniel.adventuremmo.catalogtypes.skills.SkillType;
 import me.mrdaniel.adventuremmo.event.LevelUpEvent;
 import me.mrdaniel.adventuremmo.utils.MathUtils;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
@@ -45,11 +45,11 @@ public class HoconPlayerData extends MMOObject implements PlayerData {
 	}
 
 	public int getLevels() { return this.node.getChildrenMap().values().stream().mapToInt(node -> node.getNode("level").getInt()).sum(); }
-	public int getLevel(@Nonnull final SkillType skill) { return this.node.getNode(skill.getID(), "level").getInt(); }
-	public void setLevel(@Nonnull final SkillType skill, final int level) { node.getNode(skill.getID(), "level").setValue(level); this.save(); }
+	public int getLevel(@Nonnull final SkillType skill) { return this.node.getNode(skill.getId(), "level").getInt(); }
+	public void setLevel(@Nonnull final SkillType skill, final int level) { node.getNode(skill.getId(), "level").setValue(level); this.save(); }
 	public void addLevel(@Nonnull final SkillType skill, final int level) { this.setLevel(skill, this.getLevel(skill) + level); }
-	public int getExp(@Nonnull final SkillType skill) { return this.node.getNode(skill.getID(), "exp").getInt(); }
-	public void setExp(@Nonnull final SkillType skill, final int exp) { this.node.getNode(skill.getID(), "exp").setValue(exp); this.save(); }
+	public int getExp(@Nonnull final SkillType skill) { return this.node.getNode(skill.getId(), "exp").getInt(); }
+	public void setExp(@Nonnull final SkillType skill, final int exp) { this.node.getNode(skill.getId(), "exp").setValue(exp); this.save(); }
 
 	public void addExp(@Nonnull final Player p, @Nonnull final SkillType skill, final int exp) {
 		int current_level = this.getLevel(skill);

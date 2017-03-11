@@ -8,7 +8,7 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.entity.living.player.Player;
 
 import me.mrdaniel.adventuremmo.AdventureMMO;
-import me.mrdaniel.adventuremmo.enums.SkillType;
+import me.mrdaniel.adventuremmo.catalogtypes.skills.SkillType;
 
 public class CommandSkill extends PlayerCommand {
 

@@ -1,4 +1,4 @@
-package me.mrdaniel.adventuremmo.data;
+package me.mrdaniel.adventuremmo.io;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -17,7 +17,9 @@ import com.google.common.collect.Maps;
 
 import me.mrdaniel.adventuremmo.AdventureMMO;
 import me.mrdaniel.adventuremmo.MMOObject;
-import me.mrdaniel.adventuremmo.enums.ToolType;
+import me.mrdaniel.adventuremmo.catalogtypes.tools.ToolTypes;
+import me.mrdaniel.adventuremmo.data.BlockData;
+import me.mrdaniel.adventuremmo.data.ToolData;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
@@ -101,7 +103,7 @@ public class ItemDatabase extends MMOObject {
 
 	@Nonnull
 	public Optional<ToolData> getData(@Nullable final ItemStack item) {
-		if (item == null) { return Optional.of(new ToolData(ToolType.HAND)); }
+		if (item == null) { return Optional.of(new ToolData(ToolTypes.HAND)); }
 		return Optional.ofNullable(this.tools.get(item.getItem()));
 	}
 }

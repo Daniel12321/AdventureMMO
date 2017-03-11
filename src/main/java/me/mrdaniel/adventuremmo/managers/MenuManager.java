@@ -7,15 +7,15 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
-import org.spongepowered.api.util.Tuple;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
 import me.mrdaniel.adventuremmo.AdventureMMO;
-import me.mrdaniel.adventuremmo.data.PlayerData;
+import me.mrdaniel.adventuremmo.catalogtypes.skills.SkillType;
+import me.mrdaniel.adventuremmo.catalogtypes.skills.SkillTypes;
 import me.mrdaniel.adventuremmo.data.manipulators.SettingsData;
-import me.mrdaniel.adventuremmo.enums.SkillType;
+import me.mrdaniel.adventuremmo.io.PlayerData;
 import me.mrdaniel.adventuremmo.utils.MathUtils;
 import me.mrdaniel.adventuremmo.utils.TextUtils;
 
@@ -38,9 +38,7 @@ public class MenuManager {
 		else {
 			p.sendMessage(this.getTitle("Skills", false));
 			p.sendMessage(Text.of(TextColors.AQUA, "Total", TextColors.GRAY, " - ", TextColors.GREEN, "Level ", pdata.getLevels()));
-			for (SkillType skill : SkillType.values()) {
-				p.sendMessage(Text.builder().append(Text.of(TextColors.AQUA, skill.getName(), TextColors.GRAY, " - ", TextColors.GREEN, "Level ", pdata.getLevel(skill))).onHover(TextActions.showText(Text.of(TextColors.BLUE, "Click for more info."))).onClick(TextActions.runCommand("/mmoskill " + skill.getID())).build());
-			}
+			SkillTypes.getAll().forEach(skill -> p.sendMessage(Text.builder().append(Text.of(TextColors.AQUA, skill.getName(), TextColors.GRAY, " - ", TextColors.GREEN, "Level ", pdata.getLevel(skill))).onHover(TextActions.showText(Text.of(TextColors.BLUE, "Click for more info."))).onClick(TextActions.runCommand("/mmoskill " + skill.getId())).build()));
 			p.sendMessage(Text.EMPTY);
 		}
 	}
@@ -71,11 +69,7 @@ public class MenuManager {
 		}
 		else {
 			p.sendMessage(this.getTitle(title, false));
-			Top top = this.scoreboards.getMMO().getTops().getTop(type);
-			for (int i = 1; i <= 10; i++) {
-				Tuple<String, Integer> player = top.get(i);
-				p.sendMessage(Text.of(TextColors.RED, i, ": ", TextColors.AQUA, player.getFirst(), TextColors.GRAY, " - ", TextColors.GREEN, "Level ", player.getSecond()));
-			}
+			this.scoreboards.getMMO().getTops().getTop(type).getTop().forEach((number, player) -> p.sendMessage(Text.of(TextColors.RED, number, ": ", TextColors.AQUA, player.getFirst(), TextColors.GRAY, " - ", TextColors.GREEN, "Level ", player.getSecond())));
 			p.sendMessage(Text.EMPTY);
 		}
 	}
@@ -92,12 +86,10 @@ public class MenuManager {
 	@Nonnull
 	private Multimap<Integer, Text> getSkillListLines(@Nonnull final PlayerData data) {
 		Multimap<Integer, Text> lines = ArrayListMultimap.create();
-		SkillType[] types = SkillType.values();
 
-		for (int i = 0; i < types.length; i++) {
-			lines.put(data.getLevel(types[i]), Text.of(TextColors.AQUA, types[i].getName(), TextColors.GRAY, " - "));
-		}
+		SkillTypes.getAll().forEach(type -> lines.put(data.getLevel(type), Text.of(TextColors.AQUA, type.getName(), TextColors.GRAY, " - ")));
 		lines.put(data.getLevels(), Text.of(TextColors.GREEN, "Total", TextColors.GRAY, " - "));
+
 		return lines;
 	}
 
@@ -113,13 +105,10 @@ public class MenuManager {
 
 	@Nonnull
 	private Multimap<Integer, Text> getSkillTopLines(@Nullable final SkillType type) {
-		Top top = this.scoreboards.getMMO().getTops().getTop(type);
 		Multimap<Integer, Text> lines = ArrayListMultimap.create();
 
-		for (int i = 1; i <= 10; i++) {
-			Tuple<String, Integer> player = top.get(i);
-			lines.put(player.getSecond(), Text.of(TextColors.AQUA, player.getFirst()));
-		}
+		this.scoreboards.getMMO().getTops().getTop(type).getTop().forEach((number, player) -> lines.put(player.getSecond(), Text.of(TextColors.AQUA, player.getFirst())));
+
 		return lines;
 	}
 

@@ -4,7 +4,8 @@ import java.util.Optional;
 
 import javax.annotation.Nonnull;
 
-import me.mrdaniel.adventuremmo.enums.ToolType;
+import me.mrdaniel.adventuremmo.catalogtypes.tools.ToolType;
+import me.mrdaniel.adventuremmo.catalogtypes.tools.ToolTypes;
 
 public class ToolData {
 
@@ -21,12 +22,12 @@ public class ToolData {
 
 	@Nonnull
 	public String serialize() {
-		return this.type.getID();
+		return this.type.getId();
 	}
 
 	@Nonnull
 	public static Optional<ToolData> deserialize(@Nonnull final String str) {
-		try { return Optional.of(new ToolData(ToolType.of(str).get())); }
+		try { return Optional.of(new ToolData(ToolTypes.of(str).get())); }
 		catch (final Exception exc) { return Optional.empty(); }
 	}
 }

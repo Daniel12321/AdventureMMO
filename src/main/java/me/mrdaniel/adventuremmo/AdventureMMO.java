@@ -26,20 +26,30 @@ import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
+import me.mrdaniel.adventuremmo.catalogtypes.abilities.Ability;
+import me.mrdaniel.adventuremmo.catalogtypes.abilities.AbilityRegistryModule;
+import me.mrdaniel.adventuremmo.catalogtypes.settings.Setting;
+import me.mrdaniel.adventuremmo.catalogtypes.settings.SettingRegistryModule;
+import me.mrdaniel.adventuremmo.catalogtypes.skills.SkillType;
+import me.mrdaniel.adventuremmo.catalogtypes.skills.SkillTypeRegistryModule;
+import me.mrdaniel.adventuremmo.catalogtypes.tools.ToolType;
+import me.mrdaniel.adventuremmo.catalogtypes.tools.ToolTypeRegistryModule;
 import me.mrdaniel.adventuremmo.commands.CommandSettings;
 import me.mrdaniel.adventuremmo.commands.CommandSkill;
 import me.mrdaniel.adventuremmo.commands.CommandTop;
-import me.mrdaniel.adventuremmo.data.HoconPlayerDatabase;
-import me.mrdaniel.adventuremmo.data.ItemDatabase;
-import me.mrdaniel.adventuremmo.data.PlayerDatabase;
-import me.mrdaniel.adventuremmo.data.manipulators.ActivateData;
-import me.mrdaniel.adventuremmo.data.manipulators.ActivateDataBuilder;
-import me.mrdaniel.adventuremmo.data.manipulators.ImmutableActivateData;
+import me.mrdaniel.adventuremmo.data.manipulators.ImmutableMMOData;
 import me.mrdaniel.adventuremmo.data.manipulators.ImmutableSettingsData;
+import me.mrdaniel.adventuremmo.data.manipulators.MMOData;
+import me.mrdaniel.adventuremmo.data.manipulators.MMODataBuilder;
 import me.mrdaniel.adventuremmo.data.manipulators.SettingsData;
 import me.mrdaniel.adventuremmo.data.manipulators.SettingsDataBuilder;
+import me.mrdaniel.adventuremmo.io.Config;
+import me.mrdaniel.adventuremmo.io.HoconPlayerDatabase;
+import me.mrdaniel.adventuremmo.io.ItemDatabase;
+import me.mrdaniel.adventuremmo.io.PlayerDatabase;
+import me.mrdaniel.adventuremmo.listeners.AbilityListener;
 import me.mrdaniel.adventuremmo.listeners.ClientListener;
-import me.mrdaniel.adventuremmo.listeners.PlayerListener;
+import me.mrdaniel.adventuremmo.listeners.EXPListener;
 import me.mrdaniel.adventuremmo.listeners.WorldListener;
 import me.mrdaniel.adventuremmo.managers.MenuManager;
 import me.mrdaniel.adventuremmo.managers.TopManager;
@@ -57,8 +67,9 @@ public class AdventureMMO {
 	private final Path configdir;
 	private final PluginContainer container;
 
-	private ItemDatabase itemdata;
+	private Config config;
 	private PlayerDatabase playerdata;
+	private ItemDatabase itemdata;
 	private MenuManager menus;
 	private TopManager tops;
 	private ChoiceMaps choices;
@@ -82,8 +93,13 @@ public class AdventureMMO {
 	public void onPreInit(@Nullable final GamePreInitializationEvent e) {
 		this.logger.info("Registering custom data...");
 
-		this.game.getDataManager().register(ActivateData.class, ImmutableActivateData.class, new ActivateDataBuilder());
+		this.game.getDataManager().register(MMOData.class, ImmutableMMOData.class, new MMODataBuilder());
 		this.game.getDataManager().register(SettingsData.class, ImmutableSettingsData.class, new SettingsDataBuilder());
+
+		this.game.getRegistry().registerModule(SkillType.class, new SkillTypeRegistryModule());
+		this.game.getRegistry().registerModule(ToolType.class, new ToolTypeRegistryModule());
+		this.game.getRegistry().registerModule(Ability.class, new AbilityRegistryModule());
+		this.game.getRegistry().registerModule(Setting.class, new SettingRegistryModule());
 
 		this.logger.info("Registered custom data successfully.");
 	}
@@ -92,6 +108,7 @@ public class AdventureMMO {
 	public void onInit(@Nullable final GameInitializationEvent e) {
 		this.logger.info("Loading plugin...");
 
+		this.config = new Config(this, this.configdir.resolve("config.conf"));
 		this.playerdata = new HoconPlayerDatabase(this, this.configdir.resolve("playerdata"));
 		this.itemdata = new ItemDatabase(this, this.configdir.resolve("itemdata.conf"));
 		this.menus = new MenuManager(this);
@@ -100,26 +117,21 @@ public class AdventureMMO {
 
 		CommandSpec skill = CommandSpec.builder().description(Text.of(TextColors.BLUE, "AdventureMMO | Skills Command"))
 				.arguments(GenericArguments.optionalWeak(GenericArguments.choices(Text.of("skill"), this.choices.getSkills())))
-				.executor(new CommandSkill(this))
-				.permission("mmo.skills")
-				.build();
+				.executor(new CommandSkill(this)).permission("mmo.skills").build();
 		this.game.getCommandManager().register(this, skill, "skill", "skills", "mmoskill", "mmoskills");
-
-		CommandSpec settings = CommandSpec.builder().description(Text.of(TextColors.BLUE, "AdventureMMO | Settings Command"))
-				.executor(new CommandSettings(this))
-				.permission("mmo.settings")
-				.build();
-		this.game.getCommandManager().register(this, settings, "setting", "settings", "mmosetting", "mmosettings");
 
 		CommandSpec top = CommandSpec.builder().description(Text.of(TextColors.BLUE, "AdventureMMO | Top Command"))
 				.arguments(GenericArguments.optional(GenericArguments.choices(Text.of("skill"), this.choices.getSkills())))
-				.executor(new CommandTop(this))
-				.permission("mmo.top")
-				.build();
+				.executor(new CommandTop(this)).permission("mmo.top").build();
 		this.game.getCommandManager().register(this, top, "mmotop", "skilltop");
 
+		CommandSpec settings = CommandSpec.builder().description(Text.of(TextColors.BLUE, "AdventureMMO | Settings Command"))
+				.executor(new CommandSettings(this)).permission("mmo.settings").build();
+		this.game.getCommandManager().register(this, settings, "setting", "settings", "mmosetting", "mmosettings");
+
 		this.game.getEventManager().registerListeners(this, new ClientListener(this));
-		this.game.getEventManager().registerListeners(this, new PlayerListener(this));
+		this.game.getEventManager().registerListeners(this, new EXPListener(this));
+		this.game.getEventManager().registerListeners(this, new AbilityListener(this));
 		this.game.getEventManager().registerListeners(this, new WorldListener());
 
 		this.logger.info("Loaded plugin successfully.");
@@ -155,6 +167,7 @@ public class AdventureMMO {
 	@Nonnull public Logger getLogger() { return this.logger; }
 	@Nonnull public PluginContainer getContainer() { return this.container; }
 
+	@Nonnull public Config getConfig() { return this.config; }
 	@Nonnull public PlayerDatabase getPlayerDatabase() { return this.playerdata; }
 	@Nonnull public ItemDatabase getItemDatabase() { return this.itemdata; }
 	@Nonnull public MenuManager getMenus() { return this.menus; }

@@ -10,7 +10,7 @@ import org.spongepowered.api.event.entity.living.humanoid.player.TargetPlayerEve
 import org.spongepowered.api.event.impl.AbstractEvent;
 import org.spongepowered.api.plugin.PluginContainer;
 
-import me.mrdaniel.adventuremmo.enums.SkillType;
+import me.mrdaniel.adventuremmo.catalogtypes.skills.SkillType;
 import me.mrdaniel.adventuremmo.utils.ServerUtils;
 
 public class LevelUpEvent extends AbstractEvent implements TargetPlayerEvent, Cancellable {

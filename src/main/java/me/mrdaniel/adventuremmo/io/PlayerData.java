@@ -1,8 +1,8 @@
-package me.mrdaniel.adventuremmo.data;
+package me.mrdaniel.adventuremmo.io;
 
 import org.spongepowered.api.entity.living.player.Player;
 
-import me.mrdaniel.adventuremmo.enums.SkillType;
+import me.mrdaniel.adventuremmo.catalogtypes.skills.SkillType;
 
 public interface PlayerData {
 

@@ -1,10 +1,13 @@
 package me.mrdaniel.adventuremmo.managers;
 
+import java.util.Map;
 import java.util.Optional;
 
 import javax.annotation.Nonnull;
 
 import org.spongepowered.api.util.Tuple;
+
+import com.google.common.collect.Maps;
 
 import ninja.leaping.configurate.ConfigurationNode;
 
@@ -45,7 +48,12 @@ public class Top {
 	}
 
 	@Nonnull
-	public Tuple<String, Integer> get(final int number) {
-		return new Tuple<String, Integer>(Optional.ofNullable(this.node.getNode(String.valueOf(number), "name").getString()).orElse(" "), this.node.getNode(String.valueOf(number), "level").getInt());
+	public Map<Integer, Tuple<String, Integer>> getTop() {
+		Map<Integer, Tuple<String, Integer>> top = Maps.newHashMap();
+
+		for (int i = 1; i <= 10; i++) {
+			top.put(i, new Tuple<String, Integer>(Optional.ofNullable(this.node.getNode(String.valueOf(i), "name").getString()).orElse(""), this.node.getNode(String.valueOf(i), "level").getInt()));
+		}
+		return top;
 	}
 }

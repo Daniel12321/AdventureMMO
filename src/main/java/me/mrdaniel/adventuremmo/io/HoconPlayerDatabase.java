@@ -1,4 +1,4 @@
-package me.mrdaniel.adventuremmo.data;
+package me.mrdaniel.adventuremmo.io;
 
 import java.io.IOException;
 import java.nio.file.Files;

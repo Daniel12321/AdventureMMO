@@ -12,7 +12,8 @@ import com.google.common.collect.Maps;
 
 import me.mrdaniel.adventuremmo.AdventureMMO;
 import me.mrdaniel.adventuremmo.MMOObject;
-import me.mrdaniel.adventuremmo.enums.SkillType;
+import me.mrdaniel.adventuremmo.catalogtypes.skills.SkillType;
+import me.mrdaniel.adventuremmo.catalogtypes.skills.SkillTypes;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
@@ -38,10 +39,7 @@ public class TopManager extends MMOObject {
 
 		this.total = new Top(this.node.getNode("total"));
 		this.skills = Maps.newHashMap();
-
-		for (SkillType type : SkillType.values()) {
-			this.skills.put(type, new Top(this.node.getNode(type.getID())));
-		}
+		SkillTypes.getAll().forEach(type -> this.skills.put(type, new Top(this.node.getNode(type.getId()))));
 	}
 
 	private CommentedConfigurationNode load() {
