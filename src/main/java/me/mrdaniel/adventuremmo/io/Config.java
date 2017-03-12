@@ -6,16 +6,17 @@ import java.nio.file.Path;
 
 import javax.annotation.Nonnull;
 
-import org.spongepowered.api.text.Text;
-
 import me.mrdaniel.adventuremmo.AdventureMMO;
 import me.mrdaniel.adventuremmo.MMOObject;
-import me.mrdaniel.adventuremmo.utils.TextUtils;
+import me.mrdaniel.adventuremmo.catalogtypes.skills.SkillType;
+import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 
 public class Config extends MMOObject {
+
+	private final int recharge_seconds;
 
 	private final ConfigurationLoader<CommentedConfigurationNode> loader;
 	private final CommentedConfigurationNode node;
@@ -30,20 +31,28 @@ public class Config extends MMOObject {
 			catch (final IOException exc) { super.getLogger().error("Failed to save config asset: {}", exc); }
 		}
 		this.node = this.load();
+
+		this.recharge_seconds = this.node.getNode("abilities", "recharge_seconds").getInt();
 	}
 
 	private CommentedConfigurationNode load() {
 		try { return this.loader.load(); }
 		catch (final IOException exc) { super.getLogger().error("Failed to load config file: {}", exc); return this.loader.createEmptyNode(); }
 	}
-	@Nonnull private String getPrefix() { return this.node.getNode("messages", "prefix").getString(); }
 
-	@Nonnull public Text getLevelUpText(@Nonnull final String skill, @Nonnull final int level) { return TextUtils.toText(this.getPrefix() + " " + this.node.getNode("messages", "levelup").getString().replace("%skill%", skill).replace("%level%", String.valueOf(level))); }
-	@Nonnull public Text getDodgeText() { return TextUtils.toText(this.getPrefix() + " " + this.node.getNode("messages", "dodge").getString()); }
-	@Nonnull public Text getRollText() { return TextUtils.toText(this.getPrefix() + " " + this.node.getNode("messages", "roll").getString()); }
-	@Nonnull public Text getAbilityRechargingText(final int seconds) { return TextUtils.toText(this.getPrefix() + " " + this.node.getNode("messages", "ability_recharge").getString().replace("%seconds%", String.valueOf(seconds))); }
-	@Nonnull public Text getAbilityActivateText(@Nonnull final String ability) { return TextUtils.toText(this.getPrefix() + " " + this.node.getNode("messages", "ability_activate").getString().replace("%ability%", ability)); }
-	@Nonnull public Text getAbilityEndText(@Nonnull final String ability) { return TextUtils.toText(this.getPrefix() + " " + this.node.getNode("messages", "ability_end").getString().replace("%ability%", ability)); }
+	@Nonnull public ConfigurationNode getMessagesNode() { return this.node.getNode("messages"); }
 
-	public int getAbilityRechargeSeconds() { return this.node.getNode("abilities", "recharge_seconds").getInt(); }
+	public int getAbilityRechargeSeconds() { return this.recharge_seconds; }
+	public boolean isSkillEnabled(@Nonnull final SkillType type) { return this.node.getNode("skills", type.getId(), "enabled").getBoolean(); }
+
+	public int getAcrobaticsExp() { return this.node.getNode("skills", "acrobatics", "exp_multiplier").getInt(); }
+	public int getFishExp() { return this.node.getNode("skills", "fishing", "fish_exp").getInt(); }
+	public int getSwordsKillExp() { return this.node.getNode("skills", "swords", "kill_exp").getInt(); }
+	public int getSwordsDamageExp() { return this.node.getNode("skills", "swords", "damage_exp").getInt(); }
+	public int getAxesKillExp() { return this.node.getNode("skills", "axes", "kill_exp").getInt(); }
+	public int getAxesDamageExp() { return this.node.getNode("skills", "axes", "damage_exp").getInt(); }
+	public int getUnarmedKillExp() { return this.node.getNode("skills", "unarmed", "kill_exp").getInt(); }
+	public int getUnarmedDamageExp() { return this.node.getNode("skills", "unarmed", "damage_exp").getInt(); }
+	public int getBowKillExp() { return this.node.getNode("skills", "archery", "kill_exp").getInt(); }
+	public int getBowDamageExp() { return this.node.getNode("skills", "archery", "damage_exp").getInt(); }
 }

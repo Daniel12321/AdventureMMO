@@ -6,28 +6,17 @@ import me.mrdaniel.adventuremmo.catalogtypes.abilities.ActiveAbility;
 
 public class FishCraze extends ActiveAbility {
 
-	@Override
-	public String getName() {
-		return "Fish Craze";
+	public FishCraze() {
+		super("Fish Craze", "fishcraze", 5.0, 0.08);
 	}
 
 	@Override
-	public String getId() {
-		return "fishcraze";
+	protected void activate(final Player p) {
+		
 	}
 
 	@Override
-	public double getIncrement() {
-		return 0.08;
-	}
-
-	@Override
-	public double getInitial() {
-		return 5.0;
-	}
-
-	@Override
-	public void activate(Player p, int level) {
-
+	protected void deactivate(final Player p) {
+		
 	}
 }

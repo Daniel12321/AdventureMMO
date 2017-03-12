@@ -17,12 +17,12 @@ public class LevelUpEvent extends AbstractEvent implements TargetPlayerEvent, Ca
 
 	private final Player player;
 	private final Cause cause;
-
 	private boolean cancelled;
 
 	public LevelUpEvent(@Nonnull final Player player, @Nonnull final PluginContainer container, @Nonnull final SkillType skill, final int old_level, final int new_level) {
 		this.player = player;
 		this.cause = ServerUtils.getCause(container, NamedCause.of("skill", skill), NamedCause.of("old_level", old_level), NamedCause.of("new_level", new_level));
+		this.cancelled = false;
 	}
 
 	@Override

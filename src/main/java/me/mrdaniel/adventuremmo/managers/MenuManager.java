@@ -38,7 +38,7 @@ public class MenuManager {
 		else {
 			p.sendMessage(this.getTitle("Skills", false));
 			p.sendMessage(Text.of(TextColors.AQUA, "Total", TextColors.GRAY, " - ", TextColors.GREEN, "Level ", pdata.getLevels()));
-			SkillTypes.getAll().forEach(skill -> p.sendMessage(Text.builder().append(Text.of(TextColors.AQUA, skill.getName(), TextColors.GRAY, " - ", TextColors.GREEN, "Level ", pdata.getLevel(skill))).onHover(TextActions.showText(Text.of(TextColors.BLUE, "Click for more info."))).onClick(TextActions.runCommand("/mmoskill " + skill.getId())).build()));
+			SkillTypes.VALUES.forEach(skill -> p.sendMessage(Text.builder().append(Text.of(TextColors.AQUA, skill.getName(), TextColors.GRAY, " - ", TextColors.GREEN, "Level ", pdata.getLevel(skill))).onHover(TextActions.showText(Text.of(TextColors.BLUE, "Click for more info."))).onClick(TextActions.runCommand("/mmoskill " + skill.getId())).build()));
 			p.sendMessage(Text.EMPTY);
 		}
 	}
@@ -87,7 +87,7 @@ public class MenuManager {
 	private Multimap<Integer, Text> getSkillListLines(@Nonnull final PlayerData data) {
 		Multimap<Integer, Text> lines = ArrayListMultimap.create();
 
-		SkillTypes.getAll().forEach(type -> lines.put(data.getLevel(type), Text.of(TextColors.AQUA, type.getName(), TextColors.GRAY, " - ")));
+		SkillTypes.VALUES.forEach(type -> lines.put(data.getLevel(type), Text.of(TextColors.AQUA, type.getName(), TextColors.GRAY, " - ")));
 		lines.put(data.getLevels(), Text.of(TextColors.GREEN, "Total", TextColors.GRAY, " - "));
 
 		return lines;

@@ -6,28 +6,17 @@ import me.mrdaniel.adventuremmo.catalogtypes.abilities.ActiveAbility;
 
 public class MadMiner extends ActiveAbility {
 
-	@Override
-	public String getName() {
-		return "Mad Miner";
+	public MadMiner() {
+		super("Mad Miner", "madminer", 5.0, 0.08);
 	}
 
 	@Override
-	public String getId() {
-		return "madminer";
+	protected void activate(final Player p) {
+		
 	}
 
 	@Override
-	public double getIncrement() {
-		return 0.08;
-	}
-
-	@Override
-	public double getInitial() {
-		return 5.0;
-	}
-
-	@Override
-	public void activate(Player p, int level) {
-
+	protected void deactivate(final Player p) {
+		
 	}
 }

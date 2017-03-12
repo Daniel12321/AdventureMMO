@@ -39,7 +39,7 @@ public class TopManager extends MMOObject {
 
 		this.total = new Top(this.node.getNode("total"));
 		this.skills = Maps.newHashMap();
-		SkillTypes.getAll().forEach(type -> this.skills.put(type, new Top(this.node.getNode(type.getId()))));
+		SkillTypes.VALUES.forEach(type -> this.skills.put(type, new Top(this.node.getNode(type.getId()))));
 	}
 
 	private CommentedConfigurationNode load() {

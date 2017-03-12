@@ -16,6 +16,6 @@ public class SkillTypeRegistryModule implements CatalogRegistryModule<SkillType>
 
 	@Override
 	public Collection<SkillType> getAll() {
-		return SkillTypes.getAll();
+		return SkillTypes.VALUES;
 	}
 }

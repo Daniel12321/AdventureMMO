@@ -6,28 +6,17 @@ import me.mrdaniel.adventuremmo.catalogtypes.abilities.ActiveAbility;
 
 public class Bloodshed extends ActiveAbility {
 
-	@Override
-	public String getName() {
-		return "Bloodshed";
+	public Bloodshed() {
+		super("Bloodshed", "bloodshed", 5.0, 0.08);
 	}
 
 	@Override
-	public String getId() {
-		return "bloodshed";
+	protected void activate(final Player p) {
+		
 	}
 
 	@Override
-	public double getIncrement() {
-		return 0.08;
-	}
-
-	@Override
-	public double getInitial() {
-		return 5.0;
-	}
-
-	@Override
-	public void activate(Player p, int level) {
+	protected void deactivate(final Player p) {
 		
 	}
 }

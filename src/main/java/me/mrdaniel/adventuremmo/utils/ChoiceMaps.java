@@ -20,7 +20,7 @@ public class ChoiceMaps {
 		this.skills = Maps.newHashMap();
 		this.settings = Maps.newHashMap();
 
-		SkillTypes.getAll().forEach(type -> this.skills.put(type.getId(), type));
+		SkillTypes.VALUES.forEach(type -> this.skills.put(type.getId(), type));
 		Settings.getAll().forEach(setting -> this.settings.put(setting.getId(), setting));
 	}
 

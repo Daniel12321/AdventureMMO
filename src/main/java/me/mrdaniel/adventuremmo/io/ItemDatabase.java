@@ -26,8 +26,8 @@ import ninja.leaping.configurate.loader.ConfigurationLoader;
 
 public class ItemDatabase extends MMOObject {
 
-	private Map<BlockType, BlockData> blocks;
-	private Map<ItemType, ToolData> tools;
+	private final Map<BlockType, BlockData> blocks;
+	private final Map<ItemType, ToolData> tools;
 
 	private final ConfigurationLoader<CommentedConfigurationNode> loader;
 	private final CommentedConfigurationNode node;
@@ -51,7 +51,7 @@ public class ItemDatabase extends MMOObject {
 			Optional<BlockType> type = super.getGame().getRegistry().getType(BlockType.class, id);
 			Optional<BlockData> data = BlockData.deserialize(value.getString());
 			if (type.isPresent()) {
-				if (data.isPresent()) { this.blocks.put(type.get(), data.get()); }
+				if (data.isPresent()) { if (super.getMMO().getConfig().isSkillEnabled(data.get().getSkill())) { this.blocks.put(type.get(), data.get()); } }
 				else { super.getLogger().warn("Invalid exp format for block id {}, skipping!", id); }
 			}
 			else { super.getLogger().warn("Failed to find block id {}, skipping!", id); }
@@ -74,22 +74,22 @@ public class ItemDatabase extends MMOObject {
 		catch (final IOException exc) { super.getMMO().getLogger().error("Failed to load itemdata file: {}", exc); return this.loader.createEmptyNode(); }
 	}
 
-	public void set(@Nonnull final BlockType type, @Nonnull final BlockData data) {
-		this.blocks.put(type, data);
-		this.node.getNode("blocks", type.getId()).setValue(data.serialize());
-		this.save();
-	}
-
-	public void set(@Nonnull final ItemType type, @Nonnull final ToolData data) {
-		this.tools.put(type, data);
-		this.node.getNode("tools", type.getId()).setValue(data.serialize());
-		this.save();
-	}
-
-	private void save() {
-		try { this.loader.save(this.node); }
-		catch (final IOException exc) { super.getMMO().getLogger().error("Failed to save itemdata file: {}", exc); }
-	}
+//	public void set(@Nonnull final BlockType type, @Nonnull final BlockData data) {
+//		this.blocks.put(type, data);
+//		this.node.getNode("blocks", type.getId()).setValue(data.serialize());
+//		this.save();
+//	}
+//
+//	public void set(@Nonnull final ItemType type, @Nonnull final ToolData data) {
+//		this.tools.put(type, data);
+//		this.node.getNode("tools", type.getId()).setValue(data.serialize());
+//		this.save();
+//	}
+//
+//	private void save() {
+//		try { this.loader.save(this.node); }
+//		catch (final IOException exc) { super.getMMO().getLogger().error("Failed to save itemdata file: {}", exc); }
+//	}
 
 	@Nonnull
 	public Optional<BlockData> getData(@Nonnull final BlockType type) {
