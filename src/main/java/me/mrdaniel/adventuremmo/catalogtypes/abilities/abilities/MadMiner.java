@@ -2,21 +2,17 @@ package me.mrdaniel.adventuremmo.catalogtypes.abilities.abilities;
 
 import org.spongepowered.api.entity.living.player.Player;
 
-import me.mrdaniel.adventuremmo.catalogtypes.abilities.ActiveAbility;
+import me.mrdaniel.adventuremmo.catalogtypes.abilities.ActiveAbilityActions;
 
-public class MadMiner extends ActiveAbility {
-
-	public MadMiner() {
-		super("Mad Miner", "madminer", 5.0, 0.08);
-	}
+public class MadMiner implements ActiveAbilityActions {
 
 	@Override
-	protected void activate(final Player p) {
+	public void activate(final Player p) {
 		
 	}
 
 	@Override
-	protected void deactivate(final Player p) {
+	public void deactivate(final Player p) {
 		
 	}
 }

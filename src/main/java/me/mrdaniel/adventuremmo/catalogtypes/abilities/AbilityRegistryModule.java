@@ -16,6 +16,6 @@ public class AbilityRegistryModule implements CatalogRegistryModule<Ability> {
 
 	@Override
 	public Collection<Ability> getAll() {
-		return Abilities.getAll();
+		return Abilities.VALUES;
 	}
 }

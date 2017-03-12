@@ -31,7 +31,8 @@ public class MessageManager extends MMOObject {
 		this.action_bar = node.getNode("action_bar").getBoolean();
 		this.delay_seconds = node.getNode("seconds_between_messages").getInt();
 
-		final String prefix = node.getNode("prefix").getString() + " ";
+		String prefix = node.getNode("prefix").getString();
+		if (!prefix.equals("")) { prefix += " "; }
 
 		this.dodge = TextUtils.toText(prefix + node.getNode("dodge").getString());
 		this.roll = TextUtils.toText(prefix + node.getNode("roll").getString());

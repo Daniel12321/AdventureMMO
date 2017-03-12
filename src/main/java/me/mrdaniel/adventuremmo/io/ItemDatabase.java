@@ -17,6 +17,7 @@ import com.google.common.collect.Maps;
 
 import me.mrdaniel.adventuremmo.AdventureMMO;
 import me.mrdaniel.adventuremmo.MMOObject;
+import me.mrdaniel.adventuremmo.catalogtypes.skills.SkillTypes;
 import me.mrdaniel.adventuremmo.catalogtypes.tools.ToolTypes;
 import me.mrdaniel.adventuremmo.data.BlockData;
 import me.mrdaniel.adventuremmo.data.ToolData;
@@ -51,7 +52,7 @@ public class ItemDatabase extends MMOObject {
 			Optional<BlockType> type = super.getGame().getRegistry().getType(BlockType.class, id);
 			Optional<BlockData> data = BlockData.deserialize(value.getString());
 			if (type.isPresent()) {
-				if (data.isPresent()) { if (super.getMMO().getConfig().isSkillEnabled(data.get().getSkill())) { this.blocks.put(type.get(), data.get()); } }
+				if (data.isPresent()) { if (SkillTypes.VALUES.contains(data.get().getSkill())) { this.blocks.put(type.get(), data.get()); } }
 				else { super.getLogger().warn("Invalid exp format for block id {}, skipping!", id); }
 			}
 			else { super.getLogger().warn("Failed to find block id {}, skipping!", id); }

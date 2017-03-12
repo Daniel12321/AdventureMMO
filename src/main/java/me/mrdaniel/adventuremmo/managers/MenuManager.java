@@ -52,9 +52,15 @@ public class MenuManager {
 			else { this.scoreboards.setTemp(p, this.getTitle(skill.getName(), true), this.getSkillInfoLines(pdata, skill)); }
 		}
 		else {
+			p.sendMessage(Text.EMPTY);
 			p.sendMessage(this.getTitle(skill.getName(), false));
 			p.sendMessage(Text.of(TextColors.GREEN, "Level: ", pdata.getLevel(skill)));
 			p.sendMessage(Text.of(TextColors.GREEN, "EXP: ",  pdata.getExp(skill), " / ", MathUtils.expTillNextLevel(pdata.getLevel(skill))));
+			skill.getAbilities().forEach(ability -> {
+				p.sendMessage(Text.EMPTY);
+				p.sendMessage(this.getSubTitle(ability.getName(), true));
+				p.sendMessage(Text.of());
+			});
 			p.sendMessage(Text.EMPTY);
 		}
 	}
@@ -114,7 +120,12 @@ public class MenuManager {
 
 	@Nonnull
 	private Text getTitle(@Nonnull final String txt, final boolean small) {
-		return small ? Text.of(TextColors.RED, "-=[ ", TextColors.AQUA, txt, TextColors.RED, " ]=-") : Text.of(TextColors.RED, "----===[ ", TextColors.AQUA, txt, TextColors.RED, " ]===---");
+		return small ? Text.of(TextColors.RED, "---==[ ", TextColors.AQUA, txt, TextColors.RED, " ]==---") : Text.of(TextColors.RED, "----===[ ", TextColors.AQUA, txt, TextColors.RED, " ]===---");
+	}
+
+	@Nonnull
+	private Text getSubTitle(@Nonnull final String txt, final boolean small) {
+		return small ? Text.of(TextColors.RED, "-=[ ", TextColors.DARK_GREEN, txt, TextColors.RED, " ]=-") : Text.of(TextColors.RED, "---==[ ", TextColors.AQUA, txt, TextColors.RED, " ]==---");
 	}
 
 	@Nonnull

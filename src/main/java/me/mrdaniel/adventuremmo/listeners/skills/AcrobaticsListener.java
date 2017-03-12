@@ -17,16 +17,18 @@ import me.mrdaniel.adventuremmo.io.PlayerData;
 
 public class AcrobaticsListener extends MMOObject {
 
-	private final int exp_multiplier;
+	private final double exp_multiplier;
 
-	public AcrobaticsListener(@Nonnull final AdventureMMO mmo, final int exp_multiplier) {
+	public AcrobaticsListener(@Nonnull final AdventureMMO mmo, final double exp_multiplier) {
 		super(mmo);
 
 		this.exp_multiplier = exp_multiplier;
 	}
 
-	@Listener(order = Order.EARLY)
+	@Listener(order = Order.LATE)
 	public void onDamange(final DamageEntityEvent e) {
+		if (e.isCancelled()) { return; }
+
 		if (e.getTargetEntity() instanceof Player) {
 			Player p = (Player) e.getTargetEntity();
 			PlayerData data = super.getMMO().getPlayerDatabase().get(p.getUniqueId());

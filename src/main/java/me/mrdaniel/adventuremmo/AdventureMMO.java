@@ -26,6 +26,7 @@ import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
+import me.mrdaniel.adventuremmo.catalogtypes.abilities.Abilities;
 import me.mrdaniel.adventuremmo.catalogtypes.abilities.Ability;
 import me.mrdaniel.adventuremmo.catalogtypes.abilities.AbilityRegistryModule;
 import me.mrdaniel.adventuremmo.catalogtypes.settings.Setting;
@@ -37,6 +38,7 @@ import me.mrdaniel.adventuremmo.catalogtypes.tools.ToolType;
 import me.mrdaniel.adventuremmo.catalogtypes.tools.ToolTypeRegistryModule;
 import me.mrdaniel.adventuremmo.commands.CommandSettings;
 import me.mrdaniel.adventuremmo.commands.CommandSkill;
+import me.mrdaniel.adventuremmo.commands.CommandSkills;
 import me.mrdaniel.adventuremmo.commands.CommandTop;
 import me.mrdaniel.adventuremmo.data.manipulators.ImmutableMMOData;
 import me.mrdaniel.adventuremmo.data.manipulators.ImmutableSettingsData;
@@ -51,16 +53,6 @@ import me.mrdaniel.adventuremmo.io.PlayerDatabase;
 import me.mrdaniel.adventuremmo.listeners.AbilitiesListener;
 import me.mrdaniel.adventuremmo.listeners.ClientListener;
 import me.mrdaniel.adventuremmo.listeners.WorldListener;
-import me.mrdaniel.adventuremmo.listeners.skills.AcrobaticsListener;
-import me.mrdaniel.adventuremmo.listeners.skills.ArcheryListener;
-import me.mrdaniel.adventuremmo.listeners.skills.AxesListener;
-import me.mrdaniel.adventuremmo.listeners.skills.ExcavationListener;
-import me.mrdaniel.adventuremmo.listeners.skills.FarmingListener;
-import me.mrdaniel.adventuremmo.listeners.skills.FishingListener;
-import me.mrdaniel.adventuremmo.listeners.skills.MiningListener;
-import me.mrdaniel.adventuremmo.listeners.skills.SwordsListener;
-import me.mrdaniel.adventuremmo.listeners.skills.UnarmedListener;
-import me.mrdaniel.adventuremmo.listeners.skills.WoodcuttingListener;
 import me.mrdaniel.adventuremmo.managers.MenuManager;
 import me.mrdaniel.adventuremmo.managers.MessageManager;
 import me.mrdaniel.adventuremmo.managers.TopManager;
@@ -78,7 +70,7 @@ public class AdventureMMO {
 	private final Path configdir;
 	private final PluginContainer container;
 
-	private Config config;
+//	private Config config;
 	private PlayerDatabase playerdata;
 	private ItemDatabase itemdata;
 	private MenuManager menus;
@@ -122,46 +114,50 @@ public class AdventureMMO {
 
 		final long startuptime = System.currentTimeMillis();
 
-		this.config = new Config(this, this.configdir.resolve("config.conf"));
+		// Loading Config
+		final Config config = new Config(this, this.configdir.resolve("config.conf"));
+
+		// Registering Config Settings
+		SkillTypes.VALUES.removeIf(skill -> !config.getNode("skills", skill.getId(), "enabled").getBoolean());
+		Abilities.VALUES.forEach(a -> a.setValues(config.getNode("abilities", a.getId())));
+
+		// Initializing Managers
 		this.playerdata = new HoconPlayerDatabase(this, this.configdir.resolve("playerdata"));
 		this.itemdata = new ItemDatabase(this, this.configdir.resolve("itemdata.conf"));
 		this.menus = new MenuManager(this);
-		this.messages = new MessageManager(this, this.config.getMessagesNode());
+		this.messages = new MessageManager(this, config.getNode("messages"));
 		this.tops = new TopManager(this, this.configdir.resolve("tops.conf"));
 		this.choices = new ChoiceMaps();
 
+		// Registering Commands
 		CommandSpec skills = CommandSpec.builder().description(Text.of(TextColors.BLUE, "AdventureMMO | Skills Command"))
 				.arguments(GenericArguments.optionalWeak(GenericArguments.choices(Text.of("skill"), this.choices.getSkills())))
-				.executor(new CommandSkill(this)).permission("mmo.skills").build();
+				.executor(new CommandSkills(this)).build();
 		this.game.getCommandManager().register(this, skills, "skill", "skills", "mmoskill", "mmoskills");
 
 		CommandSpec tops = CommandSpec.builder().description(Text.of(TextColors.BLUE, "AdventureMMO | Top Command"))
-				.arguments(GenericArguments.optional(GenericArguments.choices(Text.of("skill"), this.choices.getSkills())))
-				.executor(new CommandTop(this)).permission("mmo.top").build();
+				.arguments(GenericArguments.optionalWeak(GenericArguments.choices(Text.of("skill"), this.choices.getSkills())))
+				.executor(new CommandTop(this)).build();
 		this.game.getCommandManager().register(this, tops, "mmotop", "skilltop");
 
 		CommandSpec settings = CommandSpec.builder().description(Text.of(TextColors.BLUE, "AdventureMMO | Settings Command"))
-				.executor(new CommandSettings(this)).permission("mmo.settings").build();
+				.executor(new CommandSettings(this)).build();
 		this.game.getCommandManager().register(this, settings, "setting", "settings", "mmosetting", "mmosettings");
 
+		SkillTypes.VALUES.forEach(skill -> {
+			if (config.getNode("skills", skill.getId(), "short_command").getBoolean()) {
+				CommandSpec skillspec = CommandSpec.builder().description(Text.of(TextColors.BLUE, "AdventureMMO | ", skill.getName(), " Command")).executor(new CommandSkill(this, skill)).build();
+				this.game.getCommandManager().register(this, skillspec, skill.getId());
+			}
+		});
+
+		// Registering Listeners
+		SkillTypes.VALUES.forEach(skill -> this.game.getEventManager().registerListeners(this, skill.getListener().apply(this, config)));
 		this.game.getEventManager().registerListeners(this, new ClientListener(this));
-		this.game.getEventManager().registerListeners(this, new AbilitiesListener(this));
+		this.game.getEventManager().registerListeners(this, new AbilitiesListener(this, config.getNode("abilities", "recharge_seconds").getInt()));
 		this.game.getEventManager().registerListeners(this, new WorldListener(this));
 
-		SkillTypes.VALUES.removeIf(skill -> !this.config.isSkillEnabled(skill));
-
-		if (this.config.isSkillEnabled(SkillTypes.MINING)) { this.game.getEventManager().registerListeners(this, new MiningListener(this)); }
-		if (this.config.isSkillEnabled(SkillTypes.WOODCUTTING)) { this.game.getEventManager().registerListeners(this, new WoodcuttingListener(this)); }
-		if (this.config.isSkillEnabled(SkillTypes.EXCAVATION)) { this.game.getEventManager().registerListeners(this, new ExcavationListener(this)); }
-		if (this.config.isSkillEnabled(SkillTypes.FISHING)) { this.game.getEventManager().registerListeners(this, new FishingListener(this, this.config.getFishExp())); }
-		if (this.config.isSkillEnabled(SkillTypes.FARMING)) { this.game.getEventManager().registerListeners(this, new FarmingListener(this)); }
-		if (this.config.isSkillEnabled(SkillTypes.ACROBATICS)) { this.game.getEventManager().registerListeners(this, new AcrobaticsListener(this, this.config.getAcrobaticsExp())); }
-		if (this.config.isSkillEnabled(SkillTypes.SWORDS)) { this.game.getEventManager().registerListeners(this, new SwordsListener(this, this.config.getSwordsDamageExp(), this.config.getSwordsKillExp())); }
-		if (this.config.isSkillEnabled(SkillTypes.AXES)) { this.game.getEventManager().registerListeners(this, new AxesListener(this, this.config.getAxesDamageExp(), this.config.getAxesKillExp())); }
-		if (this.config.isSkillEnabled(SkillTypes.UNARMED)) { this.game.getEventManager().registerListeners(this, new UnarmedListener(this, this.config.getUnarmedDamageExp(), this.config.getUnarmedKillExp())); }
-		if (this.config.isSkillEnabled(SkillTypes.ARCHERY)) { this.game.getEventManager().registerListeners(this, new ArcheryListener(this, this.config.getBowDamageExp(), this.config.getBowKillExp())); }
-
-		this.logger.info("Loaded plugin successfully ({} ms).", System.currentTimeMillis() - startuptime);
+		this.logger.info("Loaded plugin successfully in {} milliseconds.", System.currentTimeMillis() - startuptime);
 	}
 
 	@Listener
@@ -194,7 +190,6 @@ public class AdventureMMO {
 	@Nonnull public Logger getLogger() { return this.logger; }
 	@Nonnull public PluginContainer getContainer() { return this.container; }
 
-	@Nonnull public Config getConfig() { return this.config; }
 	@Nonnull public PlayerDatabase getPlayerDatabase() { return this.playerdata; }
 	@Nonnull public ItemDatabase getItemDatabase() { return this.itemdata; }
 	@Nonnull public MenuManager getMenus() { return this.menus; }

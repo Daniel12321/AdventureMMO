@@ -3,6 +3,7 @@ package me.mrdaniel.adventuremmo.listeners.skills;
 import javax.annotation.Nonnull;
 
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.util.Tristate;
 
@@ -31,15 +32,13 @@ public abstract class ActiveAbilityListener extends MMOObject {
 		this.onblock = onblock;
 	}
 
-	@Listener
-	public void onAbility(final AbilityEvent.Pre e, @First final ToolType tool) {
+	@Listener(order = Order.EARLY)
+	public void onAbility(final AbilityEvent e, @First final ToolType tool) {
 		if (tool != this.tool) { return; }
-		if (super.getGame().getEventManager().post(new AbilityEvent.Activate(super.getMMO(), e.getTargetEntity(), this.tool, this.skill, this.ability))) { return; }
 		if (this.onblock == Tristate.TRUE && !e.isOnBlock())  { return; }
 		if (this.onblock == Tristate.FALSE && e.isOnBlock()) { return; }
 
-		final int level = super.getMMO().getPlayerDatabase().get(e.getTargetEntity().getUniqueId()).getLevel(this.skill);
-
-		this.ability.activate(super.getMMO(), e.getTargetEntity(), level);
+		e.setAbility(this.ability);
+		e.setSkill(this.skill);
 	}
 }

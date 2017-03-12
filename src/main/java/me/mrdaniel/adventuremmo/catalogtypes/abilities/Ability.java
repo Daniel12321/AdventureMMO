@@ -3,21 +3,26 @@ package me.mrdaniel.adventuremmo.catalogtypes.abilities;
 import javax.annotation.Nonnull;
 
 import org.spongepowered.api.CatalogType;
+import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.annotation.CatalogedBy;
+
+import ninja.leaping.configurate.ConfigurationNode;
 
 @CatalogedBy(Abilities.class)
 public abstract class Ability implements CatalogType {
 
 	private final String name;
 	private final String id;
-	private final double initial;
-	private final double increment;
+	private double initial;
+	private double increment;
+	private double cap;
 
-	public Ability(@Nonnull final String name, @Nonnull final String id, final double initial, final double increment) {
+	public Ability(@Nonnull final String name, @Nonnull final String id) {
 		this.name = name;
 		this.id = id;
-		this.initial = initial;
-		this.increment = increment;
+		this.initial = 0;
+		this.increment = 0;
+		this.cap = 0;
 	}
 
 	@Nonnull
@@ -36,5 +41,17 @@ public abstract class Ability implements CatalogType {
 
 	public double getInitial() { 
 		return this.initial;
+	}
+
+	public double getCap() {
+		return this.cap;
+	}
+
+	public abstract Text getValueLine(final int level);
+
+	public void setValues(@Nonnull final ConfigurationNode node) {
+		this.initial = node.getNode("initial_value").getDouble();
+		this.increment = node.getNode("level_increment").getDouble();
+		this.cap = node.getNode("value_cap").getDouble();
 	}
 }
