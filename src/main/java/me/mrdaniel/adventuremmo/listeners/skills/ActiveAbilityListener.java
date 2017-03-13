@@ -4,7 +4,6 @@ import javax.annotation.Nonnull;
 
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
-import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.util.Tristate;
 
 import me.mrdaniel.adventuremmo.AdventureMMO;
@@ -33,8 +32,8 @@ public abstract class ActiveAbilityListener extends MMOObject {
 	}
 
 	@Listener(order = Order.EARLY)
-	public void onAbility(final AbilityEvent e, @First final ToolType tool) {
-		if (tool != this.tool) { return; }
+	public void onAbility(final AbilityEvent e) {
+		if (e.getTool() != this.tool) { return; }
 		if (this.onblock == Tristate.TRUE && !e.isOnBlock())  { return; }
 		if (this.onblock == Tristate.FALSE && e.isOnBlock()) { return; }
 

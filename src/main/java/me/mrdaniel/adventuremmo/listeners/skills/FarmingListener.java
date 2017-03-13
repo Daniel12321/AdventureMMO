@@ -22,7 +22,7 @@ public class FarmingListener extends ActiveAbilityListener {
 	@Listener
 	public void onBlockBreak(final BreakBlockEvent e, @First final BlockData block) {
 		if (block.getSkill() == super.skill) {
-			super.getMMO().getPlayerDatabase().get(e.getTargetEntity().getUniqueId()).addExp(e.getTargetEntity(), super.skill, block.getExp());
+			super.getMMO().getPlayerDatabase().get(e.getPlayer().getUniqueId()).addExp(e.getPlayer(), super.skill, block.getExp());
 		}
 	}
 }

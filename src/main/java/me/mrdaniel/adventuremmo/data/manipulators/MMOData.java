@@ -1,7 +1,5 @@
 package me.mrdaniel.adventuremmo.data.manipulators;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.util.Map;
 import java.util.Optional;
 
@@ -14,6 +12,7 @@ import org.spongepowered.api.data.manipulator.mutable.common.AbstractData;
 import org.spongepowered.api.data.merge.MergeFunction;
 import org.spongepowered.api.data.value.mutable.Value;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 
 import me.mrdaniel.adventuremmo.data.MMOKeys;
@@ -23,10 +22,16 @@ public class MMOData extends AbstractData<MMOData, ImmutableMMOData> {
 	private Map<String, Long> delays;
 	private Map<String, Long> abilities;
 
-	public MMOData() { this(Maps.newHashMap(), Maps.newHashMap()); }
-	public MMOData(@Nonnull final Map<String, Long> delays, @Nonnull final Map<String, Long> abilities) {
+	private boolean scoreboard;
+	private boolean scoreboard_permanent;
+
+	public MMOData() { this(Maps.newHashMap(), Maps.newHashMap(), true, false); }
+	public MMOData(@Nonnull final Map<String, Long> delays, @Nonnull final Map<String, Long> abilities, final boolean scoreboard, final boolean scoreboard_permanent) {
 		this.delays = delays;
 		this.abilities = abilities;
+
+		this.scoreboard = scoreboard;
+		this.scoreboard_permanent = scoreboard_permanent;
 
 		registerGettersAndSetters();
 	}
@@ -40,6 +45,14 @@ public class MMOData extends AbstractData<MMOData, ImmutableMMOData> {
 		registerFieldGetter(MMOKeys.ABILITIES, this::getAbilities);
 		registerFieldSetter(MMOKeys.ABILITIES, this::setAbilities);
 		registerKeyValue(MMOKeys.ABILITIES, this::getAbilitiesValue);
+
+		registerFieldGetter(MMOKeys.SCOREBOARD, this::getScoreboard);
+		registerFieldSetter(MMOKeys.SCOREBOARD, this::setScoreboard);
+		registerKeyValue(MMOKeys.SCOREBOARD, this::getScoreboardValue);
+
+		registerFieldGetter(MMOKeys.SCOREBOARD_PERMANENT, this::getScoreboardPermanent);
+		registerFieldSetter(MMOKeys.SCOREBOARD_PERMANENT, this::setScoreboardPermanent);
+		registerKeyValue(MMOKeys.SCOREBOARD_PERMANENT, this::getScoreboardPermanentValue);
 	}
 
 	public Value<Map<String, Long>> getDelaysValue() { return MMOKeys.FACTORY.createMapValue(MMOKeys.DELAYS, this.delays); }
@@ -57,17 +70,36 @@ public class MMOData extends AbstractData<MMOData, ImmutableMMOData> {
 	public void setAbility(@Nonnull final String id, final long endtime) { this.abilities.put(id, endtime); }
 	public boolean isAbilityActive(@Nonnull final String id) { return this.getAbility(id) > System.currentTimeMillis(); }
 
+	public boolean getScoreboard() { return this.scoreboard; }
+	public void setScoreboard(final boolean scoreboard) { this.scoreboard = scoreboard; }
+
+	public boolean getScoreboardPermanent() { return this.scoreboard_permanent; }
+	public void setScoreboardPermanent(final boolean scoreboard_permanent) { this.scoreboard_permanent = scoreboard_permanent; }
+
+	public Value<Boolean> getScoreboardValue() { return MMOKeys.FACTORY.createValue(MMOKeys.SCOREBOARD, this.scoreboard); }
+	public Value<Boolean> getScoreboardPermanentValue() { return MMOKeys.FACTORY.createValue(MMOKeys.SCOREBOARD_PERMANENT, this.scoreboard_permanent); }
+
 	@SuppressWarnings("unchecked")
 	public Optional<MMOData> from(@Nonnull final DataView view) {
 		return Optional.of(new MMOData(
-				(Map<String, Long>) view.get(MMOKeys.DELAYS.getQuery()).orElse(Maps.newHashMap()),
-				(Map<String, Long>) view.get(MMOKeys.ABILITIES.getQuery()).orElse(Maps.newHashMap())));
+				view.getMap(MMOKeys.DELAYS.getQuery()).map(map -> Maps.newHashMap((Map<String, Long>) map)).orElse(Maps.newHashMap()),
+				view.getMap(MMOKeys.ABILITIES.getQuery()).map(map -> Maps.newHashMap((Map<String, Long>) map)).orElse(Maps.newHashMap()),
+				view.getBoolean(MMOKeys.SCOREBOARD.getQuery()).orElse(true),
+				view.getBoolean(MMOKeys.SCOREBOARD_PERMANENT.getQuery()).orElse(false)));
 	}
 
-	@Override public Optional<MMOData> fill(DataHolder holder, MergeFunction overlap) { return Optional.of(checkNotNull(overlap).merge(copy(), from(holder.toContainer()).orElse(null))); }
+	@Override
+	public DataContainer toContainer() {
+		return super.toContainer()
+				.set(MMOKeys.DELAYS.getQuery(), this.delays)
+				.set(MMOKeys.ABILITIES.getQuery(), this.abilities)
+				.set(MMOKeys.SCOREBOARD.getQuery(), this.scoreboard)
+				.set(MMOKeys.SCOREBOARD_PERMANENT.getQuery(), this.scoreboard_permanent);
+	}
+
+	@Override public Optional<MMOData> fill(DataHolder holder, MergeFunction overlap) { return Optional.of(Preconditions.checkNotNull(overlap).merge(copy(), from(holder.toContainer()).orElse(null))); }
 	@Override public Optional<MMOData> from(DataContainer container) { return from((DataView)container); }
-	@Override public MMOData copy() { return new MMOData(this.delays, this.abilities); }
-	@Override public ImmutableMMOData asImmutable() { return new ImmutableMMOData(this.delays, this.abilities); }
-	@Override public DataContainer toContainer() { return super.toContainer().set(MMOKeys.DELAYS.getQuery(), this.delays).set(MMOKeys.ABILITIES.getQuery(), this.abilities); }
+	@Override public MMOData copy() { return new MMOData(this.delays, this.abilities, this.scoreboard, this.scoreboard_permanent); }
+	@Override public ImmutableMMOData asImmutable() { return new ImmutableMMOData(this.delays, this.abilities, this.scoreboard, this.scoreboard_permanent); }
 	@Override public int getContentVersion() { return 1; }
 }

@@ -23,7 +23,7 @@ public class MiningListener extends ActiveAbilityListener {
 	@Listener
 	public void onBlockBreak(final BreakBlockEvent e, @First final BlockData block, @First final ToolType tool) {
 		if (block.getSkill() == super.skill && tool == super.tool) {
-			super.getMMO().getPlayerDatabase().get(e.getTargetEntity().getUniqueId()).addExp(e.getTargetEntity(), super.skill, block.getExp());
+			super.getMMO().getPlayerDatabase().get(e.getPlayer().getUniqueId()).addExp(e.getPlayer(), super.skill, block.getExp());
 		}
 	}
 }

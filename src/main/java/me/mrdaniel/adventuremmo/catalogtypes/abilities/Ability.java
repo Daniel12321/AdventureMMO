@@ -47,6 +47,10 @@ public abstract class Ability implements CatalogType {
 		return this.cap;
 	}
 
+	public double getValue(final int level) {
+		return Math.min(this.getInitial() + (this.getIncrement()*level), this.getCap());
+	}
+
 	public abstract Text getValueLine(final int level);
 
 	public void setValues(@Nonnull final ConfigurationNode node) {

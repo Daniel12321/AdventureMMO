@@ -7,29 +7,37 @@ import javax.annotation.Nullable;
 
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.entity.living.humanoid.player.TargetPlayerEvent;
 import org.spongepowered.api.event.impl.AbstractEvent;
+import org.spongepowered.api.world.Location;
+import org.spongepowered.api.world.World;
 
 import me.mrdaniel.adventuremmo.AdventureMMO;
+import me.mrdaniel.adventuremmo.catalogtypes.tools.ToolType;
 import me.mrdaniel.adventuremmo.data.BlockData;
-import me.mrdaniel.adventuremmo.data.ToolData;
 
-public class BreakBlockEvent extends AbstractEvent implements TargetPlayerEvent {
+public class BreakBlockEvent extends AbstractEvent {
 
 	private final Player player;
+	private final Location<World> block;
 	private final Cause cause;
 
-	public BreakBlockEvent(@Nonnull final AdventureMMO mmo, @Nonnull final Player player, @Nonnull final BlockData bdata, @Nullable final ToolData tool) {
-		Cause.Builder b = Cause.source(mmo).named("block", bdata);
-		Optional.ofNullable(tool).ifPresent(data -> b.named("tool", data.getType()));
+	public BreakBlockEvent(@Nonnull final AdventureMMO mmo, @Nonnull final Player player, @Nonnull final Location<World> block_location, @Nonnull final BlockData block, @Nullable final ToolType tool) {
+		Cause.Builder b = Cause.source(mmo).named("block", block);
+		Optional.ofNullable(tool).ifPresent(data -> b.named("tool", tool));
 
 		this.player = player;
+		this.block = block_location;
 		this.cause = b.build();
 	}
 
-	@Override
-	public Player getTargetEntity() {
+	@Nonnull
+	public Player getPlayer() {
 		return this.player;
+	}
+
+	@Nonnull
+	public Location<World> getBlock() {
+		return this.block;
 	}
 
 	@Override

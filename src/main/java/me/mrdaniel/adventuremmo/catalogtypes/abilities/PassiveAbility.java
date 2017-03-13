@@ -12,11 +12,11 @@ public class PassiveAbility extends Ability {
 	}
 
 	public boolean getChance(final int level) {
-		return this.getInitial() + (this.getIncrement()*level) > Math.random()*100;
+		return super.getValue(level) > Math.random()*100;
 	}
 
 	@Override
 	public Text getValueLine(int level) {
-		return Text.of(TextColors.YELLOW, "Chance: ", this.getChance(level), "%");
+		return Text.of(TextColors.YELLOW, "Chance: ", String.format("%.2f", super.getValue(level)), "%");
 	}
 }

@@ -41,11 +41,8 @@ import me.mrdaniel.adventuremmo.commands.CommandSkill;
 import me.mrdaniel.adventuremmo.commands.CommandSkills;
 import me.mrdaniel.adventuremmo.commands.CommandTop;
 import me.mrdaniel.adventuremmo.data.manipulators.ImmutableMMOData;
-import me.mrdaniel.adventuremmo.data.manipulators.ImmutableSettingsData;
 import me.mrdaniel.adventuremmo.data.manipulators.MMOData;
 import me.mrdaniel.adventuremmo.data.manipulators.MMODataBuilder;
-import me.mrdaniel.adventuremmo.data.manipulators.SettingsData;
-import me.mrdaniel.adventuremmo.data.manipulators.SettingsDataBuilder;
 import me.mrdaniel.adventuremmo.io.Config;
 import me.mrdaniel.adventuremmo.io.HoconPlayerDatabase;
 import me.mrdaniel.adventuremmo.io.ItemDatabase;
@@ -98,7 +95,6 @@ public class AdventureMMO {
 		this.logger.info("Registering custom data...");
 
 		this.game.getDataManager().register(MMOData.class, ImmutableMMOData.class, new MMODataBuilder());
-		this.game.getDataManager().register(SettingsData.class, ImmutableSettingsData.class, new SettingsDataBuilder());
 
 		this.game.getRegistry().registerModule(SkillType.class, new SkillTypeRegistryModule());
 		this.game.getRegistry().registerModule(ToolType.class, new ToolTypeRegistryModule());
@@ -154,7 +150,7 @@ public class AdventureMMO {
 		// Registering Listeners
 		SkillTypes.VALUES.forEach(skill -> this.game.getEventManager().registerListeners(this, skill.getListener().apply(this, config)));
 		this.game.getEventManager().registerListeners(this, new ClientListener(this));
-		this.game.getEventManager().registerListeners(this, new AbilitiesListener(this, config.getNode("abilities", "recharge_seconds").getInt()));
+		this.game.getEventManager().registerListeners(this, new AbilitiesListener(this, config));
 		this.game.getEventManager().registerListeners(this, new WorldListener(this));
 
 		this.logger.info("Loaded plugin successfully in {} milliseconds.", System.currentTimeMillis() - startuptime);

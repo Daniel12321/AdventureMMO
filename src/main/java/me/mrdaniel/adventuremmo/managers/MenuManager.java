@@ -12,9 +12,10 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
 import me.mrdaniel.adventuremmo.AdventureMMO;
+import me.mrdaniel.adventuremmo.catalogtypes.abilities.Ability;
 import me.mrdaniel.adventuremmo.catalogtypes.skills.SkillType;
 import me.mrdaniel.adventuremmo.catalogtypes.skills.SkillTypes;
-import me.mrdaniel.adventuremmo.data.manipulators.SettingsData;
+import me.mrdaniel.adventuremmo.data.manipulators.MMOData;
 import me.mrdaniel.adventuremmo.io.PlayerData;
 import me.mrdaniel.adventuremmo.utils.MathUtils;
 import me.mrdaniel.adventuremmo.utils.TextUtils;
@@ -22,17 +23,19 @@ import me.mrdaniel.adventuremmo.utils.TextUtils;
 public class MenuManager {
 
 	private final ScoreboardManager scoreboards;
+	private int i;
 
 	public MenuManager(@Nonnull final AdventureMMO mmo) {
 		this.scoreboards = new ScoreboardManager(mmo);
+		this.i = 0;
 	}
 
 	public void sendSkillList(@Nonnull final Player p) {
 		PlayerData pdata = this.scoreboards.getMMO().getPlayerDatabase().get(p.getUniqueId());
-		SettingsData sdata = p.get(SettingsData.class).orElse(new SettingsData());
+		MMOData sdata = p.get(MMOData.class).orElse(new MMOData());
 
 		if (sdata.getScoreboard()) {
-			if (sdata.getScoreboardPermanent()) { this.scoreboards.setRepeating(p, this.getTitle("Skills", true), data -> this.getSkillListLines(data)); }
+			if (sdata.getScoreboardPermanent()) { this.scoreboards.setRepeating(p, this.getTitle("Skills", true), this::getSkillListLines); }
 			else { this.scoreboards.setTemp(p, this.getTitle("Skills", true), this.getSkillListLines(pdata)); }
 		}
 		else {
@@ -45,7 +48,7 @@ public class MenuManager {
 
 	public void sendSkillInfo(@Nonnull final Player p, @Nonnull final SkillType skill) {
 		PlayerData pdata = this.scoreboards.getMMO().getPlayerDatabase().get(p.getUniqueId());
-		SettingsData sdata = p.get(SettingsData.class).orElse(new SettingsData());
+		MMOData sdata = p.get(MMOData.class).orElse(new MMOData());
 
 		if (sdata.getScoreboard()) {
 			if (sdata.getScoreboardPermanent()) { this.scoreboards.setRepeating(p, this.getTitle(skill.getName(), true), data -> this.getSkillInfoLines(data, skill)); }
@@ -58,15 +61,15 @@ public class MenuManager {
 			p.sendMessage(Text.of(TextColors.GREEN, "EXP: ",  pdata.getExp(skill), " / ", MathUtils.expTillNextLevel(pdata.getLevel(skill))));
 			skill.getAbilities().forEach(ability -> {
 				p.sendMessage(Text.EMPTY);
-				p.sendMessage(this.getSubTitle(ability.getName(), true));
-				p.sendMessage(Text.of());
+				p.sendMessage(this.getSubTitle(ability.getName(), false));
+				p.sendMessage(ability.getValueLine(pdata.getLevel(skill)));
 			});
 			p.sendMessage(Text.EMPTY);
 		}
 	}
 
 	public void sendSkillTop(@Nonnull final Player p, @Nullable final SkillType type) {
-		SettingsData sdata = p.get(SettingsData.class).orElse(new SettingsData());
+		MMOData sdata = p.get(MMOData.class).orElse(new MMOData());
 		String title = (type == null) ? "Total Top" : (type.getName() + " Top");
 
 		if (sdata.getScoreboard()) {
@@ -81,11 +84,11 @@ public class MenuManager {
 	}
 
 	public void sendSettingsInfo(@Nonnull final Player p) {
-		SettingsData sdata = p.get(SettingsData.class).orElse(new SettingsData());
+		MMOData sdata = p.get(MMOData.class).orElse(new MMOData());
 
 		p.sendMessage(this.getTitle("Settings", false));
-		p.sendMessage(Text.builder().append(Text.of(TextColors.AQUA, "Scoreboard: ", TextUtils.getValueText(sdata.getScoreboard()))).onHover(TextActions.showText(TextUtils.getToggleText(sdata.getScoreboard()))).onClick(TextActions.executeCallback(src -> { sdata.setScoreboard(!sdata.getScoreboard()); p.offer(sdata); this.sendSettingsInfo((Player)src); })).build());
-		p.sendMessage(Text.builder().append(Text.of(TextColors.AQUA, "Scoreboard Permanent: ", TextUtils.getValueText(sdata.getScoreboardPermanent()))).onHover(TextActions.showText(TextUtils.getToggleText(sdata.getScoreboardPermanent()))).onClick(TextActions.executeCallback(src -> { sdata.setScoreboardPermanent(!sdata.getScoreboardPermanent()); p.offer(sdata); this.sendSettingsInfo((Player)src); })).build());
+		p.sendMessage(Text.builder().append(Text.of(TextColors.AQUA, "Scoreboard: ", TextUtils.getValueText(sdata.getScoreboard()))).onHover(TextActions.showText(TextUtils.getToggleText(sdata.getScoreboard()))).onClick(TextActions.executeCallback(src -> { sdata.setScoreboard(!sdata.getScoreboard()); p.offer(sdata); this.sendSettingsInfo((Player)src); this.scoreboards.unload(p); })).build());
+		p.sendMessage(Text.builder().append(Text.of(TextColors.AQUA, "Scoreboard Permanent: ", TextUtils.getValueText(sdata.getScoreboardPermanent()))).onHover(TextActions.showText(TextUtils.getToggleText(sdata.getScoreboardPermanent()))).onClick(TextActions.executeCallback(src -> { sdata.setScoreboardPermanent(!sdata.getScoreboardPermanent()); p.offer(sdata); this.sendSettingsInfo((Player)src); this.scoreboards.unload(p); })).build());
 		p.sendMessage(Text.EMPTY);
 	}
 
@@ -102,9 +105,15 @@ public class MenuManager {
 	@Nonnull
 	private Multimap<Integer, Text> getSkillInfoLines(@Nonnull final PlayerData data, @Nonnull final SkillType skill) {
 		Multimap<Integer, Text> lines = ArrayListMultimap.create();
+		int i = 1;
 
-		lines.put(2, Text.of(TextColors.GREEN, "Level: ", data.getLevel(skill)));
-		lines.put(1, Text.of(TextColors.GREEN, "EXP: ", data.getExp(skill), " / ", MathUtils.expTillNextLevel(data.getLevel(skill))));
+		for (Ability ability : skill.getAbilities()) {
+			lines.put(i++, ability.getValueLine(data.getLevel(skill)));
+			lines.put(i++, this.getSubTitle(ability.getName(), true));
+			lines.put(i++, this.getEmptyLine());
+		}
+		lines.put(i++, Text.of(TextColors.GREEN, "EXP: ", data.getExp(skill), " / ", MathUtils.expTillNextLevel(data.getLevel(skill))));
+		lines.put(i++, Text.of(TextColors.GREEN, "Level: ", data.getLevel(skill)));
 
 		return lines;
 	}
@@ -120,12 +129,20 @@ public class MenuManager {
 
 	@Nonnull
 	private Text getTitle(@Nonnull final String txt, final boolean small) {
-		return small ? Text.of(TextColors.RED, "---==[ ", TextColors.AQUA, txt, TextColors.RED, " ]==---") : Text.of(TextColors.RED, "----===[ ", TextColors.AQUA, txt, TextColors.RED, " ]===---");
+		return small ? Text.of(TextColors.RED, "--=[ ", TextColors.AQUA, txt, TextColors.RED, " ]=--") : Text.of(TextColors.RED, "----===[ ", TextColors.AQUA, txt, TextColors.RED, " ]===---");
 	}
 
 	@Nonnull
 	private Text getSubTitle(@Nonnull final String txt, final boolean small) {
 		return small ? Text.of(TextColors.RED, "-=[ ", TextColors.DARK_GREEN, txt, TextColors.RED, " ]=-") : Text.of(TextColors.RED, "---==[ ", TextColors.AQUA, txt, TextColors.RED, " ]==---");
+	}
+
+	@Nonnull
+	private Text getEmptyLine() {
+		String str = "";
+		for (int i = 0; i < this.i; i++) { str += " "; }
+		if (this.i++ > 8) { this.i = 0; }
+		return Text.of(str);
 	}
 
 	@Nonnull

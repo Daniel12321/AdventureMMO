@@ -43,23 +43,25 @@ public class MessageManager extends MMOObject {
 		this.ability_end = prefix + node.getNode("ability_end").getString();
 	}
 
-	public void sendDodge(@Nonnull final Player p) { this.send(p, this.dodge); }
-	public void sendRoll(@Nonnull final Player p) { this.send(p, this.roll); }
-	public void sendLevelUp(@Nonnull final Player p, @Nonnull final String skill, final int level) { this.send(p, TextUtils.toText(this.levelup.replace("%skill%", skill).replace("%level%", String.valueOf(level)))); }
-	public void sendAbilityRecharge(@Nonnull final Player p, final int seconds) { this.sendDelayed(p, TextUtils.toText(this.ability_recharge.replace("%seconds%", String.valueOf(seconds)))); }
-	public void sendAbilityActivate(@Nonnull final Player p, @Nonnull final String ability) { this.send(p, TextUtils.toText(this.ability_activate.replace("%ability%", ability))); }
-	public void sendAbilityEnd(@Nonnull final Player p, @Nonnull final String ability) { this.send(p, TextUtils.toText(this.ability_end.replace("%ability%", ability))); }
+	public void sendDodge(@Nonnull final Player p) { this.send(p, this.dodge, p.get(MMOData.class).orElse(new MMOData())); }
+	public void sendRoll(@Nonnull final Player p) { this.send(p, this.roll, p.get(MMOData.class).orElse(new MMOData())); }
+	public void sendLevelUp(@Nonnull final Player p, @Nonnull final String skill, final int level) { this.send(p, TextUtils.toText(this.levelup.replace("%skill%", skill).replace("%level%", String.valueOf(level))), p.get(MMOData.class).orElse(new MMOData())); }
+	public void sendAbilityRecharge(@Nonnull final Player p, final int seconds) { this.sendDelayed(p, TextUtils.toText(this.ability_recharge.replace("%seconds%", String.valueOf(seconds))), p.get(MMOData.class).orElse(new MMOData())); }
+	public void sendAbilityActivate(@Nonnull final Player p, @Nonnull final String ability) { this.send(p, TextUtils.toText(this.ability_activate.replace("%ability%", ability)), p.get(MMOData.class).orElse(new MMOData())); }
+	public void sendAbilityEnd(@Nonnull final Player p, @Nonnull final String ability) { this.send(p, TextUtils.toText(this.ability_end.replace("%ability%", ability)), p.get(MMOData.class).orElse(new MMOData())); }
 
-	private void sendDelayed(@Nonnull final Player p, @Nonnull final Text txt) {
-		MMOData data = p.get(MMOData.class).orElse(new MMOData());
+	private void sendDelayed(@Nonnull final Player p, @Nonnull final Text txt, @Nonnull final MMOData data) {
 		if (!data.isDelayActive("message_delay")) {
 			data.setDelay("message_delay", System.currentTimeMillis() + (this.delay_seconds * 1000));
-			this.send(p, txt);
+			this.send(p, txt, data);
 		}
 	}
 
-	private void send(@Nonnull final Player p, @Nonnull final Text txt) {
+	private void send(@Nonnull final Player p, @Nonnull final Text txt, @Nonnull final MMOData data) {
 		if (this.action_bar) { p.sendMessage(ChatTypes.ACTION_BAR, txt); }
 		else { p.sendMessage(txt); }
+
+		data.setDelay("message_delay", System.currentTimeMillis() + (this.delay_seconds * 1000));
+		p.offer(data);
 	}
 }
