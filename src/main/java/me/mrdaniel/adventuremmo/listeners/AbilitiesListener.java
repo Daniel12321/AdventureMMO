@@ -10,6 +10,7 @@ import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.effect.particle.ParticleEffect;
 import org.spongepowered.api.effect.particle.ParticleTypes;
+import org.spongepowered.api.effect.sound.SoundTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
@@ -17,9 +18,11 @@ import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.block.InteractBlockEvent;
 import org.spongepowered.api.event.cause.entity.damage.source.EntityDamageSource;
 import org.spongepowered.api.event.entity.DamageEntityEvent;
+import org.spongepowered.api.event.filter.IsCancelled;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.scheduler.Task;
+import org.spongepowered.api.util.Tristate;
 
 import com.flowpowered.math.vector.Vector3d;
 import com.google.common.collect.Maps;
@@ -36,7 +39,7 @@ import me.mrdaniel.adventuremmo.data.manipulators.MMOData;
 import me.mrdaniel.adventuremmo.event.AbilityEvent;
 import me.mrdaniel.adventuremmo.event.BreakBlockEvent;
 import me.mrdaniel.adventuremmo.event.LevelUpEvent;
-import me.mrdaniel.adventuremmo.event.PlayerTargetEntityEvent;
+import me.mrdaniel.adventuremmo.event.PlayerDamageEntityEvent;
 import me.mrdaniel.adventuremmo.io.Config;
 import me.mrdaniel.adventuremmo.utils.MathUtils;
 
@@ -48,13 +51,12 @@ public class AbilitiesListener extends MMOObject {
 		super(mmo);
 
 		this.ability_recharge = Maps.newHashMap();
-		Abilities.VALUES.stream().filter(ability -> ability instanceof ActiveAbility).forEach(ability -> this.ability_recharge.put(ability, config.getNode("abilities", ability.getId(), "recharge_seconds").getInt()));
+		Abilities.VALUES.stream().filter(ability -> ability instanceof ActiveAbility).forEach(ability -> this.ability_recharge.put(ability, config.getNode("abilities", ability.getId(), "recharge_seconds").getInt(300)));
 	}
 
 	@Listener(order = Order.LATE)
+	@IsCancelled(value = Tristate.FALSE)
 	public void onBlockBreak(final ChangeBlockEvent.Break e, @Root final Player p) {
-		if (e.isCancelled()) { return; }
-
 		Optional<ToolData> handdata = super.getMMO().getItemDatabase().getData(p.getItemInHand(HandTypes.MAIN_HAND).orElse(null));
 
 		e.getTransactions().forEach(trans -> {
@@ -65,18 +67,17 @@ public class AbilitiesListener extends MMOObject {
 	}
 
 	@Listener(order = Order.LATE)
+	@IsCancelled(value = Tristate.FALSE)
 	public void onDamage(final DamageEntityEvent e, @First final EntityDamageSource source) {
-		if (e.isCancelled()) { return; }
-
 		if (source.getSource() instanceof Player) {
 			Player damager = (Player) source.getSource();
-			super.getMMO().getItemDatabase().getData(damager.getItemInHand(HandTypes.MAIN_HAND).orElse(null)).ifPresent(handdata -> super.getGame().getEventManager().post(new PlayerTargetEntityEvent(super.getMMO(), damager, e, handdata.getType())));
+			super.getMMO().getItemDatabase().getData(damager.getItemInHand(HandTypes.MAIN_HAND).orElse(null)).ifPresent(handdata -> super.getGame().getEventManager().post(new PlayerDamageEntityEvent(super.getMMO(), damager, e, handdata.getType())));
 		}
 	}
 
 	@Listener(order = Order.LATE)
+	@IsCancelled(value = Tristate.FALSE)
 	public void onBlockClick(final InteractBlockEvent.Secondary.MainHand e, @Root final Player p) {
-		if (e.isCancelled()) { return; }
 		if (!p.get(Keys.IS_SNEAKING).orElse(false)) { return; }
 
 		Optional<ToolData> handdata = super.getMMO().getItemDatabase().getData(p.getItemInHand(HandTypes.MAIN_HAND).orElse(null));
@@ -97,24 +98,29 @@ public class AbilitiesListener extends MMOObject {
 		data.setAbility(ability.getId(), System.currentTimeMillis() + (long) (seconds * 1000));
 		p.offer(data);
 
+		ability.getActions().activate(super.getMMO(), p);
+
 		super.getMMO().getMessages().sendAbilityActivate(p, ability.getName());
-		ability.getActions().activate(p);
+		p.getWorld().spawnParticles(ParticleEffect.builder().type(ParticleTypes.FIREWORKS_SPARK).quantity(50).offset(new Vector3d(1.2, 1.2, 1.2)).build(), p.getLocation().getPosition().add(0.0, 1.0, 0.0));
+		p.getWorld().playSound(SoundTypes.ENTITY_FIREWORK_LAUNCH, p.getLocation().getPosition().add(0.0, 1.0, 0.0), 1.0);
 
 		Task.builder().delayTicks((int) (20 * seconds)).execute(() -> {
+			ability.getActions().deactivate(super.getMMO(), p);
+
 			super.getMMO().getMessages().sendAbilityEnd(p, ability.getName());
-			ability.getActions().deactivate(p);
+			p.getWorld().spawnParticles(ParticleEffect.builder().type(ParticleTypes.LAVA).quantity(20).offset(new Vector3d(1.2, 1.2, 1.2)).build(), p.getLocation().getPosition().add(0.0, 1.0, 0.0));
+			p.getWorld().playSound(SoundTypes.BLOCK_LAVA_EXTINGUISH, p.getLocation().getPosition().add(0.0, 1.0, 0.0), 1.0);
 		}).submit(super.getMMO());
 	}
 
 	@Listener(order = Order.LATE)
+	@IsCancelled(value = Tristate.FALSE)
 	public void onLevelUp(final LevelUpEvent e, @First final SkillType skill) {
-		if (e.isCancelled()) { return; }
-
 		super.getMMO().getMessages().sendLevelUp(e.getTargetEntity(), skill.getName(), e.getCause().get("new_level", Integer.class).get());
 
 		super.getMMO().getTops().update(skill, e.getTargetEntity().getName(), e.getCause().get("new_level", Integer.class).get());
 		super.getMMO().getTops().update(null, e.getTargetEntity().getName(), super.getMMO().getPlayerDatabase().get(e.getTargetEntity().getUniqueId()).getLevels());
 
-		e.getTargetEntity().getWorld().spawnParticles(ParticleEffect.builder().type(ParticleTypes.HAPPY_VILLAGER).quantity(50).offset(new Vector3d(0.8, 0.8, 0.8)).build(), e.getTargetEntity().getLocation().getPosition().add(0,  1.0, 0));
+		e.getTargetEntity().getWorld().spawnParticles(ParticleEffect.builder().type(ParticleTypes.HAPPY_VILLAGER).quantity(50).offset(new Vector3d(1.2, 1.2, 1.2)).build(), e.getTargetEntity().getLocation().getPosition().add(0.0, 1.0, 0.0));
 	}
 }

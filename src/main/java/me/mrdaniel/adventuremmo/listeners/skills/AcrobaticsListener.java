@@ -8,6 +8,8 @@ import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.cause.entity.damage.DamageTypes;
 import org.spongepowered.api.event.cause.entity.damage.source.DamageSource;
 import org.spongepowered.api.event.entity.DamageEntityEvent;
+import org.spongepowered.api.event.filter.IsCancelled;
+import org.spongepowered.api.util.Tristate;
 
 import me.mrdaniel.adventuremmo.AdventureMMO;
 import me.mrdaniel.adventuremmo.MMOObject;
@@ -26,9 +28,8 @@ public class AcrobaticsListener extends MMOObject {
 	}
 
 	@Listener(order = Order.LATE)
+	@IsCancelled(value = Tristate.FALSE)
 	public void onDamange(final DamageEntityEvent e) {
-		if (e.isCancelled()) { return; }
-
 		if (e.getTargetEntity() instanceof Player) {
 			Player p = (Player) e.getTargetEntity();
 			PlayerData data = super.getMMO().getPlayerDatabase().get(p.getUniqueId());

@@ -11,7 +11,9 @@ import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.cause.entity.damage.source.EntityDamageSource;
 import org.spongepowered.api.event.entity.DamageEntityEvent;
 import org.spongepowered.api.event.entity.projectile.LaunchProjectileEvent;
+import org.spongepowered.api.event.filter.IsCancelled;
 import org.spongepowered.api.event.filter.cause.First;
+import org.spongepowered.api.util.Tristate;
 
 import com.flowpowered.math.vector.Vector3d;
 
@@ -35,9 +37,8 @@ public class ArcheryListener extends MMOObject  {
 	}
 
 	@Listener(order = Order.LATE)
+	@IsCancelled(value = Tristate.FALSE)
 	public void onDamage(final DamageEntityEvent e, @First final EntityDamageSource source) {
-		if (e.isCancelled()) { return; }
-
 		if (source.getSource() instanceof Arrow) {
 			Arrow arrow = (Arrow) source.getSource();
 			if (arrow.getShooter() instanceof Player) {
@@ -48,9 +49,8 @@ public class ArcheryListener extends MMOObject  {
 	}
 
 	@Listener(order = Order.LATE)
+	@IsCancelled(value = Tristate.FALSE)
 	public void onArrowFire(final LaunchProjectileEvent e) {
-		if (e.isCancelled()) { return; }
-
 		if (e.getTargetEntity() instanceof Arrow && e.getTargetEntity().getShooter() instanceof Player) {
 			Player p = (Player) e.getTargetEntity().getShooter();
 			PlayerData data = super.getMMO().getPlayerDatabase().get(p.getUniqueId());

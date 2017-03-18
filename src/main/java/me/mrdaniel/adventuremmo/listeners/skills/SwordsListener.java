@@ -24,7 +24,7 @@ import me.mrdaniel.adventuremmo.catalogtypes.skills.SkillTypes;
 import me.mrdaniel.adventuremmo.catalogtypes.tools.ToolType;
 import me.mrdaniel.adventuremmo.catalogtypes.tools.ToolTypes;
 import me.mrdaniel.adventuremmo.data.manipulators.MMOData;
-import me.mrdaniel.adventuremmo.event.PlayerTargetEntityEvent;
+import me.mrdaniel.adventuremmo.event.PlayerDamageEntityEvent;
 import me.mrdaniel.adventuremmo.io.PlayerData;
 import me.mrdaniel.adventuremmo.utils.ItemUtils;
 
@@ -41,7 +41,7 @@ public class SwordsListener extends ActiveAbilityListener  {
 	}
 
 	@Listener
-	public void onTarget(final PlayerTargetEntityEvent e, @First final ToolType tool) {
+	public void onTarget(final PlayerDamageEntityEvent e, @First final ToolType tool) {
 		if (tool == ToolTypes.SWORD) {
 			PlayerData pdata = super.getMMO().getPlayerDatabase().get(e.getPlayer().getUniqueId());
 			Entity target = e.getOriginalEvent().getTargetEntity();
@@ -54,19 +54,21 @@ public class SwordsListener extends ActiveAbilityListener  {
 			}
 			else {
 				pdata.addExp(e.getPlayer(), super.skill, this.damage_exp);
-				if (e.getPlayer().get(MMOData.class).orElse(new MMOData()).isAbilityActive(super.ability.getId())) {
-					Task.builder().delayTicks(15).intervalTicks(15).execute(new Consumer<Task>() {
-						final DamageSource source = e.getOriginalEvent().getCause().first(DamageSource.class).get();
-						int i = 8;
-						@Override public void accept(@Nonnull final Task t) {
-							if (i-- > 0) {
-								target.damage(1, source);
-								target.getWorld().spawnParticles(ParticleEffect.builder().type(ParticleTypes.REDSTONE_DUST).option(ParticleOptions.COLOR, Color.RED).option(ParticleOptions.VELOCITY, new Vector3d(0, -0.1, 0)).offset(new Vector3d(0.5, 0.5, 0.5)).quantity(50).build(), target.getLocation().getPosition());
+				e.getPlayer().get(MMOData.class).ifPresent(data -> {
+					if (data.isAbilityActive(super.ability.getId())) {
+						Task.builder().delayTicks(15).intervalTicks(15).execute(new Consumer<Task>() {
+							final DamageSource source = e.getOriginalEvent().getCause().first(DamageSource.class).get();
+							int i = 8;
+							@Override public void accept(@Nonnull final Task t) {
+								if (i-- > 0) {
+									target.damage(1, source);
+									target.getWorld().spawnParticles(ParticleEffect.builder().type(ParticleTypes.REDSTONE_DUST).option(ParticleOptions.COLOR, Color.RED).option(ParticleOptions.VELOCITY, new Vector3d(0, -0.1, 0)).offset(new Vector3d(0.5, 0.5, 0.5)).quantity(50).build(), target.getLocation().getPosition());
+								}
+								else { t.cancel(); }
 							}
-							else { t.cancel(); }
-						}
-					}).submit(super.getMMO());
-				}
+						}).submit(super.getMMO());
+					}
+				});
 			}
 		}
 	}

@@ -13,6 +13,7 @@ import me.mrdaniel.adventuremmo.catalogtypes.tools.ToolType;
 import me.mrdaniel.adventuremmo.catalogtypes.tools.ToolTypes;
 import me.mrdaniel.adventuremmo.data.BlockData;
 import me.mrdaniel.adventuremmo.event.BreakBlockEvent;
+import me.mrdaniel.adventuremmo.io.PlayerData;
 
 public class MiningListener extends ActiveAbilityListener {
 
@@ -23,7 +24,12 @@ public class MiningListener extends ActiveAbilityListener {
 	@Listener
 	public void onBlockBreak(final BreakBlockEvent e, @First final BlockData block, @First final ToolType tool) {
 		if (block.getSkill() == super.skill && tool == super.tool) {
-			super.getMMO().getPlayerDatabase().get(e.getPlayer().getUniqueId()).addExp(e.getPlayer(), super.skill, block.getExp());
+			PlayerData pdata = super.getMMO().getPlayerDatabase().get(e.getPlayer().getUniqueId());
+			pdata.addExp(e.getPlayer(), super.skill, block.getExp());
+
+			if (Abilities.DOUBLE_DROP.getChance(pdata.getLevel(super.skill))) {
+				super.getMMO().getDoubleDrops().add(e.getBlock().getExtent(), e.getBlock().getBlockPosition());
+			}
 		}
 	}
 }

@@ -23,5 +23,6 @@ public class ClientListener extends MMOObject {
 	public void onQuit(final ClientConnectionEvent.Disconnect e) {
 		super.getMMO().getPlayerDatabase().unload(e.getTargetEntity().getUniqueId());
 		super.getMMO().getMenus().getScoreboardManager().unload(e.getTargetEntity());
+		super.getMMO().getSuperTools().undo(e.getTargetEntity());
 	}
 }

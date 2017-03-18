@@ -4,6 +4,7 @@ import javax.annotation.Nonnull;
 
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
+import org.spongepowered.api.event.filter.IsCancelled;
 import org.spongepowered.api.util.Tristate;
 
 import me.mrdaniel.adventuremmo.AdventureMMO;
@@ -32,6 +33,7 @@ public abstract class ActiveAbilityListener extends MMOObject {
 	}
 
 	@Listener(order = Order.EARLY)
+	@IsCancelled(value = Tristate.FALSE)
 	public void onAbility(final AbilityEvent e) {
 		if (e.getTool() != this.tool) { return; }
 		if (this.onblock == Tristate.TRUE && !e.isOnBlock())  { return; }

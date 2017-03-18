@@ -17,12 +17,9 @@ import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.GameReloadEvent;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
-import org.spongepowered.api.event.game.state.GamePostInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
-import org.spongepowered.api.event.service.ChangeServiceProviderEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
-import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
@@ -41,23 +38,30 @@ import me.mrdaniel.adventuremmo.commands.CommandSkill;
 import me.mrdaniel.adventuremmo.commands.CommandSkills;
 import me.mrdaniel.adventuremmo.commands.CommandTop;
 import me.mrdaniel.adventuremmo.data.manipulators.ImmutableMMOData;
+import me.mrdaniel.adventuremmo.data.manipulators.ImmutableSuperToolData;
 import me.mrdaniel.adventuremmo.data.manipulators.MMOData;
 import me.mrdaniel.adventuremmo.data.manipulators.MMODataBuilder;
+import me.mrdaniel.adventuremmo.data.manipulators.SuperToolData;
+import me.mrdaniel.adventuremmo.data.manipulators.SuperToolDataBuilder;
+import me.mrdaniel.adventuremmo.exception.ServiceException;
 import me.mrdaniel.adventuremmo.io.Config;
 import me.mrdaniel.adventuremmo.io.HoconPlayerDatabase;
 import me.mrdaniel.adventuremmo.io.ItemDatabase;
 import me.mrdaniel.adventuremmo.io.PlayerDatabase;
 import me.mrdaniel.adventuremmo.listeners.AbilitiesListener;
 import me.mrdaniel.adventuremmo.listeners.ClientListener;
+import me.mrdaniel.adventuremmo.listeners.EconomyListener;
 import me.mrdaniel.adventuremmo.listeners.WorldListener;
+import me.mrdaniel.adventuremmo.managers.DoubleDropManager;
 import me.mrdaniel.adventuremmo.managers.MenuManager;
 import me.mrdaniel.adventuremmo.managers.MessageManager;
+import me.mrdaniel.adventuremmo.managers.SuperToolManager;
 import me.mrdaniel.adventuremmo.managers.TopManager;
 import me.mrdaniel.adventuremmo.utils.ChoiceMaps;
 
 @Plugin(id = "adventuremmo",
 	name = "AdventureMMO",
-	version = "2.0.0",
+	version = "2.0.1",
 	description = "A light-weight plugin that adds skills with all sorts of fun game mechanics to your server.",
 	authors = {"Daniel12321"})
 public class AdventureMMO {
@@ -67,15 +71,14 @@ public class AdventureMMO {
 	private final Path configdir;
 	private final PluginContainer container;
 
-//	private Config config;
 	private PlayerDatabase playerdata;
 	private ItemDatabase itemdata;
 	private MenuManager menus;
 	private MessageManager messages;
 	private TopManager tops;
+	private DoubleDropManager doubledrops;
+	private SuperToolManager supertools;
 	private ChoiceMaps choices;
-
-	private UserStorageService users;
 
 	@Inject
 	public AdventureMMO(final Game game, @ConfigDir(sharedRoot = false) final Path path, final PluginContainer container) {
@@ -95,6 +98,7 @@ public class AdventureMMO {
 		this.logger.info("Registering custom data...");
 
 		this.game.getDataManager().register(MMOData.class, ImmutableMMOData.class, new MMODataBuilder());
+		this.game.getDataManager().register(SuperToolData.class, ImmutableSuperToolData.class, new SuperToolDataBuilder());
 
 		this.game.getRegistry().registerModule(SkillType.class, new SkillTypeRegistryModule());
 		this.game.getRegistry().registerModule(ToolType.class, new ToolTypeRegistryModule());
@@ -114,7 +118,7 @@ public class AdventureMMO {
 		final Config config = new Config(this, this.configdir.resolve("config.conf"));
 
 		// Registering Config Settings
-		SkillTypes.VALUES.removeIf(skill -> !config.getNode("skills", skill.getId(), "enabled").getBoolean());
+		SkillTypes.VALUES.removeIf(skill -> !config.getNode("skills", skill.getId(), "enabled").getBoolean(true));
 		Abilities.VALUES.forEach(a -> a.setValues(config.getNode("abilities", a.getId())));
 
 		// Initializing Managers
@@ -123,27 +127,34 @@ public class AdventureMMO {
 		this.menus = new MenuManager(this);
 		this.messages = new MessageManager(this, config.getNode("messages"));
 		this.tops = new TopManager(this, this.configdir.resolve("tops.conf"));
+		this.doubledrops = new DoubleDropManager(this);
+		this.supertools = new SuperToolManager(this);
 		this.choices = new ChoiceMaps();
 
 		// Registering Commands
-		CommandSpec skills = CommandSpec.builder().description(Text.of(TextColors.BLUE, "AdventureMMO | Skills Command"))
+		this.game.getCommandManager().register(this, CommandSpec.builder()
+				.description(Text.of(TextColors.BLUE, "AdventureMMO | Skills Command"))
 				.arguments(GenericArguments.optionalWeak(GenericArguments.choices(Text.of("skill"), this.choices.getSkills())))
-				.executor(new CommandSkills(this)).build();
-		this.game.getCommandManager().register(this, skills, "skill", "skills", "mmoskill", "mmoskills");
+				.executor(new CommandSkills(this))
+				.build(), "skill", "skills", "mmoskill", "mmoskills");
 
-		CommandSpec tops = CommandSpec.builder().description(Text.of(TextColors.BLUE, "AdventureMMO | Top Command"))
+		this.game.getCommandManager().register(this, CommandSpec.builder()
+				.description(Text.of(TextColors.BLUE, "AdventureMMO | Top Command"))
 				.arguments(GenericArguments.optionalWeak(GenericArguments.choices(Text.of("skill"), this.choices.getSkills())))
-				.executor(new CommandTop(this)).build();
-		this.game.getCommandManager().register(this, tops, "mmotop", "skilltop");
+				.executor(new CommandTop(this))
+				.build(), "mmotop", "skilltop");
 
-		CommandSpec settings = CommandSpec.builder().description(Text.of(TextColors.BLUE, "AdventureMMO | Settings Command"))
-				.executor(new CommandSettings(this)).build();
-		this.game.getCommandManager().register(this, settings, "setting", "settings", "mmosetting", "mmosettings");
+		this.game.getCommandManager().register(this, CommandSpec.builder()
+				.description(Text.of(TextColors.BLUE, "AdventureMMO | Settings Command"))
+				.executor(new CommandSettings(this))
+				.build(), "setting", "settings", "mmosetting", "mmosettings");
 
 		SkillTypes.VALUES.forEach(skill -> {
-			if (config.getNode("skills", skill.getId(), "short_command").getBoolean()) {
-				CommandSpec skillspec = CommandSpec.builder().description(Text.of(TextColors.BLUE, "AdventureMMO | ", skill.getName(), " Command")).executor(new CommandSkill(this, skill)).build();
-				this.game.getCommandManager().register(this, skillspec, skill.getId());
+			if (config.getNode("skills", skill.getId(), "short_command").getBoolean(true)) {
+				this.game.getCommandManager().register(this, CommandSpec.builder()
+						.description(Text.of(TextColors.BLUE, "AdventureMMO | ", skill.getName(), " Command"))
+						.executor(new CommandSkill(this, skill))
+						.build(), skill.getId());
 			}
 		});
 
@@ -152,18 +163,11 @@ public class AdventureMMO {
 		this.game.getEventManager().registerListeners(this, new ClientListener(this));
 		this.game.getEventManager().registerListeners(this, new AbilitiesListener(this, config));
 		this.game.getEventManager().registerListeners(this, new WorldListener(this));
-
+		if (config.getNode("economy", "enabled").getBoolean()) {
+			try { this.game.getEventManager().registerListeners(this, new EconomyListener(this, config)); }
+			catch (final ServiceException exc) { this.logger.error("No Economy Service was found! Install one or disable economy in the config file: {}", exc); }
+		}
 		this.logger.info("Loaded plugin successfully in {} milliseconds.", System.currentTimeMillis() - startuptime);
-	}
-
-	@Listener
-	public void onPostInit(@Nullable final GamePostInitializationEvent e) {
-		this.users = this.game.getServiceManager().provide(UserStorageService.class).get();
-	}
-
-	@Listener
-	public void onServiceChange(final ChangeServiceProviderEvent e) {
-		if (e.getNewProvider() instanceof UserStorageService) { this.users = (UserStorageService) e.getNewProvider(); }
 	}
 
 	@Listener
@@ -175,7 +179,6 @@ public class AdventureMMO {
 		this.game.getCommandManager().getOwnedBy(this).forEach(this.game.getCommandManager()::removeMapping);
 
 		this.onInit(null);
-		this.onPostInit(null);
 
 		this.game.getServer().getOnlinePlayers().forEach(p -> this.playerdata.load(p.getUniqueId()));
 
@@ -191,7 +194,7 @@ public class AdventureMMO {
 	@Nonnull public MenuManager getMenus() { return this.menus; }
 	@Nonnull public MessageManager getMessages() { return this.messages; }
 	@Nonnull public TopManager getTops() { return this.tops; }
+	@Nonnull public DoubleDropManager getDoubleDrops() { return this.doubledrops; }
+	@Nonnull public SuperToolManager getSuperTools() { return this.supertools; }
 	@Nonnull public ChoiceMaps getChoices() { return this.choices; }
-
-	@Nonnull public UserStorageService getUsers() { return this.users; }
 }

@@ -17,7 +17,7 @@ import me.mrdaniel.adventuremmo.catalogtypes.skills.SkillTypes;
 import me.mrdaniel.adventuremmo.catalogtypes.tools.ToolType;
 import me.mrdaniel.adventuremmo.catalogtypes.tools.ToolTypes;
 import me.mrdaniel.adventuremmo.data.manipulators.MMOData;
-import me.mrdaniel.adventuremmo.event.PlayerTargetEntityEvent;
+import me.mrdaniel.adventuremmo.event.PlayerDamageEntityEvent;
 import me.mrdaniel.adventuremmo.io.PlayerData;
 import me.mrdaniel.adventuremmo.utils.ItemUtils;
 
@@ -34,7 +34,7 @@ public class UnarmedListener extends ActiveAbilityListener  {
 	}
 
 	@Listener
-	public void onTarget(final PlayerTargetEntityEvent e, @First final ToolType tool) {
+	public void onTarget(final PlayerDamageEntityEvent e, @First final ToolType tool) {
 		if (tool == ToolTypes.HAND) {
 			PlayerData pdata = super.getMMO().getPlayerDatabase().get(e.getPlayer().getUniqueId());
 			Entity target = e.getOriginalEvent().getTargetEntity();
@@ -48,11 +48,13 @@ public class UnarmedListener extends ActiveAbilityListener  {
 						ent.offer(Keys.PICKUP_DELAY, 30);
 					});
 				}
-				if (e.getPlayer().get(MMOData.class).orElse(new MMOData()).isAbilityActive(super.ability.getId())) {
-					Task.builder().delayTicks(0).execute(() -> {
-						target.setVelocity(target.getVelocity().mul(6.0, 3.0, 6.0));
-					}).submit(super.getMMO());
-				}
+				e.getPlayer().get(MMOData.class).ifPresent(data -> {
+					if (data.isAbilityActive(super.ability.getId())) {
+						Task.builder().delayTicks(0).execute(() -> {
+							target.setVelocity(target.getVelocity().mul(6.0, 3.0, 6.0));
+						}).submit(super.getMMO());
+					}
+				});
 			}
 		}
 	}

@@ -4,7 +4,9 @@ import javax.annotation.Nonnull;
 
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.action.FishingEvent;
+import org.spongepowered.api.event.filter.IsCancelled;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.util.Tristate;
@@ -24,7 +26,8 @@ public class FishingListener extends ActiveAbilityListener {
 		this.fish_exp = fish_exp;
 	}
 
-	@Listener
+	@Listener(order = Order.LATE)
+	@IsCancelled(value = Tristate.FALSE)
 	public void onFish(final FishingEvent.Stop e) {
 		if (e.getTargetEntity() instanceof Player) {
 			Player p = (Player) e.getTargetEntity();

@@ -10,13 +10,13 @@ import org.spongepowered.api.event.impl.AbstractEvent;
 import me.mrdaniel.adventuremmo.AdventureMMO;
 import me.mrdaniel.adventuremmo.catalogtypes.tools.ToolType;
 
-public class PlayerTargetEntityEvent extends AbstractEvent {
+public class PlayerDamageEntityEvent extends AbstractEvent {
 
 	private final Player player;
 	private final DamageEntityEvent original_event;
 	private final Cause cause;
 
-	public PlayerTargetEntityEvent(@Nonnull final AdventureMMO mmo, @Nonnull final Player player, @Nonnull final DamageEntityEvent original_event, @Nonnull final ToolType tool) {
+	public PlayerDamageEntityEvent(@Nonnull final AdventureMMO mmo, @Nonnull final Player player, @Nonnull final DamageEntityEvent original_event, @Nonnull final ToolType tool) {
 		this.player = player;
 		this.original_event = original_event;
 		this.cause = Cause.source(mmo).named("tool", tool).build();

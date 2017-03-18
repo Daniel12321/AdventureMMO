@@ -28,19 +28,19 @@ public class MessageManager extends MMOObject {
 	public MessageManager(@Nonnull final AdventureMMO mmo, @Nonnull final ConfigurationNode node) {
 		super(mmo);
 
-		this.action_bar = node.getNode("action_bar").getBoolean();
-		this.delay_seconds = node.getNode("seconds_between_messages").getInt();
+		this.action_bar = node.getNode("action_bar").getBoolean(true);
+		this.delay_seconds = node.getNode("seconds_between_messages").getInt(5);
 
-		String prefix = node.getNode("prefix").getString();
+		String prefix = node.getNode("prefix").getString("&8[&9MMO&8]");
 		if (!prefix.equals("")) { prefix += " "; }
 
-		this.dodge = TextUtils.toText(prefix + node.getNode("dodge").getString());
-		this.roll = TextUtils.toText(prefix + node.getNode("roll").getString());
+		this.dodge = TextUtils.toText(prefix + node.getNode("dodge").getString(""));
+		this.roll = TextUtils.toText(prefix + node.getNode("roll").getString(""));
 
-		this.levelup = prefix + node.getNode("levelup").getString();
-		this.ability_recharge = prefix + node.getNode("ability_recharge").getString();
-		this.ability_activate = prefix + node.getNode("ability_activate").getString();
-		this.ability_end = prefix + node.getNode("ability_end").getString();
+		this.levelup = prefix + node.getNode("levelup").getString("");
+		this.ability_recharge = prefix + node.getNode("ability_recharge").getString("");
+		this.ability_activate = prefix + node.getNode("ability_activate").getString("");
+		this.ability_end = prefix + node.getNode("ability_end").getString("");
 	}
 
 	public void sendDodge(@Nonnull final Player p) { this.send(p, this.dodge, p.get(MMOData.class).orElse(new MMOData())); }

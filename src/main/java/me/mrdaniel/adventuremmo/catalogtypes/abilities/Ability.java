@@ -54,8 +54,8 @@ public abstract class Ability implements CatalogType {
 	public abstract Text getValueLine(final int level);
 
 	public void setValues(@Nonnull final ConfigurationNode node) {
-		this.initial = node.getNode("initial_value").getDouble();
-		this.increment = node.getNode("level_increment").getDouble();
-		this.cap = node.getNode("value_cap").getDouble();
+		this.initial = node.getNode("initial_value").getDouble(0.0);
+		this.increment = node.getNode("level_increment").getDouble(0.1);
+		this.cap = node.getNode("value_cap").getDouble(80.0);
 	}
 }
