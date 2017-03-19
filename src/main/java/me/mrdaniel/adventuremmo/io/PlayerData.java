@@ -1,7 +1,5 @@
 package me.mrdaniel.adventuremmo.io;
 
-import org.spongepowered.api.entity.living.player.Player;
-
 import me.mrdaniel.adventuremmo.catalogtypes.skills.SkillType;
 
 public interface PlayerData {
@@ -13,5 +11,5 @@ public interface PlayerData {
 
 	public int getExp(SkillType skill);
 	public void setExp(SkillType skill, int exp);
-	public void addExp(Player p, SkillType skill, int exp);
+	public void addExp(SkillType skill, int exp);
 }

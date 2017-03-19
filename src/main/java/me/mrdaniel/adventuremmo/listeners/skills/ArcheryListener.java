@@ -42,8 +42,7 @@ public class ArcheryListener extends MMOObject  {
 		if (source.getSource() instanceof Arrow) {
 			Arrow arrow = (Arrow) source.getSource();
 			if (arrow.getShooter() instanceof Player) {
-				Player p = (Player) arrow.getShooter();
-				super.getMMO().getPlayerDatabase().get(p.getUniqueId()).addExp(p, SkillTypes.ARCHERY, e.willCauseDeath() ? this.kill_exp : this.damage_exp);
+				super.getMMO().getPlayerDatabase().addExp(super.getMMO(), (Player)arrow.getShooter(), SkillTypes.ARCHERY, e.willCauseDeath() ? this.kill_exp : this.damage_exp);
 			}
 		}
 	}

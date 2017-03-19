@@ -9,7 +9,6 @@ import org.spongepowered.api.data.type.TreeTypes;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.NamedCause;
-import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.util.Direction;
@@ -23,9 +22,7 @@ import com.google.common.collect.Lists;
 import me.mrdaniel.adventuremmo.AdventureMMO;
 import me.mrdaniel.adventuremmo.catalogtypes.abilities.Abilities;
 import me.mrdaniel.adventuremmo.catalogtypes.skills.SkillTypes;
-import me.mrdaniel.adventuremmo.catalogtypes.tools.ToolType;
 import me.mrdaniel.adventuremmo.catalogtypes.tools.ToolTypes;
-import me.mrdaniel.adventuremmo.data.BlockData;
 import me.mrdaniel.adventuremmo.data.manipulators.MMOData;
 import me.mrdaniel.adventuremmo.event.BreakBlockEvent;
 import me.mrdaniel.adventuremmo.io.PlayerData;
@@ -38,32 +35,29 @@ public class WoodcuttingListener extends ActiveAbilityListener {
 	}
 
 	@Listener
-	public void onBlockBreak(final BreakBlockEvent e, @First final BlockData block, @First final ToolType tool) {
-		if (block.getSkill() == super.skill && tool == super.tool) {
-			PlayerData pdata = super.getMMO().getPlayerDatabase().get(e.getPlayer().getUniqueId());
-			pdata.addExp(e.getPlayer(), super.skill, block.getExp());
+	public void onBlockBreak(final BreakBlockEvent e) {
+		if (e.getBlock().getSkill() == super.skill && e.getTool() != null && e.getTool() == super.tool) {
+			PlayerData pdata = super.getMMO().getPlayerDatabase().addExp(super.getMMO(), e.getPlayer(), super.skill, e.getBlock().getExp());
 
 			if (Abilities.DOUBLE_DROP.getChance(pdata.getLevel(super.skill))) {
-				super.getMMO().getDoubleDrops().add(e.getBlock().getExtent(), e.getBlock().getBlockPosition());
+				super.getMMO().getDoubleDrops().add(e.getLocation().getExtent(), e.getLocation().getBlockPosition());
 			}
 
-			e.getPlayer().get(MMOData.class).ifPresent(data -> {
-				if (data.isAbilityActive(super.ability.getId())) {
-					Task.builder().delayTicks(2).execute(() -> {
-						Lists.newArrayList(Direction.UP, Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST).forEach(direction -> {
-							Location<World> newloc = e.getBlock().getRelative(direction);
-							super.getMMO().getItemDatabase().getData(newloc.getBlockType()).ifPresent(blockdata -> {
-								if (blockdata.getSkill() == this.skill) {
-									ItemStackSnapshot item = ItemUtils.build(newloc.getBlockType().getItem().get(), Abilities.DOUBLE_DROP.getChance(pdata.getLevel(super.skill)) ? 1 : 2, this.matchTree(newloc.getBlock().get(Keys.TREE_TYPE).orElse(TreeTypes.OAK))).createSnapshot();
-									newloc.setBlockType(BlockTypes.AIR, BlockChangeFlag.ALL, Cause.source(super.getMMO().getContainer()).named(NamedCause.simulated(e.getPlayer())).build());
-									ItemUtils.drop(newloc, item);
-									super.getGame().getEventManager().post(new BreakBlockEvent(super.getMMO(), e.getPlayer(), newloc, blockdata, this.tool));
-								}
-							});
-						}); 
-					}).submit(super.getMMO());
-				}
-			});
+			if (e.getPlayer().get(MMOData.class).orElse(new MMOData()).isAbilityActive(super.ability.getId())) {
+				Task.builder().delayTicks(2).execute(() -> {
+					Lists.newArrayList(Direction.UP, Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST).forEach(direction -> {
+						Location<World> newloc = e.getLocation().getRelative(direction);
+						super.getMMO().getItemDatabase().getData(newloc.getBlockType()).ifPresent(blockdata -> {
+							if (blockdata.getSkill() == this.skill) {
+								ItemStackSnapshot item = ItemUtils.build(newloc.getBlockType().getItem().get(), Abilities.DOUBLE_DROP.getChance(pdata.getLevel(super.skill)) ? 1 : 2, this.matchTree(newloc.getBlock().get(Keys.TREE_TYPE).orElse(TreeTypes.OAK))).createSnapshot();
+								newloc.setBlockType(BlockTypes.AIR, BlockChangeFlag.ALL, Cause.source(super.getMMO().getContainer()).named(NamedCause.simulated(e.getPlayer())).build());
+								ItemUtils.drop(newloc, item);
+								super.getGame().getEventManager().post(new BreakBlockEvent(super.getMMO(), e.getPlayer(), newloc, blockdata, this.tool));
+							}
+						});
+					}); 
+				}).submit(super.getMMO());
+			}
 		}
 	}
 

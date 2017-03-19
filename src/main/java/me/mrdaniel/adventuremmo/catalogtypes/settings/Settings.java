@@ -11,12 +11,13 @@ public final class Settings {
 
 	private Settings(){}
 
+	public static final Setting ACTION_BAR = new Setting("Action Bar", "action_bar");
 	public static final Setting SCOREBOARD = new Setting("Scoreboard", "scoreboard");
 	public static final Setting SCOREBOARD_PERMANENT = new Setting("Scoreboard Permanent", "scoreboard_permanent");
 
 	@Nonnull
 	public static List<Setting> getAll() {
-		return Lists.newArrayList(SCOREBOARD, SCOREBOARD_PERMANENT);
+		return Lists.newArrayList(ACTION_BAR, SCOREBOARD, SCOREBOARD_PERMANENT);
 	}
 
 	@Nonnull

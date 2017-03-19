@@ -14,17 +14,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import me.mrdaniel.adventuremmo.AdventureMMO;
-import me.mrdaniel.adventuremmo.MMOObject;
 
-public class HoconPlayerDatabase extends MMOObject implements PlayerDatabase {
+public class HoconPlayerDatabase implements PlayerDatabase {
 
 	private final Logger logger;
 	private final Path path;
 	private final Map<UUID, HoconPlayerData> data;
 
 	public HoconPlayerDatabase(@Nonnull final AdventureMMO mmo, @Nonnull final Path path) {
-		super(mmo);
-
 		this.logger = LoggerFactory.getLogger("AdventureMMO PlayerDatabase");
 		this.path = path;
 		this.data = new ConcurrentHashMap<UUID, HoconPlayerData>();
@@ -34,7 +31,7 @@ public class HoconPlayerDatabase extends MMOObject implements PlayerDatabase {
 			catch (final IOException exc) { this.logger.error("Failed to create main directory: {}", exc); }
 		}
 
-		super.getServer().getOnlinePlayers().forEach(p -> this.load(p.getUniqueId()));
+		mmo.getGame().getServer().getOnlinePlayers().forEach(p -> this.load(p.getUniqueId()));
 	}
 
 	@Override
@@ -46,12 +43,12 @@ public class HoconPlayerDatabase extends MMOObject implements PlayerDatabase {
 	public Optional<PlayerData> getOffline(@Nonnull final UUID uuid) {
 		Path path = this.path.resolve(uuid.toString() + ".conf");
 		if (!Files.exists(path)) { return Optional.empty(); }
-		return Optional.of(new HoconPlayerData(super.getMMO(), path));
+		return Optional.of(new HoconPlayerData(path));
 	}
 
 	@Override
 	public synchronized void load(@Nonnull final UUID uuid) {
-		this.data.put(uuid, new HoconPlayerData(super.getMMO(), this.path.resolve(uuid.toString() + ".conf")));
+		this.data.put(uuid, new HoconPlayerData(this.path.resolve(uuid.toString() + ".conf")));
 	}
 
 	@Override

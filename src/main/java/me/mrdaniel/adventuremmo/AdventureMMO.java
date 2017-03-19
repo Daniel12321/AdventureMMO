@@ -57,11 +57,12 @@ import me.mrdaniel.adventuremmo.managers.MenuManager;
 import me.mrdaniel.adventuremmo.managers.MessageManager;
 import me.mrdaniel.adventuremmo.managers.SuperToolManager;
 import me.mrdaniel.adventuremmo.managers.TopManager;
+import me.mrdaniel.adventuremmo.service.AdventureMMOService;
 import me.mrdaniel.adventuremmo.utils.ChoiceMaps;
 
 @Plugin(id = "adventuremmo",
 	name = "AdventureMMO",
-	version = "2.0.1",
+	version = "2.0.2",
 	description = "A light-weight plugin that adds skills with all sorts of fun game mechanics to your server.",
 	authors = {"Daniel12321"})
 public class AdventureMMO {
@@ -104,6 +105,8 @@ public class AdventureMMO {
 		this.game.getRegistry().registerModule(ToolType.class, new ToolTypeRegistryModule());
 		this.game.getRegistry().registerModule(Ability.class, new AbilityRegistryModule());
 		this.game.getRegistry().registerModule(Setting.class, new SettingRegistryModule());
+
+		this.game.getServiceManager().setProvider(this, AdventureMMOService.class, new AdventureMMOService(this));
 
 		this.logger.info("Registered custom data successfully.");
 	}

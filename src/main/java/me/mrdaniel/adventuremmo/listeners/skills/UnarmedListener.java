@@ -7,14 +7,12 @@ import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.ArmorEquipable;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.util.Tristate;
 
 import me.mrdaniel.adventuremmo.AdventureMMO;
 import me.mrdaniel.adventuremmo.catalogtypes.abilities.Abilities;
 import me.mrdaniel.adventuremmo.catalogtypes.skills.SkillTypes;
-import me.mrdaniel.adventuremmo.catalogtypes.tools.ToolType;
 import me.mrdaniel.adventuremmo.catalogtypes.tools.ToolTypes;
 import me.mrdaniel.adventuremmo.data.manipulators.MMOData;
 import me.mrdaniel.adventuremmo.event.PlayerDamageEntityEvent;
@@ -34,27 +32,21 @@ public class UnarmedListener extends ActiveAbilityListener  {
 	}
 
 	@Listener
-	public void onTarget(final PlayerDamageEntityEvent e, @First final ToolType tool) {
-		if (tool == ToolTypes.HAND) {
-			PlayerData pdata = super.getMMO().getPlayerDatabase().get(e.getPlayer().getUniqueId());
-			Entity target = e.getOriginalEvent().getTargetEntity();
-			if (e.getOriginalEvent().willCauseDeath()) { pdata.addExp(e.getPlayer(), super.skill, this.kill_exp); }
-			else {
-				pdata.addExp(e.getPlayer(), super.skill, this.damage_exp);
+	public void onTarget(final PlayerDamageEntityEvent e) {
+		if (e.getTool() == super.tool) {
+			PlayerData pdata = super.getMMO().getPlayerDatabase().addExp(super.getMMO(), e.getPlayer(), super.skill, e.isDeath() ? this.kill_exp : this.damage_exp);
+			Entity target = e.getEntity();
+			if (!e.isDeath()) {
 				if (Abilities.DISARM.getChance(pdata.getLevel(super.skill)) && target instanceof ArmorEquipable) {
-					((ArmorEquipable)target).getItemInHand(HandTypes.MAIN_HAND).ifPresent(item -> {
-						((ArmorEquipable)target).setItemInHand(HandTypes.MAIN_HAND, null);
-						Entity ent = ItemUtils.drop(target.getLocation(), item.createSnapshot());
-						ent.offer(Keys.PICKUP_DELAY, 30);
+					ArmorEquipable ae = (ArmorEquipable) target;
+					ae.getItemInHand(HandTypes.MAIN_HAND).ifPresent(item -> {
+						ae.setItemInHand(HandTypes.MAIN_HAND, null);
+						ItemUtils.drop(target.getLocation(), item.createSnapshot()).offer(Keys.PICKUP_DELAY, 30);
 					});
 				}
-				e.getPlayer().get(MMOData.class).ifPresent(data -> {
-					if (data.isAbilityActive(super.ability.getId())) {
-						Task.builder().delayTicks(0).execute(() -> {
-							target.setVelocity(target.getVelocity().mul(6.0, 3.0, 6.0));
-						}).submit(super.getMMO());
-					}
-				});
+				if (e.getPlayer().get(MMOData.class).orElse(new MMOData()).isAbilityActive(super.ability.getId())) {
+					Task.builder().delayTicks(0).execute(() -> target.setVelocity(target.getVelocity().mul(6.0, 3.0, 6.0))).submit(super.getMMO());
+				}
 			}
 		}
 	}

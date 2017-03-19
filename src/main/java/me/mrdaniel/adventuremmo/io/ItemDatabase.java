@@ -19,8 +19,6 @@ import me.mrdaniel.adventuremmo.AdventureMMO;
 import me.mrdaniel.adventuremmo.MMOObject;
 import me.mrdaniel.adventuremmo.catalogtypes.skills.SkillTypes;
 import me.mrdaniel.adventuremmo.catalogtypes.tools.ToolTypes;
-import me.mrdaniel.adventuremmo.data.BlockData;
-import me.mrdaniel.adventuremmo.data.ToolData;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;

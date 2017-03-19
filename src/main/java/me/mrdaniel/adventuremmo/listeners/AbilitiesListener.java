@@ -34,13 +34,13 @@ import me.mrdaniel.adventuremmo.catalogtypes.abilities.Ability;
 import me.mrdaniel.adventuremmo.catalogtypes.abilities.ActiveAbility;
 import me.mrdaniel.adventuremmo.catalogtypes.skills.SkillType;
 import me.mrdaniel.adventuremmo.catalogtypes.tools.ToolType;
-import me.mrdaniel.adventuremmo.data.ToolData;
 import me.mrdaniel.adventuremmo.data.manipulators.MMOData;
 import me.mrdaniel.adventuremmo.event.AbilityEvent;
 import me.mrdaniel.adventuremmo.event.BreakBlockEvent;
 import me.mrdaniel.adventuremmo.event.LevelUpEvent;
 import me.mrdaniel.adventuremmo.event.PlayerDamageEntityEvent;
 import me.mrdaniel.adventuremmo.io.Config;
+import me.mrdaniel.adventuremmo.io.ToolData;
 import me.mrdaniel.adventuremmo.utils.MathUtils;
 
 public class AbilitiesListener extends MMOObject {
@@ -70,8 +70,8 @@ public class AbilitiesListener extends MMOObject {
 	@IsCancelled(value = Tristate.FALSE)
 	public void onDamage(final DamageEntityEvent e, @First final EntityDamageSource source) {
 		if (source.getSource() instanceof Player) {
-			Player damager = (Player) source.getSource();
-			super.getMMO().getItemDatabase().getData(damager.getItemInHand(HandTypes.MAIN_HAND).orElse(null)).ifPresent(handdata -> super.getGame().getEventManager().post(new PlayerDamageEntityEvent(super.getMMO(), damager, e, handdata.getType())));
+			Player p = (Player) source.getSource();
+			super.getMMO().getItemDatabase().getData(p.getItemInHand(HandTypes.MAIN_HAND).orElse(null)).ifPresent(handdata -> super.getGame().getEventManager().post(new PlayerDamageEntityEvent(super.getMMO(), p, e.getTargetEntity(), handdata.getType(), e.getFinalDamage(), e.willCauseDeath())));
 		}
 	}
 
@@ -115,12 +115,12 @@ public class AbilitiesListener extends MMOObject {
 
 	@Listener(order = Order.LATE)
 	@IsCancelled(value = Tristate.FALSE)
-	public void onLevelUp(final LevelUpEvent e, @First final SkillType skill) {
-		super.getMMO().getMessages().sendLevelUp(e.getTargetEntity(), skill.getName(), e.getCause().get("new_level", Integer.class).get());
+	public void onLevelUp(final LevelUpEvent e) {
+		super.getMMO().getMessages().sendLevelUp(e.getPlayer(), e.getSkill().getName(), e.getNewLevel());
 
-		super.getMMO().getTops().update(skill, e.getTargetEntity().getName(), e.getCause().get("new_level", Integer.class).get());
-		super.getMMO().getTops().update(null, e.getTargetEntity().getName(), super.getMMO().getPlayerDatabase().get(e.getTargetEntity().getUniqueId()).getLevels());
+		super.getMMO().getTops().update(e.getSkill(), e.getPlayer().getName(), e.getNewLevel());
+		super.getMMO().getTops().update(null, e.getPlayer().getName(), super.getMMO().getPlayerDatabase().get(e.getPlayer().getUniqueId()).getLevels());
 
-		e.getTargetEntity().getWorld().spawnParticles(ParticleEffect.builder().type(ParticleTypes.HAPPY_VILLAGER).quantity(50).offset(new Vector3d(1.2, 1.2, 1.2)).build(), e.getTargetEntity().getLocation().getPosition().add(0.0, 1.0, 0.0));
+		e.getPlayer().getWorld().spawnParticles(ParticleEffect.builder().type(ParticleTypes.HAPPY_VILLAGER).quantity(50).offset(new Vector3d(1.2, 1.2, 1.2)).build(), e.getPlayer().getLocation().getPosition().add(0.0, 1.0, 0.0));
 	}
 }

@@ -1,7 +1,10 @@
 package me.mrdaniel.adventuremmo.listeners.skills;
 
+import java.util.Optional;
+
 import javax.annotation.Nonnull;
 
+import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
@@ -32,23 +35,19 @@ public class AcrobaticsListener extends MMOObject {
 	public void onDamange(final DamageEntityEvent e) {
 		if (e.getTargetEntity() instanceof Player) {
 			Player p = (Player) e.getTargetEntity();
-			PlayerData data = super.getMMO().getPlayerDatabase().get(p.getUniqueId());
 
-			if (Abilities.DODGE.getChance(data.getLevel(SkillTypes.ACROBATICS))) {
+			Optional<DamageSource> source = e.getCause().first(DamageSource.class);
+			boolean fall = source.isPresent() && source.get().getType() == DamageTypes.FALL;
+			PlayerData data = fall ? super.getMMO().getPlayerDatabase().addExp(super.getMMO(), p, SkillTypes.ACROBATICS, (int) (this.exp_multiplier * p.get(Keys.FALL_DISTANCE).orElse(4F))) : super.getMMO().getPlayerDatabase().get(p.getUniqueId());
+
+			if (fall && Abilities.ROLL.getChance(data.getLevel(SkillTypes.ACROBATICS))) {
+				e.setCancelled(true);
+				super.getMMO().getMessages().sendRoll(p);
+			}
+			else if (Abilities.DODGE.getChance(data.getLevel(SkillTypes.ACROBATICS))) {
 				e.setCancelled(true);
 				super.getMMO().getMessages().sendDodge(p);
-				return;
 			}
-
-			e.getCause().first(DamageSource.class).ifPresent(source -> {
-				if (source.getType() == DamageTypes.FALL) {
-					if (Abilities.ROLL.getChance(data.getLevel(SkillTypes.ACROBATICS))) {
-						e.setCancelled(true);
-						super.getMMO().getMessages().sendRoll(p);
-					}
-					super.getMMO().getPlayerDatabase().get(p.getUniqueId()).addExp(p, SkillTypes.ACROBATICS, (int) (this.exp_multiplier * e.getOriginalDamage()));
-				}
-			});
 		}
 	}
 }

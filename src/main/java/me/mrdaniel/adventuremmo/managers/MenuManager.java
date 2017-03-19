@@ -84,11 +84,12 @@ public class MenuManager {
 	}
 
 	public void sendSettingsInfo(@Nonnull final Player p) {
-		MMOData sdata = p.get(MMOData.class).orElse(new MMOData());
+		MMOData data = p.get(MMOData.class).orElse(new MMOData());
 
 		p.sendMessage(this.getTitle("Settings", false));
-		p.sendMessage(Text.builder().append(Text.of(TextColors.AQUA, "Scoreboard: ", TextUtils.getValueText(sdata.getScoreboard()))).onHover(TextActions.showText(TextUtils.getToggleText(sdata.getScoreboard()))).onClick(TextActions.executeCallback(src -> { sdata.setScoreboard(!sdata.getScoreboard()); p.offer(sdata); this.sendSettingsInfo((Player)src); this.scoreboards.unload(p); })).build());
-		p.sendMessage(Text.builder().append(Text.of(TextColors.AQUA, "Scoreboard Permanent: ", TextUtils.getValueText(sdata.getScoreboardPermanent()))).onHover(TextActions.showText(TextUtils.getToggleText(sdata.getScoreboardPermanent()))).onClick(TextActions.executeCallback(src -> { sdata.setScoreboardPermanent(!sdata.getScoreboardPermanent()); p.offer(sdata); this.sendSettingsInfo((Player)src); this.scoreboards.unload(p); })).build());
+		p.sendMessage(Text.builder().append(Text.of(TextColors.AQUA, "Action Bar: ", TextUtils.getValueText(data.getActionBar()))).onHover(TextActions.showText(TextUtils.getToggleText(data.getActionBar()))).onClick(TextActions.executeCallback(src -> { data.setActionBar(!data.getActionBar()); p.offer(data); this.sendSettingsInfo((Player)src); })).build());
+		p.sendMessage(Text.builder().append(Text.of(TextColors.AQUA, "Scoreboard: ", TextUtils.getValueText(data.getScoreboard()))).onHover(TextActions.showText(TextUtils.getToggleText(data.getScoreboard()))).onClick(TextActions.executeCallback(src -> { data.setScoreboard(!data.getScoreboard()); p.offer(data); this.sendSettingsInfo((Player)src); this.scoreboards.unload(p); })).build());
+		p.sendMessage(Text.builder().append(Text.of(TextColors.AQUA, "Scoreboard Permanent: ", TextUtils.getValueText(data.getScoreboardPermanent()))).onHover(TextActions.showText(TextUtils.getToggleText(data.getScoreboardPermanent()))).onClick(TextActions.executeCallback(src -> { data.setScoreboardPermanent(!data.getScoreboardPermanent()); p.offer(data); this.sendSettingsInfo((Player)src); this.scoreboards.unload(p); })).build());
 		p.sendMessage(Text.EMPTY);
 	}
 

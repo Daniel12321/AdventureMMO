@@ -16,9 +16,10 @@ import me.mrdaniel.adventuremmo.catalogtypes.tools.ToolType;
 public class AbilityEvent extends AbstractEvent implements Cancellable {
 
 	private final Player player;
-	private final Cause cause;
 	private final ToolType tool;
 	private final boolean onblock;
+
+	private final Cause cause;
 	private boolean cancelled;
 
 	@Nullable private ActiveAbility ability;
@@ -26,9 +27,10 @@ public class AbilityEvent extends AbstractEvent implements Cancellable {
 
 	public AbilityEvent(@Nonnull final AdventureMMO mmo, @Nonnull final Player player, @Nonnull final ToolType tool, final boolean onblock) {
 		this.player = player;
-		this.cause = Cause.source(mmo.getContainer()).named("tool", tool).build();
 		this.tool = tool;
 		this.onblock = onblock;
+
+		this.cause = Cause.source(mmo.getContainer()).build();
 		this.cancelled = false;
 
 		this.ability = null;
@@ -82,31 +84,3 @@ public class AbilityEvent extends AbstractEvent implements Cancellable {
 		return this.cancelled;
 	}
 }
-//	/*
-//	 * Launched before an ability matching the tool is found.
-//	 */
-//	public static class Pre extends AbilityEvent {
-//
-//		private final boolean onblock;
-//
-//		public Pre(@Nonnull final AdventureMMO mmo, @Nonnull final Player player, @Nonnull final ToolType tool, final boolean onblock) {
-//			super(player, Cause.source(mmo).named("tool", tool).build());
-//
-//			this.onblock = onblock;
-//		}
-//
-//		public boolean isOnBlock() {
-//			return this.onblock;
-//		}
-//	}
-//
-//	/*
-//	 * Launched when an ability is found and ready to activate.
-//	 */
-//	public static class Activate extends AbilityEvent {
-//
-//		public Activate(@Nonnull final AdventureMMO mmo, @Nonnull final Player player, @Nonnull final ToolType tool, @Nonnull final SkillType skill, @Nonnull final ActiveAbility ability) {
-//			super(player, Cause.source(mmo).named("tool", tool).named("skill", skill).named("ability", ability).build());
-//		}
-//	}
-//}

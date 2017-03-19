@@ -5,34 +5,52 @@ import javax.annotation.Nonnull;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Cancellable;
 import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
-import org.spongepowered.api.event.entity.living.humanoid.player.TargetPlayerEvent;
 import org.spongepowered.api.event.impl.AbstractEvent;
-import org.spongepowered.api.plugin.PluginContainer;
 
+import me.mrdaniel.adventuremmo.AdventureMMO;
 import me.mrdaniel.adventuremmo.catalogtypes.skills.SkillType;
-import me.mrdaniel.adventuremmo.utils.ServerUtils;
 
-public class LevelUpEvent extends AbstractEvent implements TargetPlayerEvent, Cancellable {
+public class LevelUpEvent extends AbstractEvent implements Cancellable {
 
 	private final Player player;
+	private final SkillType skill;
+	private final int old_level;
+	private final int new_level;
+
 	private final Cause cause;
 	private boolean cancelled;
 
-	public LevelUpEvent(@Nonnull final Player player, @Nonnull final PluginContainer container, @Nonnull final SkillType skill, final int old_level, final int new_level) {
+	public LevelUpEvent(@Nonnull final AdventureMMO mmo, @Nonnull final Player player, @Nonnull final SkillType skill, final int old_level, final int new_level) {
 		this.player = player;
-		this.cause = ServerUtils.getCause(container, NamedCause.of("skill", skill), NamedCause.of("old_level", old_level), NamedCause.of("new_level", new_level));
+		this.skill = skill;
+		this.old_level = old_level;
+		this.new_level = new_level;
+
+		this.cause = Cause.source(mmo.getContainer()).build();
 		this.cancelled = false;
+	}
+
+	@Nonnull
+	public Player getPlayer() {
+		return this.player;
+	}
+
+	@Nonnull
+	public SkillType getSkill() {
+		return this.skill;
+	}
+
+	public int getOldLevel() {
+		return this.old_level;
+	}
+
+	public int getNewLevel() {
+		return this.new_level;
 	}
 
 	@Override
 	public Cause getCause() {
 		return this.cause;
-	}
-
-	@Override
-	public Player getTargetEntity() {
-		return this.player;
 	}
 
 	@Override

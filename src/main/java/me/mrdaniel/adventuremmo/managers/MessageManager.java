@@ -14,7 +14,6 @@ import ninja.leaping.configurate.ConfigurationNode;
 
 public class MessageManager extends MMOObject {
 
-	private final boolean action_bar;
 	private final int delay_seconds;
 
 	private final Text dodge;
@@ -28,7 +27,6 @@ public class MessageManager extends MMOObject {
 	public MessageManager(@Nonnull final AdventureMMO mmo, @Nonnull final ConfigurationNode node) {
 		super(mmo);
 
-		this.action_bar = node.getNode("action_bar").getBoolean(true);
 		this.delay_seconds = node.getNode("seconds_between_messages").getInt(5);
 
 		String prefix = node.getNode("prefix").getString("&8[&9MMO&8]");
@@ -51,15 +49,11 @@ public class MessageManager extends MMOObject {
 	public void sendAbilityEnd(@Nonnull final Player p, @Nonnull final String ability) { this.send(p, TextUtils.toText(this.ability_end.replace("%ability%", ability)), p.get(MMOData.class).orElse(new MMOData())); }
 
 	private void sendDelayed(@Nonnull final Player p, @Nonnull final Text txt, @Nonnull final MMOData data) {
-		if (!data.isDelayActive("message_delay")) {
-			data.setDelay("message_delay", System.currentTimeMillis() + (this.delay_seconds * 1000));
-			this.send(p, txt, data);
-		}
+		if (!data.isDelayActive("message_delay")) { this.send(p, txt, data); }
 	}
 
 	private void send(@Nonnull final Player p, @Nonnull final Text txt, @Nonnull final MMOData data) {
-		if (this.action_bar) { p.sendMessage(ChatTypes.ACTION_BAR, txt); }
-		else { p.sendMessage(txt); }
+		p.sendMessage(data.getActionBar() ? ChatTypes.ACTION_BAR : ChatTypes.CHAT, txt);
 
 		data.setDelay("message_delay", System.currentTimeMillis() + (this.delay_seconds * 1000));
 		p.offer(data);

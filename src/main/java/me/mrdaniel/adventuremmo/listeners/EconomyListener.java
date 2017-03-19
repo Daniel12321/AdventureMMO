@@ -32,10 +32,8 @@ public class EconomyListener extends MMOObject {
 
 	@Listener
 	public void onLevelUp(final LevelUpEvent e) {
-		int level = e.getCause().get("new_level", Integer.class).get();
-
-		this.economy.getOrCreateAccount(e.getTargetEntity().getUniqueId()).ifPresent(account -> {
-			account.deposit(this.economy.getDefaultCurrency(), new BigDecimal(this.initial + (level * this.increment)), ServerUtils.getCause(super.getContainer()));
+		this.economy.getOrCreateAccount(e.getPlayer().getUniqueId()).ifPresent(account -> {
+			account.deposit(this.economy.getDefaultCurrency(), new BigDecimal(this.initial + (e.getNewLevel() * this.increment)), ServerUtils.getCause(super.getContainer()));
 		});
 	}
 

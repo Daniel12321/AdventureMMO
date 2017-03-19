@@ -3,10 +3,10 @@ package me.mrdaniel.adventuremmo.utils;
 public class MathUtils {
 
 	public static int expTillNextLevel(final int current_level) {
-		return 83 * current_level + 500;
+		return (int) (Math.pow(1.005, current_level + 600) * 1000 - 19250);
 	}
 
-	public static double between(final double value, final double min, final double max) {
+	public static int between(final int value, final int min, final int max) {
 		return value < min ? min : value > max ? max : value;
 	}
 
