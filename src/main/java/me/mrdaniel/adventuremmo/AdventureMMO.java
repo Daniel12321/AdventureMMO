@@ -23,6 +23,7 @@ import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
+import me.mrdaniel.adventuremmo.bstats.MetricsLite;
 import me.mrdaniel.adventuremmo.catalogtypes.abilities.Abilities;
 import me.mrdaniel.adventuremmo.catalogtypes.abilities.Ability;
 import me.mrdaniel.adventuremmo.catalogtypes.abilities.AbilityRegistryModule;
@@ -62,7 +63,7 @@ import me.mrdaniel.adventuremmo.utils.ChoiceMaps;
 
 @Plugin(id = "adventuremmo",
 	name = "AdventureMMO",
-	version = "2.0.2",
+	version = "2.0.3",
 	description = "A light-weight plugin that adds skills with all sorts of fun game mechanics to your server.",
 	authors = {"Daniel12321"})
 public class AdventureMMO {
@@ -71,6 +72,8 @@ public class AdventureMMO {
 	private final Logger logger;
 	private final Path configdir;
 	private final PluginContainer container;
+
+	private final MetricsLite metrics;
 
 	private PlayerDatabase playerdata;
 	private ItemDatabase itemdata;
@@ -82,11 +85,13 @@ public class AdventureMMO {
 	private ChoiceMaps choices;
 
 	@Inject
-	public AdventureMMO(final Game game, @ConfigDir(sharedRoot = false) final Path path, final PluginContainer container) {
+	public AdventureMMO(final Game game, @ConfigDir(sharedRoot = false) final Path path, final PluginContainer container, final MetricsLite metrics) {
 		this.game = game;
 		this.logger = LoggerFactory.getLogger("AdventureMMO");
 		this.configdir = path;
 		this.container = container;
+
+		this.metrics = metrics;
 
 		if (!Files.exists(path)) {
 			try { Files.createDirectory(path); }
@@ -191,6 +196,8 @@ public class AdventureMMO {
 	@Nonnull public Game getGame() { return this.game; }
 	@Nonnull public Logger getLogger() { return this.logger; }
 	@Nonnull public PluginContainer getContainer() { return this.container; }
+
+	@Nonnull public MetricsLite getMetrics() { return this.metrics; }
 
 	@Nonnull public PlayerDatabase getPlayerDatabase() { return this.playerdata; }
 	@Nonnull public ItemDatabase getItemDatabase() { return this.itemdata; }

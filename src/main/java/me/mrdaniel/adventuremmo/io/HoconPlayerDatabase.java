@@ -10,25 +10,20 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.Nonnull;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import me.mrdaniel.adventuremmo.AdventureMMO;
 
 public class HoconPlayerDatabase implements PlayerDatabase {
 
-	private final Logger logger;
 	private final Path path;
 	private final Map<UUID, HoconPlayerData> data;
 
 	public HoconPlayerDatabase(@Nonnull final AdventureMMO mmo, @Nonnull final Path path) {
-		this.logger = LoggerFactory.getLogger("AdventureMMO PlayerDatabase");
 		this.path = path;
 		this.data = new ConcurrentHashMap<UUID, HoconPlayerData>();
 
 		if (!Files.exists(path)) {
 			try { Files.createDirectory(path); }
-			catch (final IOException exc) { this.logger.error("Failed to create main directory: {}", exc); }
+			catch (final IOException exc) { mmo.getLogger().error("Failed to create main playerdata directory: {}", exc); }
 		}
 
 		mmo.getGame().getServer().getOnlinePlayers().forEach(p -> this.load(p.getUniqueId()));

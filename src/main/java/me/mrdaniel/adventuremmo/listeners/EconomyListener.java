@@ -9,13 +9,11 @@ import org.spongepowered.api.event.service.ChangeServiceProviderEvent;
 import org.spongepowered.api.service.economy.EconomyService;
 
 import me.mrdaniel.adventuremmo.AdventureMMO;
-import me.mrdaniel.adventuremmo.MMOObject;
 import me.mrdaniel.adventuremmo.event.LevelUpEvent;
 import me.mrdaniel.adventuremmo.exception.ServiceException;
 import me.mrdaniel.adventuremmo.io.Config;
-import me.mrdaniel.adventuremmo.utils.ServerUtils;
 
-public class EconomyListener extends MMOObject {
+public class EconomyListener {
 
 	private EconomyService economy;
 
@@ -23,8 +21,6 @@ public class EconomyListener extends MMOObject {
 	private final double increment;
 
 	public EconomyListener(@Nonnull final AdventureMMO mmo, @Nonnull final Config config) throws ServiceException {
-		super(mmo);
-
 		this.economy = mmo.getGame().getServiceManager().provide(EconomyService.class).orElseThrow(() -> new ServiceException("Failed to find Economy Service!"));
 		this.initial = config.getNode("economy", "base_money").getDouble(100.0);
 		this.increment = config.getNode("economy", "increment_money").getDouble(10.0);
@@ -33,7 +29,7 @@ public class EconomyListener extends MMOObject {
 	@Listener
 	public void onLevelUp(final LevelUpEvent e) {
 		this.economy.getOrCreateAccount(e.getPlayer().getUniqueId()).ifPresent(account -> {
-			account.deposit(this.economy.getDefaultCurrency(), new BigDecimal(this.initial + (e.getNewLevel() * this.increment)), ServerUtils.getCause(super.getContainer()));
+			account.deposit(this.economy.getDefaultCurrency(), new BigDecimal(this.initial + (e.getNewLevel() * this.increment)), e.getCause());
 		});
 	}
 
