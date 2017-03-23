@@ -34,10 +34,13 @@ import me.mrdaniel.adventuremmo.catalogtypes.skills.SkillTypeRegistryModule;
 import me.mrdaniel.adventuremmo.catalogtypes.skills.SkillTypes;
 import me.mrdaniel.adventuremmo.catalogtypes.tools.ToolType;
 import me.mrdaniel.adventuremmo.catalogtypes.tools.ToolTypeRegistryModule;
+import me.mrdaniel.adventuremmo.commands.CommandReload;
+import me.mrdaniel.adventuremmo.commands.CommandSet;
 import me.mrdaniel.adventuremmo.commands.CommandSettings;
 import me.mrdaniel.adventuremmo.commands.CommandSkill;
 import me.mrdaniel.adventuremmo.commands.CommandSkills;
 import me.mrdaniel.adventuremmo.commands.CommandTop;
+import me.mrdaniel.adventuremmo.commands.CommandView;
 import me.mrdaniel.adventuremmo.data.manipulators.ImmutableMMOData;
 import me.mrdaniel.adventuremmo.data.manipulators.ImmutableSuperToolData;
 import me.mrdaniel.adventuremmo.data.manipulators.MMOData;
@@ -63,7 +66,7 @@ import me.mrdaniel.adventuremmo.utils.ChoiceMaps;
 
 @Plugin(id = "adventuremmo",
 	name = "AdventureMMO",
-	version = "2.0.3",
+	version = "2.0.4",
 	description = "A light-weight plugin that adds skills with all sorts of fun game mechanics to your server.",
 	authors = {"Daniel12321"})
 public class AdventureMMO {
@@ -73,7 +76,7 @@ public class AdventureMMO {
 	private final Path configdir;
 	private final PluginContainer container;
 
-	private final MetricsLite metrics;
+//	private final MetricsLite metrics;
 
 	private PlayerDatabase playerdata;
 	private ItemDatabase itemdata;
@@ -91,7 +94,7 @@ public class AdventureMMO {
 		this.configdir = path;
 		this.container = container;
 
-		this.metrics = metrics;
+//		this.metrics = metrics;
 
 		if (!Files.exists(path)) {
 			try { Files.createDirectory(path); }
@@ -166,11 +169,19 @@ public class AdventureMMO {
 			}
 		});
 
+		// Admin Commands
+		this.game.getCommandManager().register(this, CommandSpec.builder()
+				.child(CommandSpec.builder().description(Text.of(TextColors.BLUE, "AdventureMMO | Reload Command")).permission("mmo.admin.reload").executor(new CommandReload(this)).build(), "reload")
+				.child(CommandSpec.builder().description(Text.of(TextColors.BLUE, "AdventureMMO | View Command")).permission("mmo.admin.view").arguments(GenericArguments.user(Text.of("user"))).executor(new CommandView(this)).build(), "view")
+				.child(CommandSpec.builder().description(Text.of(TextColors.BLUE, "AdventureMMO | Set Command")).permission("mmo.admin.set").arguments(GenericArguments.user(Text.of("user")), GenericArguments.choices(Text.of("skill"), this.choices.getSkills()), GenericArguments.integer(Text.of("level")), GenericArguments.optionalWeak(GenericArguments.integer(Text.of("exp")))).executor(new CommandSet(this)).build(), "set")
+				.build(), "mmoadmin");
+
 		// Registering Listeners
 		SkillTypes.VALUES.forEach(skill -> this.game.getEventManager().registerListeners(this, skill.getListener().apply(this, config)));
 		this.game.getEventManager().registerListeners(this, new ClientListener(this));
 		this.game.getEventManager().registerListeners(this, new AbilitiesListener(this, config));
 		this.game.getEventManager().registerListeners(this, new WorldListener(this));
+		this.game.getEventManager().registerListeners(this, this.doubledrops);
 		if (config.getNode("economy", "enabled").getBoolean()) {
 			try { this.game.getEventManager().registerListeners(this, new EconomyListener(this, config)); }
 			catch (final ServiceException exc) { this.logger.error("No Economy Service was found! Install one or disable economy in the config file: {}", exc); }
@@ -197,7 +208,7 @@ public class AdventureMMO {
 	@Nonnull public Logger getLogger() { return this.logger; }
 	@Nonnull public PluginContainer getContainer() { return this.container; }
 
-	@Nonnull public MetricsLite getMetrics() { return this.metrics; }
+//	@Nonnull public MetricsLite getMetrics() { return this.metrics; }
 
 	@Nonnull public PlayerDatabase getPlayerDatabase() { return this.playerdata; }
 	@Nonnull public ItemDatabase getItemDatabase() { return this.itemdata; }

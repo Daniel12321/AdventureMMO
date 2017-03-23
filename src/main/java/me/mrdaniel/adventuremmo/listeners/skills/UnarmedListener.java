@@ -42,6 +42,7 @@ public class UnarmedListener extends ActiveAbilityListener  {
 					ae.getItemInHand(HandTypes.MAIN_HAND).ifPresent(item -> {
 						ae.setItemInHand(HandTypes.MAIN_HAND, null);
 						ItemUtils.drop(target.getLocation(), item.createSnapshot()).offer(Keys.PICKUP_DELAY, 30);
+						super.getMMO().getMessages().sendDisarm(e.getPlayer());
 					});
 				}
 				if (e.getPlayer().get(MMOData.class).orElse(new MMOData()).isAbilityActive(super.ability.getId())) {

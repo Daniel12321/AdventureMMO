@@ -45,7 +45,7 @@ public class ItemUtils {
 	public static Entity drop(@Nonnull final Location<World> loc, @Nonnull final ItemStackSnapshot item) {
 		Entity e = loc.createEntity(EntityTypes.ITEM);
 		e.offer(Keys.REPRESENTED_ITEM, item);
-		e.offer(Keys.PICKUP_DELAY, 10);
+//		e.offer(Keys.PICKUP_DELAY, 10);
 		loc.getExtent().spawnEntity(e, ServerUtils.getSpawnCause(e));
 		return e;
 	}

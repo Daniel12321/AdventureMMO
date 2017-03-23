@@ -19,7 +19,7 @@ public class MMOKeys {
 
 	// MMOData
 	public static final Key<MapValue<String, Long>> DELAYS = KeyFactory.makeMapKey(new TypeToken<Map<String, Long>>(){}, new TypeToken<MapValue<String, Long>>(){}, DataQuery.of("delays"), "mmo:delays", "MMO Delays");
-	public static final Key<MapValue<String, Long>> ABILITIES = KeyFactory.makeSingleKey(new TypeToken<Map<String, Long>>(){}, new TypeToken<MapValue<String, Long>>(){}, DataQuery.of("abilities"), "mmo:abilities", "MMO Abilities");
+	public static final Key<MapValue<String, Long>> ABILITIES = KeyFactory.makeMapKey(new TypeToken<Map<String, Long>>(){}, new TypeToken<MapValue<String, Long>>(){}, DataQuery.of("abilities"), "mmo:abilities", "MMO Abilities");
 
 	public static final Key<Value<Boolean>> ACTION_BAR = KeyFactory.makeSingleKey(TypeToken.of(Boolean.class), new TypeToken<Value<Boolean>>() {}, DataQuery.of("action_bar"), "mmo:action_bar", "MMO Action Bar");
 	public static final Key<Value<Boolean>> SCOREBOARD = KeyFactory.makeSingleKey(TypeToken.of(Boolean.class), new TypeToken<Value<Boolean>>() {}, DataQuery.of("scoreboard"), "mmo:scoreboard", "MMO Scoreboard");

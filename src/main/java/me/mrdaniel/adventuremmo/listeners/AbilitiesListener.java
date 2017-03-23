@@ -100,14 +100,14 @@ public class AbilitiesListener extends MMOObject {
 
 		ability.getActions().activate(super.getMMO(), p);
 
-		super.getMMO().getMessages().sendAbilityActivate(p, ability.getName());
+		super.getMMO().getMessages().sendAbilityActivate(p, ability);
 		p.getWorld().spawnParticles(ParticleEffect.builder().type(ParticleTypes.FIREWORKS_SPARK).quantity(50).offset(new Vector3d(1.2, 1.2, 1.2)).build(), p.getLocation().getPosition().add(0.0, 1.0, 0.0));
 		p.getWorld().playSound(SoundTypes.ENTITY_FIREWORK_LAUNCH, p.getLocation().getPosition().add(0.0, 1.0, 0.0), 1.0);
 
 		Task.builder().delayTicks((int) (20 * seconds)).execute(() -> {
 			ability.getActions().deactivate(super.getMMO(), p);
 
-			super.getMMO().getMessages().sendAbilityEnd(p, ability.getName());
+			super.getMMO().getMessages().sendAbilityEnd(p, ability);
 			p.getWorld().spawnParticles(ParticleEffect.builder().type(ParticleTypes.LAVA).quantity(20).offset(new Vector3d(1.2, 1.2, 1.2)).build(), p.getLocation().getPosition().add(0.0, 1.0, 0.0));
 			p.getWorld().playSound(SoundTypes.BLOCK_LAVA_EXTINGUISH, p.getLocation().getPosition().add(0.0, 1.0, 0.0), 1.0);
 		}).submit(super.getMMO());
@@ -116,7 +116,7 @@ public class AbilitiesListener extends MMOObject {
 	@Listener(order = Order.LATE)
 	@IsCancelled(value = Tristate.FALSE)
 	public void onLevelUp(final LevelUpEvent e) {
-		super.getMMO().getMessages().sendLevelUp(e.getPlayer(), e.getSkill().getName(), e.getNewLevel());
+		super.getMMO().getMessages().sendLevelUp(e.getPlayer(), e.getSkill(), e.getNewLevel());
 
 		super.getMMO().getTops().update(e.getSkill(), e.getPlayer().getName(), e.getNewLevel());
 		super.getMMO().getTops().update(null, e.getPlayer().getName(), super.getMMO().getPlayerDatabase().get(e.getPlayer().getUniqueId()).getLevels());

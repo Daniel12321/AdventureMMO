@@ -54,7 +54,7 @@ public class ExcavationListener extends ActiveAbilityListener {
 
 			final int level = pdata.getLevel(super.skill);
 			if (Abilities.DOUBLE_DROP.getChance(level)) {
-				super.getMMO().getDoubleDrops().add(e.getLocation().getExtent(), e.getLocation().getBlockPosition());
+				super.getMMO().getDoubleDrops().addDouble(e.getLocation().getExtent(), e.getLocation().getBlockPosition());
 			}
 
 			if (Abilities.TREASURE_HUNT.getChance(level)) {
@@ -69,6 +69,6 @@ public class ExcavationListener extends ActiveAbilityListener {
 			int l = this.levels.get(i);
 			if (level >= l && this.drops.get(l).getFirst() > Math.random()*100) { return this.drops.get(l).getSecond().create(super.getMMO()); }
 		}
-		return ItemStack.of(ItemTypes.GLOWSTONE, 1);
+		return ItemStack.of(ItemTypes.GLOWSTONE_DUST, 1);
 	}
 }

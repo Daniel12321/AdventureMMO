@@ -14,8 +14,6 @@ import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.filter.type.Include;
 import org.spongepowered.api.event.item.inventory.ClickInventoryEvent;
 import org.spongepowered.api.event.item.inventory.DropItemEvent;
-import org.spongepowered.api.event.world.LoadWorldEvent;
-import org.spongepowered.api.event.world.UnloadWorldEvent;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 import org.spongepowered.api.item.inventory.transaction.SlotTransaction;
 import org.spongepowered.api.util.Tristate;
@@ -63,17 +61,5 @@ public class WorldListener extends MMOObject {
 		for (ItemStackSnapshot item : e.getOriginalDroppedItems()) {
 			if (item.get(ImmutableSuperToolData.class).isPresent()) { e.setCancelled(true); return; }
 		}
-	}
-
-	@Listener
-	@IsCancelled(value = Tristate.FALSE)
-	public void onWorldLoad(final LoadWorldEvent e) {
-		super.getMMO().getDoubleDrops().loadWorld(e.getTargetWorld());
-	}
-
-	@Listener
-	@IsCancelled(value = Tristate.FALSE)
-	public void onWorldUnload(final UnloadWorldEvent e) {
-		this.getMMO().getDoubleDrops().unloadWorld(e.getTargetWorld());
 	}
 }

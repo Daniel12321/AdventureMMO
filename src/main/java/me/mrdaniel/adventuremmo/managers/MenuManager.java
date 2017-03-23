@@ -6,6 +6,7 @@ import javax.annotation.Nullable;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
+import org.spongepowered.api.text.channel.MessageReceiver;
 import org.spongepowered.api.text.format.TextColors;
 
 import com.google.common.collect.ArrayListMultimap;
@@ -30,6 +31,14 @@ public class MenuManager {
 		this.i = 0;
 	}
 
+	public void sendAdminView(@Nonnull final MessageReceiver src, @Nonnull final PlayerData data, @Nonnull final String name) {
+		src.sendMessage(Text.EMPTY);
+		src.sendMessage(this.getTitle(name, false));
+		src.sendMessage(Text.of(TextColors.AQUA, "Total", TextColors.GRAY, " - ", TextColors.GREEN, "Level ", data.getLevels()));
+		SkillTypes.VALUES.forEach(skill -> src.sendMessage(Text.of(TextColors.AQUA, skill.getName(), TextColors.GRAY, " - ", TextColors.GREEN, "Level ", data.getLevel(skill))));
+		src.sendMessage(Text.EMPTY);
+	}
+
 	public void sendSkillList(@Nonnull final Player p) {
 		PlayerData pdata = this.scoreboards.getMMO().getPlayerDatabase().get(p.getUniqueId());
 		MMOData sdata = p.get(MMOData.class).orElse(new MMOData());
@@ -39,6 +48,7 @@ public class MenuManager {
 			else { this.scoreboards.setTemp(p, this.getTitle("Skills", true), this.getSkillListLines(pdata)); }
 		}
 		else {
+			p.sendMessage(Text.EMPTY);
 			p.sendMessage(this.getTitle("Skills", false));
 			p.sendMessage(Text.of(TextColors.AQUA, "Total", TextColors.GRAY, " - ", TextColors.GREEN, "Level ", pdata.getLevels()));
 			SkillTypes.VALUES.forEach(skill -> p.sendMessage(Text.builder().append(Text.of(TextColors.AQUA, skill.getName(), TextColors.GRAY, " - ", TextColors.GREEN, "Level ", pdata.getLevel(skill))).onHover(TextActions.showText(Text.of(TextColors.BLUE, "Click for more info."))).onClick(TextActions.runCommand("/mmoskill " + skill.getId())).build()));
@@ -61,7 +71,7 @@ public class MenuManager {
 			p.sendMessage(Text.of(TextColors.GREEN, "EXP: ",  pdata.getExp(skill), " / ", MathUtils.expTillNextLevel(pdata.getLevel(skill))));
 			skill.getAbilities().forEach(ability -> {
 				p.sendMessage(Text.EMPTY);
-				p.sendMessage(this.getSubTitle(ability.getName(), false));
+				p.sendMessage(this.getBoardTitle(ability.getName(), false));
 				p.sendMessage(ability.getValueLine(pdata.getLevel(skill)));
 			});
 			p.sendMessage(Text.EMPTY);
@@ -77,6 +87,7 @@ public class MenuManager {
 			else { this.scoreboards.setTemp(p, this.getTitle(title, true), this.getSkillTopLines(type)); }
 		}
 		else {
+			p.sendMessage(Text.EMPTY);
 			p.sendMessage(this.getTitle(title, false));
 			this.scoreboards.getMMO().getTops().getTop(type).getTop().forEach((number, player) -> p.sendMessage(Text.of(TextColors.RED, number, ": ", TextColors.AQUA, player.getFirst(), TextColors.GRAY, " - ", TextColors.GREEN, "Level ", player.getSecond())));
 			p.sendMessage(Text.EMPTY);
@@ -86,6 +97,7 @@ public class MenuManager {
 	public void sendSettingsInfo(@Nonnull final Player p) {
 		MMOData data = p.get(MMOData.class).orElse(new MMOData());
 
+		p.sendMessage(Text.EMPTY);
 		p.sendMessage(this.getTitle("Settings", false));
 		p.sendMessage(Text.builder().append(Text.of(TextColors.AQUA, "Action Bar: ", TextUtils.getValueText(data.getActionBar()))).onHover(TextActions.showText(TextUtils.getToggleText(data.getActionBar()))).onClick(TextActions.executeCallback(src -> { data.setActionBar(!data.getActionBar()); p.offer(data); this.sendSettingsInfo((Player)src); })).build());
 		p.sendMessage(Text.builder().append(Text.of(TextColors.AQUA, "Scoreboard: ", TextUtils.getValueText(data.getScoreboard()))).onHover(TextActions.showText(TextUtils.getToggleText(data.getScoreboard()))).onClick(TextActions.executeCallback(src -> { data.setScoreboard(!data.getScoreboard()); p.offer(data); this.sendSettingsInfo((Player)src); this.scoreboards.unload(p); })).build());
@@ -110,7 +122,7 @@ public class MenuManager {
 
 		for (Ability ability : skill.getAbilities()) {
 			lines.put(i++, ability.getValueLine(data.getLevel(skill)));
-			lines.put(i++, this.getSubTitle(ability.getName(), true));
+			lines.put(i++, this.getBoardTitle(ability.getName(), true));
 			lines.put(i++, this.getEmptyLine());
 		}
 		lines.put(i++, Text.of(TextColors.GREEN, "EXP: ", data.getExp(skill), " / ", MathUtils.expTillNextLevel(data.getLevel(skill))));
@@ -134,7 +146,7 @@ public class MenuManager {
 	}
 
 	@Nonnull
-	private Text getSubTitle(@Nonnull final String txt, final boolean small) {
+	private Text getBoardTitle(@Nonnull final String txt, final boolean small) {
 		return small ? Text.of(TextColors.RED, "-=[ ", TextColors.DARK_GREEN, txt, TextColors.RED, " ]=-") : Text.of(TextColors.RED, "---==[ ", TextColors.AQUA, txt, TextColors.RED, " ]==---");
 	}
 

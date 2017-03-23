@@ -24,7 +24,7 @@ public class MiningListener extends ActiveAbilityListener {
 			PlayerData pdata = super.getMMO().getPlayerDatabase().addExp(super.getMMO(), e.getPlayer(), super.skill, e.getBlock().getExp());
 
 			if (Abilities.DOUBLE_DROP.getChance(pdata.getLevel(super.skill))) {
-				super.getMMO().getDoubleDrops().add(e.getLocation().getExtent(), e.getLocation().getBlockPosition());
+				super.getMMO().getDoubleDrops().addDouble(e.getLocation().getExtent(), e.getLocation().getBlockPosition());
 			}
 		}
 	}

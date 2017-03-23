@@ -9,6 +9,7 @@ import me.mrdaniel.adventuremmo.AdventureMMO;
 import me.mrdaniel.adventuremmo.catalogtypes.abilities.Abilities;
 import me.mrdaniel.adventuremmo.catalogtypes.skills.SkillTypes;
 import me.mrdaniel.adventuremmo.catalogtypes.tools.ToolTypes;
+import me.mrdaniel.adventuremmo.data.manipulators.MMOData;
 import me.mrdaniel.adventuremmo.event.BreakBlockEvent;
 import me.mrdaniel.adventuremmo.io.PlayerData;
 
@@ -24,7 +25,11 @@ public class FarmingListener extends ActiveAbilityListener {
 			PlayerData pdata = super.getMMO().getPlayerDatabase().addExp(super.getMMO(), e.getPlayer(), super.skill, e.getBlock().getExp());
 
 			if (Abilities.DOUBLE_DROP.getChance(pdata.getLevel(super.skill))) {
-				super.getMMO().getDoubleDrops().add(e.getLocation().getExtent(), e.getLocation().getBlockPosition());
+				super.getMMO().getDoubleDrops().addDouble(e.getLocation().getExtent(), e.getLocation().getBlockPosition());
+			}
+
+			if (e.getPlayer().get(MMOData.class).orElse(new MMOData()).isAbilityActive(super.ability.getId())) {
+				super.getMMO().getDoubleDrops().addTriple(e.getLocation().getExtent(), e.getLocation().getBlockPosition());
 			}
 		}
 	}

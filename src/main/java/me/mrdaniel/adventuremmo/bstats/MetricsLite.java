@@ -69,7 +69,7 @@ public class MetricsLite {
 			startSubmitting();
 		}
 		else {
-			try { usedMetricsClass.getMethod("linkMetrics", Object.class).invoke(null,this); }
+			try { usedMetricsClass.getMethod("linkMetrics", Object.class).invoke(null, this); }
 			catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
 				if (this.logFailedRequests) { logger.warn("Failed to link to first metrics class {}!", usedMetricsClass.getName(), e); }
 			}
