@@ -73,16 +73,19 @@ public class HoconItemDatabase extends MMOObject implements ItemDatabase {
 		catch (final IOException exc) { super.getMMO().getLogger().error("Failed to load itemdata file: {}", exc); return this.loader.createEmptyNode(); }
 	}
 
+	@Override
 	@Nonnull
 	public Optional<BlockData> getData(@Nonnull final BlockType type) {
 		return Optional.ofNullable(this.blocks.get(type));
 	}
 
+	@Override
 	@Nonnull
 	public Optional<ToolData> getData(@Nonnull final ItemType type) {
 		return Optional.ofNullable(this.tools.get(type));
 	}
 
+	@Override
 	@Nonnull
 	public Optional<ToolData> getData(@Nullable final ItemStack item) {
 		if (item == null) { return Optional.of(new ToolData(ToolTypes.HAND)); }

@@ -10,19 +10,8 @@ public class SQLPlayerData implements PlayerData {
 		;
 	}
 
-	public int getExp(@Nonnull final SkillType skill) {
-		return 0;
-	}
-
-	public void setExp(@Nonnull final SkillType skill, final int exp) {
-		;
-	}
-
-	public int getLevel(@Nonnull final SkillType skill) {
-		return 0;
-	}
-
-	public void setLevel(@Nonnull final SkillType skill, final int level) {
-		;
-	}
+	@Override public int getExp(@Nonnull final SkillType skill) { return 0; }
+	@Override public void setExp(@Nonnull final SkillType skill, final int exp) { ; }
+	@Override public int getLevel(@Nonnull final SkillType skill) { return 0; }
+	@Override public void setLevel(@Nonnull final SkillType skill, final int level) { ; }
 }

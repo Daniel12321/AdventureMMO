@@ -7,7 +7,6 @@ import javax.annotation.Nonnull;
 
 import com.google.common.collect.Lists;
 
-import me.mrdaniel.adventuremmo.catalogtypes.abilities.abilities.GreenThumbs;
 import me.mrdaniel.adventuremmo.catalogtypes.abilities.abilities.SuperTool;
 import me.mrdaniel.adventuremmo.catalogtypes.tools.ToolTypes;
 
@@ -19,7 +18,7 @@ public final class Abilities {
 	public static final ActiveAbility GIGA_DRILL = new ActiveAbility("Giga Drill", "gigadrill", new SuperTool(ToolTypes.SHOVEL));
 	public static final ActiveAbility TREE_VELLER = new ActiveAbility("Tree Veller", "treeveller", ActiveAbilityActions.EMPTY);
 	public static final ActiveAbility FISH_FRENZY = new ActiveAbility("Fish Frenzy", "fishfrenzy", new SuperTool(ToolTypes.ROD));
-	public static final ActiveAbility GREEN_THUMBS = new ActiveAbility("Green Thumbs", "greenthumbs", new GreenThumbs());
+	public static final ActiveAbility GREEN_THUMBS = new ActiveAbility("Green Thumbs", "greenthumbs", ActiveAbilityActions.EMPTY);
 	public static final ActiveAbility BLOODSHED = new ActiveAbility("Bloodshed", "bloodshed", ActiveAbilityActions.EMPTY);
 	public static final ActiveAbility SLAUGHTER = new ActiveAbility("Slaughter", "slaughter", ActiveAbilityActions.EMPTY);
 	public static final ActiveAbility SAITAMA_PUNCH = new ActiveAbility("Saitama Punch", "saitamapunch", ActiveAbilityActions.EMPTY);

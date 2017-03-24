@@ -68,7 +68,7 @@ import me.mrdaniel.adventuremmo.utils.ChoiceMaps;
 
 @Plugin(id = "adventuremmo",
 	name = "AdventureMMO",
-	version = "2.0.4",
+	version = "2.0.5",
 	description = "A light-weight plugin that adds skills with all sorts of fun game mechanics to your server.",
 	authors = {"Daniel12321"})
 public class AdventureMMO {

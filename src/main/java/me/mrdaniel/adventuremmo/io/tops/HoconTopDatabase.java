@@ -47,6 +47,7 @@ public class HoconTopDatabase extends MMOObject implements TopDatabase {
 		catch (final IOException exc) { super.getLogger().error("Failed to save playerdata file: {}", exc); }
 	}
 
+	@Override
 	@Nonnull
 	public Map<Integer, Tuple<String, Integer>> getTop(@Nullable final SkillType skill) {
 		ConfigurationNode node = this.node.getNode(skill == null ? "total" : skill.getId());
@@ -58,6 +59,7 @@ public class HoconTopDatabase extends MMOObject implements TopDatabase {
 		return top;
 	}
 
+	@Override
 	public void update(@Nonnull final String player, @Nullable final SkillType skill, final int level) {
 		this.update(this.node.getNode(skill == null ? "total" : skill.getId()), player, level);
 		this.save();

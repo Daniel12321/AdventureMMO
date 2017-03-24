@@ -29,18 +29,24 @@ public class HoconPlayerDatabase implements PlayerDatabase {
 		mmo.getGame().getServer().getOnlinePlayers().forEach(p -> this.load(p.getUniqueId()));
 	}
 
+	@Override
 	public synchronized void load(@Nonnull final UUID uuid) {
 		this.players.put(uuid, new HoconPlayerData(this.path.resolve(uuid.toString() + ".conf")));
 	}
 
+	@Override
 	public synchronized void unload(@Nonnull final UUID uuid) {
 		this.players.remove(uuid);
 	}
 
+	@Override
+	@Nonnull
 	public synchronized PlayerData get(@Nonnull final UUID uuid) {
 		return this.players.get(uuid);
 	}
 
+	@Override
+	@Nonnull
 	public Optional<PlayerData> getOffline(@Nonnull final UUID uuid) {
 		Path path = this.path.resolve(uuid.toString() + ".conf");
 		if (!Files.exists(path)) { return Optional.empty(); }

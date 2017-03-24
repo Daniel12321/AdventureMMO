@@ -30,7 +30,7 @@ import me.mrdaniel.adventuremmo.io.tops.TopDatabase;
 
 public class SQLDatabase implements PlayerDatabase, ItemDatabase, TopDatabase {
 
-	private Map<UUID, SQLPlayerData> players;
+	private final Map<UUID, SQLPlayerData> players;
 
 	public SQLDatabase(@Nonnull final AdventureMMO mmo, @Nonnull final Path path) {
 		if (!Files.exists(path)) {
@@ -42,40 +42,57 @@ public class SQLDatabase implements PlayerDatabase, ItemDatabase, TopDatabase {
 	}
 
 	// TopDatabase
+	@Override
 	public void update(@Nonnull final String player, @Nullable final SkillType skill, final int level) {
 		;
 	}
 
+	@Override
+	@Nonnull
 	public Map<Integer, Tuple<String, Integer>> getTop(@Nullable final SkillType skill) {
-		return Maps.newHashMap();
+		Map<Integer, Tuple<String, Integer>> top = Maps.newHashMap();
+
+		return top;
 	}
 
 	// ItemDatabase
+	@Override
+	@Nonnull
 	public Optional<BlockData> getData(@Nonnull final BlockType type) {
 		return Optional.empty();
 	}
 
+	@Override
+	@Nonnull
 	public Optional<ToolData> getData(@Nonnull final ItemType type) {
 		return Optional.empty();
 	}
 
+	@Override
+	@Nonnull
 	public Optional<ToolData> getData(@Nullable final ItemStack item) {
 		return Optional.empty();
 	}
 
 	// PlayerDatabase
+	@Override
 	public synchronized void load(@Nonnull final UUID uuid) {
 		this.players.put(uuid, new SQLPlayerData());
 	}
 
+	@Override
 	public synchronized void unload(@Nonnull final UUID uuid) {
 		this.players.remove(uuid);
 	}
 
+	@Override
+	@Nonnull
 	public synchronized PlayerData get(@Nonnull final UUID uuid) {
 		return this.players.get(uuid);
 	}
 
+	@Override
+	@Nonnull
 	public Optional<PlayerData> getOffline(@Nonnull final UUID uuid) {
 		return Optional.empty();
 	}

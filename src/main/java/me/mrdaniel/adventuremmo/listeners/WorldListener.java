@@ -36,8 +36,6 @@ public class WorldListener extends MMOObject {
 	@Listener(order = Order.LATE)
 	@IsCancelled(value = Tristate.FALSE)
 	public void onChange(final ChangeBlockEvent e) {
-		super.getMMO().getLogger().info(e.toString());
-
 		e.getTransactions().forEach(trans -> trans.getOriginal().getLocation().ifPresent(loc -> loc.getExtent().setCreator(loc.getBlockPosition(), null)));
 	}
 
