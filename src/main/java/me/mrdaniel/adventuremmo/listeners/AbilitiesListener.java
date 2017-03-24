@@ -40,7 +40,7 @@ import me.mrdaniel.adventuremmo.event.BreakBlockEvent;
 import me.mrdaniel.adventuremmo.event.LevelUpEvent;
 import me.mrdaniel.adventuremmo.event.PlayerDamageEntityEvent;
 import me.mrdaniel.adventuremmo.io.Config;
-import me.mrdaniel.adventuremmo.io.ToolData;
+import me.mrdaniel.adventuremmo.io.items.ToolData;
 import me.mrdaniel.adventuremmo.utils.MathUtils;
 
 public class AbilitiesListener extends MMOObject {
@@ -118,8 +118,8 @@ public class AbilitiesListener extends MMOObject {
 	public void onLevelUp(final LevelUpEvent e) {
 		super.getMMO().getMessages().sendLevelUp(e.getPlayer(), e.getSkill(), e.getNewLevel());
 
-		super.getMMO().getTops().update(e.getSkill(), e.getPlayer().getName(), e.getNewLevel());
-		super.getMMO().getTops().update(null, e.getPlayer().getName(), super.getMMO().getPlayerDatabase().get(e.getPlayer().getUniqueId()).getLevels());
+		super.getMMO().getTops().update(e.getPlayer().getName(), e.getSkill(), e.getNewLevel());
+		super.getMMO().getTops().update(e.getPlayer().getName(), null, super.getMMO().getPlayerDatabase().get(e.getPlayer().getUniqueId()).getLevels());
 
 		e.getPlayer().getWorld().spawnParticles(ParticleEffect.builder().type(ParticleTypes.HAPPY_VILLAGER).quantity(50).offset(new Vector3d(1.2, 1.2, 1.2)).build(), e.getPlayer().getLocation().getPosition().add(0.0, 1.0, 0.0));
 	}

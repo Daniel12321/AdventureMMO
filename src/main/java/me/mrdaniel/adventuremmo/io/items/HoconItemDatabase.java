@@ -1,4 +1,4 @@
-package me.mrdaniel.adventuremmo.io;
+package me.mrdaniel.adventuremmo.io.items;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -23,7 +23,7 @@ import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 
-public class ItemDatabase extends MMOObject {
+public class HoconItemDatabase extends MMOObject implements ItemDatabase {
 
 	private final Map<BlockType, BlockData> blocks;
 	private final Map<ItemType, ToolData> tools;
@@ -31,7 +31,7 @@ public class ItemDatabase extends MMOObject {
 	private final ConfigurationLoader<CommentedConfigurationNode> loader;
 	private final CommentedConfigurationNode node;
 
-	public ItemDatabase(@Nonnull final AdventureMMO mmo, @Nonnull final Path path) {
+	public HoconItemDatabase(@Nonnull final AdventureMMO mmo, @Nonnull final Path path) {
 		super(mmo);
 
 		this.blocks = Maps.newHashMap();
@@ -72,23 +72,6 @@ public class ItemDatabase extends MMOObject {
 		try { return this.loader.load(); }
 		catch (final IOException exc) { super.getMMO().getLogger().error("Failed to load itemdata file: {}", exc); return this.loader.createEmptyNode(); }
 	}
-
-//	public void set(@Nonnull final BlockType type, @Nonnull final BlockData data) {
-//		this.blocks.put(type, data);
-//		this.node.getNode("blocks", type.getId()).setValue(data.serialize());
-//		this.save();
-//	}
-//
-//	public void set(@Nonnull final ItemType type, @Nonnull final ToolData data) {
-//		this.tools.put(type, data);
-//		this.node.getNode("tools", type.getId()).setValue(data.serialize());
-//		this.save();
-//	}
-//
-//	private void save() {
-//		try { this.loader.save(this.node); }
-//		catch (final IOException exc) { super.getMMO().getLogger().error("Failed to save itemdata file: {}", exc); }
-//	}
 
 	@Nonnull
 	public Optional<BlockData> getData(@Nonnull final BlockType type) {

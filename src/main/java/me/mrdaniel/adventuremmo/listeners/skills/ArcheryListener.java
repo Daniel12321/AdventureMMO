@@ -21,7 +21,7 @@ import me.mrdaniel.adventuremmo.AdventureMMO;
 import me.mrdaniel.adventuremmo.MMOObject;
 import me.mrdaniel.adventuremmo.catalogtypes.abilities.Abilities;
 import me.mrdaniel.adventuremmo.catalogtypes.skills.SkillTypes;
-import me.mrdaniel.adventuremmo.io.PlayerData;
+import me.mrdaniel.adventuremmo.io.playerdata.PlayerData;
 import me.mrdaniel.adventuremmo.utils.ServerUtils;
 
 public class ArcheryListener extends MMOObject  {

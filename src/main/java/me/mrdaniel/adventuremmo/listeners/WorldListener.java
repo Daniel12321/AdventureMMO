@@ -32,10 +32,12 @@ public class WorldListener extends MMOObject {
 		this.uuid = UUID.fromString("af191b27-3180-4021-bf4a-1d0484069300");
 	}
 
-	@Include(value = {ChangeBlockEvent.Grow.class, ChangeBlockEvent.Break.class})
+	@Include(value = {ChangeBlockEvent.Decay.class, ChangeBlockEvent.Grow.class, ChangeBlockEvent.Break.class})
 	@Listener(order = Order.LATE)
 	@IsCancelled(value = Tristate.FALSE)
-	public void onGrow(final ChangeBlockEvent e) {
+	public void onChange(final ChangeBlockEvent e) {
+		super.getMMO().getLogger().info(e.toString());
+
 		e.getTransactions().forEach(trans -> trans.getOriginal().getLocation().ifPresent(loc -> loc.getExtent().setCreator(loc.getBlockPosition(), null)));
 	}
 

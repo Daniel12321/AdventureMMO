@@ -17,7 +17,7 @@ import me.mrdaniel.adventuremmo.catalogtypes.abilities.Ability;
 import me.mrdaniel.adventuremmo.catalogtypes.skills.SkillType;
 import me.mrdaniel.adventuremmo.catalogtypes.skills.SkillTypes;
 import me.mrdaniel.adventuremmo.data.manipulators.MMOData;
-import me.mrdaniel.adventuremmo.io.PlayerData;
+import me.mrdaniel.adventuremmo.io.playerdata.PlayerData;
 import me.mrdaniel.adventuremmo.utils.MathUtils;
 import me.mrdaniel.adventuremmo.utils.TextUtils;
 
@@ -89,7 +89,7 @@ public class MenuManager {
 		else {
 			p.sendMessage(Text.EMPTY);
 			p.sendMessage(this.getTitle(title, false));
-			this.scoreboards.getMMO().getTops().getTop(type).getTop().forEach((number, player) -> p.sendMessage(Text.of(TextColors.RED, number, ": ", TextColors.AQUA, player.getFirst(), TextColors.GRAY, " - ", TextColors.GREEN, "Level ", player.getSecond())));
+			this.scoreboards.getMMO().getTops().getTop(type).forEach((number, player) -> p.sendMessage(Text.of(TextColors.RED, number, ": ", TextColors.AQUA, player.getFirst(), TextColors.GRAY, " - ", TextColors.GREEN, "Level ", player.getSecond())));
 			p.sendMessage(Text.EMPTY);
 		}
 	}
@@ -135,7 +135,7 @@ public class MenuManager {
 	private Multimap<Integer, Text> getSkillTopLines(@Nullable final SkillType type) {
 		Multimap<Integer, Text> lines = ArrayListMultimap.create();
 
-		this.scoreboards.getMMO().getTops().getTop(type).getTop().forEach((number, player) -> lines.put(player.getSecond(), Text.of(TextColors.AQUA, player.getFirst())));
+		this.scoreboards.getMMO().getTops().getTop(type).forEach((number, player) -> lines.put(player.getSecond(), Text.of(TextColors.AQUA, player.getFirst())));
 
 		return lines;
 	}

@@ -1,4 +1,4 @@
-package me.mrdaniel.adventuremmo.io;
+package me.mrdaniel.adventuremmo.io.playerdata;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -41,11 +41,8 @@ public class HoconPlayerData implements PlayerData {
 		catch (final IOException exc) { LOGGER.error("Failed to save playerdata file: {}", exc); }
 	}
 
-	public int getLevels() { return this.node.getChildrenMap().values().stream().mapToInt(node -> node.getNode("level").getInt()).sum(); }
 	public int getLevel(@Nonnull final SkillType skill) { return this.node.getNode(skill.getId(), "level").getInt(); }
 	public void setLevel(@Nonnull final SkillType skill, final int level) { node.getNode(skill.getId(), "level").setValue(level); this.save(); }
-	public void addLevel(@Nonnull final SkillType skill, final int level) { this.setLevel(skill, this.getLevel(skill) + level); this.save(); }
 	public int getExp(@Nonnull final SkillType skill) { return this.node.getNode(skill.getId(), "exp").getInt(); }
 	public void setExp(@Nonnull final SkillType skill, final int exp) { this.node.getNode(skill.getId(), "exp").setValue(exp); this.save(); }
-	public void addExp(@Nonnull final SkillType skill, final int exp) { this.setExp(skill, this.getExp(skill) + exp); this.save(); }
 }

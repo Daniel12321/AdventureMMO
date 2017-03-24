@@ -22,7 +22,7 @@ import me.mrdaniel.adventuremmo.catalogtypes.skills.SkillTypes;
 import me.mrdaniel.adventuremmo.catalogtypes.tools.ToolTypes;
 import me.mrdaniel.adventuremmo.event.BreakBlockEvent;
 import me.mrdaniel.adventuremmo.io.Config;
-import me.mrdaniel.adventuremmo.io.PlayerData;
+import me.mrdaniel.adventuremmo.io.playerdata.PlayerData;
 import me.mrdaniel.adventuremmo.utils.ItemInfo;
 import me.mrdaniel.adventuremmo.utils.ItemUtils;
 

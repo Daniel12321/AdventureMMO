@@ -16,7 +16,7 @@ import me.mrdaniel.adventuremmo.catalogtypes.skills.SkillTypes;
 import me.mrdaniel.adventuremmo.catalogtypes.tools.ToolTypes;
 import me.mrdaniel.adventuremmo.data.manipulators.MMOData;
 import me.mrdaniel.adventuremmo.event.PlayerDamageEntityEvent;
-import me.mrdaniel.adventuremmo.io.PlayerData;
+import me.mrdaniel.adventuremmo.io.playerdata.PlayerData;
 import me.mrdaniel.adventuremmo.utils.ItemUtils;
 
 public class UnarmedListener extends ActiveAbilityListener  {

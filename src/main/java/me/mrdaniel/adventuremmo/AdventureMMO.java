@@ -49,9 +49,12 @@ import me.mrdaniel.adventuremmo.data.manipulators.SuperToolData;
 import me.mrdaniel.adventuremmo.data.manipulators.SuperToolDataBuilder;
 import me.mrdaniel.adventuremmo.exception.ServiceException;
 import me.mrdaniel.adventuremmo.io.Config;
-import me.mrdaniel.adventuremmo.io.HoconPlayerDatabase;
-import me.mrdaniel.adventuremmo.io.ItemDatabase;
-import me.mrdaniel.adventuremmo.io.PlayerDatabase;
+import me.mrdaniel.adventuremmo.io.items.HoconItemDatabase;
+import me.mrdaniel.adventuremmo.io.items.ItemDatabase;
+import me.mrdaniel.adventuremmo.io.playerdata.HoconPlayerDatabase;
+import me.mrdaniel.adventuremmo.io.playerdata.PlayerDatabase;
+import me.mrdaniel.adventuremmo.io.tops.HoconTopDatabase;
+import me.mrdaniel.adventuremmo.io.tops.TopDatabase;
 import me.mrdaniel.adventuremmo.listeners.AbilitiesListener;
 import me.mrdaniel.adventuremmo.listeners.ClientListener;
 import me.mrdaniel.adventuremmo.listeners.EconomyListener;
@@ -60,7 +63,6 @@ import me.mrdaniel.adventuremmo.managers.DoubleDropManager;
 import me.mrdaniel.adventuremmo.managers.MenuManager;
 import me.mrdaniel.adventuremmo.managers.MessageManager;
 import me.mrdaniel.adventuremmo.managers.SuperToolManager;
-import me.mrdaniel.adventuremmo.managers.TopManager;
 import me.mrdaniel.adventuremmo.service.AdventureMMOService;
 import me.mrdaniel.adventuremmo.utils.ChoiceMaps;
 
@@ -76,13 +78,11 @@ public class AdventureMMO {
 	private final Path configdir;
 	private final PluginContainer container;
 
-//	private final MetricsLite metrics;
-
 	private PlayerDatabase playerdata;
+	private TopDatabase tops;
 	private ItemDatabase itemdata;
 	private MenuManager menus;
 	private MessageManager messages;
-	private TopManager tops;
 	private DoubleDropManager doubledrops;
 	private SuperToolManager supertools;
 	private ChoiceMaps choices;
@@ -93,8 +93,6 @@ public class AdventureMMO {
 		this.logger = LoggerFactory.getLogger("AdventureMMO");
 		this.configdir = path;
 		this.container = container;
-
-//		this.metrics = metrics;
 
 		if (!Files.exists(path)) {
 			try { Files.createDirectory(path); }
@@ -134,10 +132,10 @@ public class AdventureMMO {
 
 		// Initializing Managers
 		this.playerdata = new HoconPlayerDatabase(this, this.configdir.resolve("playerdata"));
-		this.itemdata = new ItemDatabase(this, this.configdir.resolve("itemdata.conf"));
+		this.tops = new HoconTopDatabase(this, this.configdir.resolve("tops.conf"));
+		this.itemdata = new HoconItemDatabase(this, this.configdir.resolve("itemdata.conf"));
 		this.menus = new MenuManager(this);
 		this.messages = new MessageManager(this, config.getNode("messages"));
-		this.tops = new TopManager(this, this.configdir.resolve("tops.conf"));
 		this.doubledrops = new DoubleDropManager(this);
 		this.supertools = new SuperToolManager(this);
 		this.choices = new ChoiceMaps();
@@ -208,13 +206,11 @@ public class AdventureMMO {
 	@Nonnull public Logger getLogger() { return this.logger; }
 	@Nonnull public PluginContainer getContainer() { return this.container; }
 
-//	@Nonnull public MetricsLite getMetrics() { return this.metrics; }
-
 	@Nonnull public PlayerDatabase getPlayerDatabase() { return this.playerdata; }
+	@Nonnull public TopDatabase getTops() { return this.tops; }
 	@Nonnull public ItemDatabase getItemDatabase() { return this.itemdata; }
 	@Nonnull public MenuManager getMenus() { return this.menus; }
 	@Nonnull public MessageManager getMessages() { return this.messages; }
-	@Nonnull public TopManager getTops() { return this.tops; }
 	@Nonnull public DoubleDropManager getDoubleDrops() { return this.doubledrops; }
 	@Nonnull public SuperToolManager getSuperTools() { return this.supertools; }
 	@Nonnull public ChoiceMaps getChoices() { return this.choices; }

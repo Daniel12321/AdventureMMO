@@ -1,4 +1,4 @@
-package me.mrdaniel.adventuremmo.io;
+package me.mrdaniel.adventuremmo.io.items;
 
 import java.util.Optional;
 

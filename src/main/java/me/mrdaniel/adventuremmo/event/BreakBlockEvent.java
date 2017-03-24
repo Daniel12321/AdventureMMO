@@ -11,7 +11,7 @@ import org.spongepowered.api.world.World;
 
 import me.mrdaniel.adventuremmo.AdventureMMO;
 import me.mrdaniel.adventuremmo.catalogtypes.tools.ToolType;
-import me.mrdaniel.adventuremmo.io.BlockData;
+import me.mrdaniel.adventuremmo.io.items.BlockData;
 
 public class BreakBlockEvent extends AbstractEvent {
 

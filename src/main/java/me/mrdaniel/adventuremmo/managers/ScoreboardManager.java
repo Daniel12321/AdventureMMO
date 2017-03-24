@@ -20,7 +20,7 @@ import com.google.common.collect.Multimap;
 
 import me.mrdaniel.adventuremmo.AdventureMMO;
 import me.mrdaniel.adventuremmo.MMOObject;
-import me.mrdaniel.adventuremmo.io.PlayerData;
+import me.mrdaniel.adventuremmo.io.playerdata.PlayerData;
 
 public class ScoreboardManager extends MMOObject {
 

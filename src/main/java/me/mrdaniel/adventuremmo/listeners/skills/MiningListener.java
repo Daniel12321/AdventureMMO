@@ -10,7 +10,7 @@ import me.mrdaniel.adventuremmo.catalogtypes.abilities.Abilities;
 import me.mrdaniel.adventuremmo.catalogtypes.skills.SkillTypes;
 import me.mrdaniel.adventuremmo.catalogtypes.tools.ToolTypes;
 import me.mrdaniel.adventuremmo.event.BreakBlockEvent;
-import me.mrdaniel.adventuremmo.io.PlayerData;
+import me.mrdaniel.adventuremmo.io.playerdata.PlayerData;
 
 public class MiningListener extends ActiveAbilityListener {
 
