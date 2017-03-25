@@ -18,6 +18,7 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.GameReloadEvent;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
+import org.spongepowered.api.event.game.state.GameStoppingEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
@@ -188,8 +189,15 @@ public class AdventureMMO {
 	}
 
 	@Listener
+	public void onStopping(@Nullable final GameStoppingEvent e) {
+		this.game.getServer().getOnlinePlayers().forEach(this.supertools::undo);
+	}
+
+	@Listener
 	public void onReload(@Nullable final GameReloadEvent e) {
 		this.logger.info("Reloading...");
+
+		this.onStopping(null);
 
 		this.game.getEventManager().unregisterPluginListeners(this);
 		this.game.getScheduler().getScheduledTasks(this).forEach(task -> task.cancel());

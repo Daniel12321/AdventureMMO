@@ -51,7 +51,7 @@ public class WorldListener extends MMOObject {
 	@IsCancelled(value = Tristate.FALSE)
 	public void onItemClick(final ClickInventoryEvent e, @First final Player p) {
 		for (SlotTransaction trans : e.getTransactions()) {
-			if (trans.getOriginal().get(ImmutableSuperToolData.class).isPresent()) { e.setCancelled(true); return; }
+			if (trans.getOriginal().get(ImmutableSuperToolData.class).isPresent()) { e.setCancelled(true); }
 		}
 	}
 
