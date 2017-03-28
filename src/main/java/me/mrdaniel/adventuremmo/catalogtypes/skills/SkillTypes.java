@@ -24,7 +24,7 @@ public final class SkillTypes {
 	private SkillTypes(){}
 
 	public static final SkillType MINING = new SkillType("Mining", "mining", (mmo, config) -> new MiningListener(mmo), Abilities.MAD_MINER, Abilities.DOUBLE_DROP);
-	public static final SkillType WOODCUTTING = new SkillType("Woodcutting", "woodcutting", (mmo, config) -> new WoodcuttingListener(mmo), Abilities.TREE_VELLER, Abilities.DOUBLE_DROP);
+	public static final SkillType WOODCUTTING = new SkillType("Woodcutting", "woodcutting", (mmo, config) -> new WoodcuttingListener(mmo), Abilities.TREE_FELLER, Abilities.DOUBLE_DROP);
 	public static final SkillType EXCAVATION = new SkillType("Excavation", "excavation", (mmo, config) -> new ExcavationListener(mmo, config), Abilities.GIGA_DRILL, Abilities.TREASURE_HUNT, Abilities.DOUBLE_DROP);
 	public static final SkillType FISHING = new SkillType("Fishing", "fishing", (mmo, config) -> new FishingListener(mmo, config), Abilities.FISH_FRENZY, Abilities.WATER_TREASURE, Abilities.DOUBLE_DROP);
 	public static final SkillType FARMING = new SkillType("Farming", "farming", (mmo, config) -> new FarmingListener(mmo), Abilities.GREEN_THUMBS, Abilities.DOUBLE_DROP);

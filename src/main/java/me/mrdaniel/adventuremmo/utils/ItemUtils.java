@@ -9,18 +9,21 @@ import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.data.MemoryDataContainer;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.meta.ItemEnchantment;
+import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.data.type.SkullType;
 import org.spongepowered.api.data.type.SkullTypes;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.item.Enchantment;
 import org.spongepowered.api.item.Enchantments;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
+import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;
@@ -45,7 +48,7 @@ public class ItemUtils {
 	public static Entity drop(@Nonnull final Location<World> loc, @Nonnull final ItemStackSnapshot item) {
 		Entity e = loc.createEntity(EntityTypes.ITEM);
 		e.offer(Keys.REPRESENTED_ITEM, item);
-//		e.offer(Keys.PICKUP_DELAY, 10);
+		e.offer(Keys.PICKUP_DELAY, 10);
 		loc.getExtent().spawnEntity(e, ServerUtils.getSpawnCause(e));
 		return e;
 	}
@@ -71,15 +74,19 @@ public class ItemUtils {
 		return ItemStack.builder().itemType(ItemTypes.SKULL).keyValue(Keys.SKULL_TYPE, SkullTypes.PLAYER).keyValue(Keys.REPRESENTED_PLAYER, p.getProfile()).build();
 	}
 
-	@Nonnull
-	public static ItemStack createSuperTool(@Nonnull final ItemStack item, @Nonnull final ToolType tool) {
-		ItemStack supertool = item.copy();
+	public static void giveSuperTool(@Nonnull final Player p, @Nonnull final ToolType tool) {
+		ItemStack item = p.getItemInHand(HandTypes.MAIN_HAND).get();
+
+		item.offer(new SuperToolData(item.get(Keys.ITEM_ENCHANTMENTS).orElse(Lists.newArrayList()), TextUtils.toString(item.get(Keys.DISPLAY_NAME).orElse(Text.of("")))));
+		item.offer(Keys.DISPLAY_NAME, Text.of(TextColors.RED, TextStyles.BOLD, "Super ", tool.getName()));
+		item.offer(Keys.UNBREAKABLE, true);
+
 		final boolean rod = tool == ToolTypes.ROD;
 		int lvl = rod ? 3 : 5;
 		int max_lvl = rod ? 5 : 10;
 		Enchantment type = rod ? Enchantments.LURE : Enchantments.EFFICIENCY;
 
-		List<ItemEnchantment> ench = supertool.get(Keys.ITEM_ENCHANTMENTS).orElse(Lists.newArrayList());
+		List<ItemEnchantment> ench = item.get(Keys.ITEM_ENCHANTMENTS).orElse(Lists.newArrayList());
 		for (ItemEnchantment enchant : ench) {
 			if (enchant.getEnchantment() == type) {
 				lvl += enchant.getLevel();
@@ -88,12 +95,14 @@ public class ItemUtils {
 			}
 		}
 		ench.add(new ItemEnchantment(type, MathUtils.between(lvl, 1, max_lvl)));
-		supertool.offer(Keys.ITEM_ENCHANTMENTS, ench);
-		supertool.offer(Keys.DISPLAY_NAME, Text.of(TextColors.RED, TextStyles.BOLD, "Super ", tool.getName()));
-		supertool.offer(new SuperToolData(true));
-		supertool.offer(Keys.UNBREAKABLE, true);
+		item.offer(Keys.ITEM_ENCHANTMENTS, ench);
 
-		return supertool;
+		p.setItemInHand(HandTypes.MAIN_HAND, item);
+	}
+
+	public static void restoreSuperTool(@Nonnull final Player p, @Nonnull final PluginContainer container) {
+		p.closeInventory(ServerUtils.getCause(container, NamedCause.of("player", p)));
+		p.getInventory().slots().forEach(slot -> slot.peek().ifPresent(item -> item.get(SuperToolData.class).ifPresent(data -> slot.set(data.restore(item)))));
 	}
 
 	@Nonnull

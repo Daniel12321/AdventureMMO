@@ -63,13 +63,13 @@ import me.mrdaniel.adventuremmo.listeners.WorldListener;
 import me.mrdaniel.adventuremmo.managers.DoubleDropManager;
 import me.mrdaniel.adventuremmo.managers.MenuManager;
 import me.mrdaniel.adventuremmo.managers.MessageManager;
-import me.mrdaniel.adventuremmo.managers.SuperToolManager;
 import me.mrdaniel.adventuremmo.service.AdventureMMOService;
 import me.mrdaniel.adventuremmo.utils.ChoiceMaps;
+import me.mrdaniel.adventuremmo.utils.ItemUtils;
 
 @Plugin(id = "adventuremmo",
 	name = "AdventureMMO",
-	version = "2.0.5",
+	version = "Dev-Build",
 	description = "A light-weight plugin that adds skills with all sorts of fun game mechanics to your server.",
 	authors = {"Daniel12321"})
 public class AdventureMMO {
@@ -85,7 +85,6 @@ public class AdventureMMO {
 	private MenuManager menus;
 	private MessageManager messages;
 	private DoubleDropManager doubledrops;
-	private SuperToolManager supertools;
 	private ChoiceMaps choices;
 
 	@Inject
@@ -128,8 +127,10 @@ public class AdventureMMO {
 		final Config config = new Config(this, this.configdir.resolve("config.conf"));
 
 		// Registering Config Settings
+		Abilities.VALUES.removeIf(ability -> !config.getNode("abilities", ability.getId(), "enabled").getBoolean(true));
+		Abilities.VALUES.forEach(ability -> ability.setValues(config.getNode("abilities", ability.getId())));
 		SkillTypes.VALUES.removeIf(skill -> !config.getNode("skills", skill.getId(), "enabled").getBoolean(true));
-		Abilities.VALUES.forEach(a -> a.setValues(config.getNode("abilities", a.getId())));
+		SkillTypes.VALUES.forEach(skill -> skill.getAbilities().removeIf(ability -> !ability.isEnabled()));
 
 		// Initializing Managers
 		this.playerdata = new HoconPlayerDatabase(this, this.configdir.resolve("playerdata"));
@@ -138,7 +139,6 @@ public class AdventureMMO {
 		this.menus = new MenuManager(this);
 		this.messages = new MessageManager(this, config.getNode("messages"));
 		this.doubledrops = new DoubleDropManager(this);
-		this.supertools = new SuperToolManager(this);
 		this.choices = new ChoiceMaps();
 
 		// Registering Commands
@@ -146,26 +146,24 @@ public class AdventureMMO {
 				.description(Text.of(TextColors.BLUE, "AdventureMMO | Skills Command"))
 				.arguments(GenericArguments.optionalWeak(GenericArguments.choices(Text.of("skill"), this.choices.getSkills())))
 				.executor(new CommandSkills(this))
-				.build(), "skill", "skills", "mmoskill", "mmoskills");
+				.build(), config.getNode("commands", "skills").getList(obj -> (String)obj));
 
 		this.game.getCommandManager().register(this, CommandSpec.builder()
 				.description(Text.of(TextColors.BLUE, "AdventureMMO | Top Command"))
 				.arguments(GenericArguments.optionalWeak(GenericArguments.choices(Text.of("skill"), this.choices.getSkills())))
 				.executor(new CommandTop(this))
-				.build(), "mmotop", "skilltop");
+				.build(), config.getNode("commands", "tops").getList(obj -> (String)obj));
 
 		this.game.getCommandManager().register(this, CommandSpec.builder()
 				.description(Text.of(TextColors.BLUE, "AdventureMMO | Settings Command"))
 				.executor(new CommandSettings(this))
-				.build(), "setting", "settings", "mmosetting", "mmosettings");
+				.build(), config.getNode("commands", "settings").getList(obj -> (String)obj));
 
-		SkillTypes.VALUES.forEach(skill -> {
-			if (config.getNode("skills", skill.getId(), "short_command").getBoolean(true)) {
-				this.game.getCommandManager().register(this, CommandSpec.builder()
-						.description(Text.of(TextColors.BLUE, "AdventureMMO | ", skill.getName(), " Command"))
-						.executor(new CommandSkill(this, skill))
-						.build(), skill.getId());
-			}
+		SkillTypes.VALUES.stream().filter(skill -> config.getNode("commands", skill.getId()).getBoolean(true)).forEach(skill -> {
+			this.game.getCommandManager().register(this, CommandSpec.builder()
+					.description(Text.of(TextColors.BLUE, "AdventureMMO | ", skill.getName(), " Command"))
+					.executor(new CommandSkill(this, skill))
+					.build(), skill.getId());
 		});
 
 		// Admin Commands
@@ -190,7 +188,7 @@ public class AdventureMMO {
 
 	@Listener
 	public void onStopping(@Nullable final GameStoppingEvent e) {
-		this.game.getServer().getOnlinePlayers().forEach(this.supertools::undo);
+		this.game.getServer().getOnlinePlayers().forEach(p -> ItemUtils.restoreSuperTool(p, this.container));
 	}
 
 	@Listener
@@ -220,6 +218,5 @@ public class AdventureMMO {
 	@Nonnull public MenuManager getMenus() { return this.menus; }
 	@Nonnull public MessageManager getMessages() { return this.messages; }
 	@Nonnull public DoubleDropManager getDoubleDrops() { return this.doubledrops; }
-	@Nonnull public SuperToolManager getSuperTools() { return this.supertools; }
 	@Nonnull public ChoiceMaps getChoices() { return this.choices; }
 }

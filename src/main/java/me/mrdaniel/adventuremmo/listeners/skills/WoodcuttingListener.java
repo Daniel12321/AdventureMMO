@@ -31,7 +31,7 @@ import me.mrdaniel.adventuremmo.utils.ItemUtils;
 public class WoodcuttingListener extends ActiveAbilityListener {
 
 	public WoodcuttingListener(@Nonnull final AdventureMMO mmo) {
-		super(mmo, Abilities.TREE_VELLER, SkillTypes.WOODCUTTING, ToolTypes.AXE, Tristate.TRUE);
+		super(mmo, Abilities.TREE_FELLER, SkillTypes.WOODCUTTING, ToolTypes.AXE, Tristate.TRUE);
 	}
 
 	@Listener

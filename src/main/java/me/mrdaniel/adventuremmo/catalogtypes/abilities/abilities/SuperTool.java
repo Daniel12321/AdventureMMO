@@ -7,6 +7,7 @@ import org.spongepowered.api.entity.living.player.Player;
 import me.mrdaniel.adventuremmo.AdventureMMO;
 import me.mrdaniel.adventuremmo.catalogtypes.abilities.ActiveAbilityActions;
 import me.mrdaniel.adventuremmo.catalogtypes.tools.ToolType;
+import me.mrdaniel.adventuremmo.utils.ItemUtils;
 
 public class SuperTool implements ActiveAbilityActions {
 
@@ -18,11 +19,11 @@ public class SuperTool implements ActiveAbilityActions {
 
 	@Override
 	public void activate(@Nonnull final AdventureMMO mmo, final Player p) {
-		mmo.getSuperTools().give(p, this.tool);
+		ItemUtils.giveSuperTool(p, tool);
 	}
 
 	@Override
 	public void deactivate(@Nonnull final AdventureMMO mmo, final Player p) {
-		mmo.getSuperTools().undo(p);
+		ItemUtils.restoreSuperTool(p, mmo.getContainer());
 	}
 }

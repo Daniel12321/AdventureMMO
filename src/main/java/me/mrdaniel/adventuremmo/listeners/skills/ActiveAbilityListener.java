@@ -35,9 +35,7 @@ public abstract class ActiveAbilityListener extends MMOObject {
 	@Listener(order = Order.EARLY)
 	@IsCancelled(value = Tristate.FALSE)
 	public void onAbility(final AbilityEvent e) {
-		if (e.getTool() != this.tool) { return; }
-		if (this.onblock == Tristate.TRUE && !e.isOnBlock())  { return; }
-		if (this.onblock == Tristate.FALSE && e.isOnBlock()) { return; }
+		if (e.getTool() != this.tool || !this.ability.isEnabled() || (this.onblock == Tristate.TRUE && !e.isOnBlock()) || (this.onblock == Tristate.FALSE && e.isOnBlock())) { return; }
 
 		e.setAbility(this.ability);
 		e.setSkill(this.skill);

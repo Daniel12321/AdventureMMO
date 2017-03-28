@@ -1,12 +1,15 @@
 package me.mrdaniel.adventuremmo.data;
 
+import java.util.List;
 import java.util.Map;
 
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.data.key.Key;
 import org.spongepowered.api.data.key.KeyFactory;
+import org.spongepowered.api.data.meta.ItemEnchantment;
 import org.spongepowered.api.data.value.ValueFactory;
+import org.spongepowered.api.data.value.mutable.ListValue;
 import org.spongepowered.api.data.value.mutable.MapValue;
 import org.spongepowered.api.data.value.mutable.Value;
 
@@ -26,5 +29,6 @@ public class MMOKeys {
 	public static final Key<Value<Boolean>> SCOREBOARD_PERMANENT = KeyFactory.makeSingleKey(TypeToken.of(Boolean.class), new TypeToken<Value<Boolean>>() {}, DataQuery.of("scoreboard_permanent"), "mmo:scoreboard_permanent", "MMO Scoreboard Permanent");
 
 	// SuperToolData
-	public static final Key<Value<Boolean>> ENABLED = KeyFactory.makeSingleKey(TypeToken.of(Boolean.class), new TypeToken<Value<Boolean>>() {}, DataQuery.of("enabled"), "mmo:enabled", "MMO Enabled");
+	public static final Key<ListValue<ItemEnchantment>> ENCHANTS = KeyFactory.makeListKey(new TypeToken<List<ItemEnchantment>>(){}, new TypeToken<ListValue<ItemEnchantment>>(){}, DataQuery.of("enchants"), "mmo:enchants", "MMO Enchants");
+	public static final Key<Value<String>> NAME = KeyFactory.makeSingleKey(TypeToken.of(String.class), new TypeToken<Value<String>>(){}, DataQuery.of("name"), "mmo:name", "MMO Name");
 }

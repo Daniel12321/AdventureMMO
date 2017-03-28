@@ -16,7 +16,7 @@ public class SuperToolDataBuilder extends AbstractDataBuilder<SuperToolData> imp
 		super(SuperToolData.class, 1);
 	}
 
-	@Override public SuperToolData create() { return new SuperToolData(true); }
+	@Override public SuperToolData create() { return new SuperToolData(); }
 	@Override public Optional<SuperToolData> createFrom(@Nonnull DataHolder dataHolder) { return create().fill(dataHolder); }
 	@Override protected Optional<SuperToolData> buildContent(@Nonnull DataView view) throws InvalidDataException { return create().from(view); }
 }
