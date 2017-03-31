@@ -35,6 +35,10 @@ import me.mrdaniel.adventuremmo.catalogtypes.skills.SkillTypeRegistryModule;
 import me.mrdaniel.adventuremmo.catalogtypes.skills.SkillTypes;
 import me.mrdaniel.adventuremmo.catalogtypes.tools.ToolType;
 import me.mrdaniel.adventuremmo.catalogtypes.tools.ToolTypeRegistryModule;
+import me.mrdaniel.adventuremmo.commands.CommandBlockClear;
+import me.mrdaniel.adventuremmo.commands.CommandBlockSet;
+import me.mrdaniel.adventuremmo.commands.CommandItemClear;
+import me.mrdaniel.adventuremmo.commands.CommandItemSet;
 import me.mrdaniel.adventuremmo.commands.CommandReload;
 import me.mrdaniel.adventuremmo.commands.CommandSet;
 import me.mrdaniel.adventuremmo.commands.CommandSettings;
@@ -69,7 +73,7 @@ import me.mrdaniel.adventuremmo.utils.ItemUtils;
 
 @Plugin(id = "adventuremmo",
 	name = "AdventureMMO",
-	version = "Dev-Build",
+	version = "2.0.7",
 	description = "A light-weight plugin that adds skills with all sorts of fun game mechanics to your server.",
 	authors = {"Daniel12321"})
 public class AdventureMMO {
@@ -171,6 +175,10 @@ public class AdventureMMO {
 				.child(CommandSpec.builder().description(Text.of(TextColors.BLUE, "AdventureMMO | Reload Command")).permission("mmo.admin.reload").executor(new CommandReload(this)).build(), "reload")
 				.child(CommandSpec.builder().description(Text.of(TextColors.BLUE, "AdventureMMO | View Command")).permission("mmo.admin.view").arguments(GenericArguments.user(Text.of("user"))).executor(new CommandView(this)).build(), "view")
 				.child(CommandSpec.builder().description(Text.of(TextColors.BLUE, "AdventureMMO | Set Command")).permission("mmo.admin.set").arguments(GenericArguments.user(Text.of("user")), GenericArguments.choices(Text.of("skill"), this.choices.getSkills()), GenericArguments.integer(Text.of("level")), GenericArguments.optionalWeak(GenericArguments.integer(Text.of("exp")))).executor(new CommandSet(this)).build(), "set")
+				.child(CommandSpec.builder().description(Text.of(TextColors.BLUE, "AdventureMMO | SetItem Command")).permission("mmo.admin.setitem").arguments(GenericArguments.choices(Text.of("tooltype"), this.choices.getTools())).executor(new CommandItemSet(this)).build(), "setitem")
+				.child(CommandSpec.builder().description(Text.of(TextColors.BLUE, "AdventureMMO | SetBlock Command")).permission("mmo.admin.setblock").arguments(GenericArguments.choices(Text.of("skill"), this.choices.getSkills()), GenericArguments.integer(Text.of("exp"))).executor(new CommandBlockSet(this)).build(), "setblock")
+				.child(CommandSpec.builder().description(Text.of(TextColors.BLUE, "AdventureMMO | ClearItem Command")).permission("mmo.admin.clearitem").executor(new CommandItemClear(this)).build(), "clearitem")
+				.child(CommandSpec.builder().description(Text.of(TextColors.BLUE, "AdventureMMO | ClearBlock Command")).permission("mmo.admin.clearblock").executor(new CommandBlockClear(this)).build(), "clearblock")
 				.build(), "mmoadmin");
 
 		// Registering Listeners
@@ -189,6 +197,7 @@ public class AdventureMMO {
 	@Listener
 	public void onStopping(@Nullable final GameStoppingEvent e) {
 		this.game.getServer().getOnlinePlayers().forEach(p -> ItemUtils.restoreSuperTool(p, this.container));
+		this.playerdata.unloadAll();
 	}
 
 	@Listener
@@ -202,8 +211,6 @@ public class AdventureMMO {
 		this.game.getCommandManager().getOwnedBy(this).forEach(this.game.getCommandManager()::removeMapping);
 
 		this.onInit(null);
-
-		this.game.getServer().getOnlinePlayers().forEach(p -> this.playerdata.load(p.getUniqueId()));
 
 		this.logger.info("Reloaded successfully.");
 	}
