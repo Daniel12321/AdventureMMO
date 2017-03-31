@@ -31,4 +31,5 @@ public class MMOKeys {
 	// SuperToolData
 	public static final Key<ListValue<ItemEnchantment>> ENCHANTS = KeyFactory.makeListKey(new TypeToken<List<ItemEnchantment>>(){}, new TypeToken<ListValue<ItemEnchantment>>(){}, DataQuery.of("enchants"), "mmo:enchants", "MMO Enchants");
 	public static final Key<Value<String>> NAME = KeyFactory.makeSingleKey(TypeToken.of(String.class), new TypeToken<Value<String>>(){}, DataQuery.of("name"), "mmo:name", "MMO Name");
+	public static final Key<Value<Integer>> DURABILITY = KeyFactory.makeSingleKey(TypeToken.of(Integer.class), new TypeToken<Value<Integer>>(){}, DataQuery.of("durability"), "mmo:durability", "MMO Durability");
 }

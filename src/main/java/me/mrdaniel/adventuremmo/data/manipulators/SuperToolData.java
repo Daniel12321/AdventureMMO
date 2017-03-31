@@ -26,11 +26,13 @@ public class SuperToolData extends AbstractData<SuperToolData, ImmutableSuperToo
 
 	private List<ItemEnchantment> enchants;
 	private String name;
+	private int durability;
 
-	public SuperToolData() { this(Lists.newArrayList(), ""); }
-	public SuperToolData(@Nonnull 	final List<ItemEnchantment> enchants, @Nonnull final String name) {
+	public SuperToolData() { this(Lists.newArrayList(), "", 0); }
+	public SuperToolData(@Nonnull 	final List<ItemEnchantment> enchants, @Nonnull final String name, final int durability) {
 		this.enchants = enchants;
 		this.name = name;
+		this.durability = durability;
 
 		registerGettersAndSetters();
 	}
@@ -44,6 +46,10 @@ public class SuperToolData extends AbstractData<SuperToolData, ImmutableSuperToo
 		registerFieldGetter(MMOKeys.NAME, this::getName);
 		registerFieldSetter(MMOKeys.NAME, this::setName);
 		registerKeyValue(MMOKeys.NAME, this::getNameValue);
+
+		registerFieldGetter(MMOKeys.DURABILITY, this::getDurability);
+		registerFieldSetter(MMOKeys.DURABILITY, this::setDurability);
+		registerKeyValue(MMOKeys.DURABILITY, this::getDurabilityValue);
 	}
 
 	public ListValue<ItemEnchantment> getEnchantsValue() { return MMOKeys.FACTORY.createListValue(MMOKeys.ENCHANTS, this.enchants); }
@@ -54,32 +60,39 @@ public class SuperToolData extends AbstractData<SuperToolData, ImmutableSuperToo
 	public String getName() { return this.name; }
 	public void setName(@Nonnull final String name) { this.name = name; }
 
+	public Value<Integer> getDurabilityValue() { return MMOKeys.FACTORY.createValue(MMOKeys.DURABILITY, this.durability); }
+	public int getDurability() { return this.durability; }
+	public void setDurability(final int durability) { this.durability = durability; }
+
 	@Nonnull
 	public ItemStack restore(@Nonnull final ItemStack tool) {
 		if (this.name.equals("")) { tool.remove(Keys.DISPLAY_NAME); }
 		else { tool.offer(Keys.DISPLAY_NAME, TextUtils.toText(this.name)); }
+
 		tool.offer(Keys.ITEM_ENCHANTMENTS, this.enchants);
 		tool.offer(Keys.UNBREAKABLE, false);
+		if (this.durability != 0) { tool.offer(Keys.ITEM_DURABILITY, this.durability); }
+
 		tool.remove(SuperToolData.class);
 		return tool;
 	}
 
 	@SuppressWarnings("unchecked")
 	public Optional<SuperToolData> from(@Nonnull final DataView view) {
-		if (!view.contains(MMOKeys.ENCHANTS.getQuery())) { return Optional.empty(); }
 		return Optional.of(new SuperToolData(
-				(List<ItemEnchantment>) view.getList(MMOKeys.ENCHANTS.getQuery()).get(),
-				view.getString(MMOKeys.NAME.getQuery()).orElse("")));
+				view.getList(MMOKeys.ENCHANTS.getQuery()).map(l -> (List<ItemEnchantment>)l).orElse(Lists.newArrayList()),
+				view.getString(MMOKeys.NAME.getQuery()).orElse(""),
+				view.getInt(MMOKeys.DURABILITY.getQuery()).orElse(0)));
 	}
 
 	@Override
 	public DataContainer toContainer() {
-		return super.toContainer().set(MMOKeys.ENCHANTS.getQuery(), this.enchants).copy().set(MMOKeys.NAME.getQuery(), this.name);
+		return super.toContainer().set(MMOKeys.ENCHANTS.getQuery(), this.enchants).set(MMOKeys.NAME.getQuery(), this.name).set(MMOKeys.DURABILITY.getQuery(), this.durability);
 	}
 
 	@Override public Optional<SuperToolData> fill(DataHolder holder, MergeFunction overlap) { return Optional.of(Preconditions.checkNotNull(overlap).merge(copy(), from(holder.toContainer()).orElse(null))); }
 	@Override public Optional<SuperToolData> from(DataContainer container) { return from((DataView)container); }
-	@Override public SuperToolData copy() { return new SuperToolData(this.enchants, this.name); }
-	@Override public ImmutableSuperToolData asImmutable() { return new ImmutableSuperToolData(this.enchants, this.name); }
+	@Override public SuperToolData copy() { return new SuperToolData(this.enchants, this.name, this.durability); }
+	@Override public ImmutableSuperToolData asImmutable() { return new ImmutableSuperToolData(this.enchants, this.name, this.durability); }
 	@Override public int getContentVersion() { return 1; }
 }

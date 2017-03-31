@@ -21,6 +21,8 @@ public class HoconPlayerData implements PlayerData {
 	private final ConfigurationLoader<CommentedConfigurationNode> loader;
 	private final CommentedConfigurationNode node;
 
+	private long last_use;
+
 	public HoconPlayerData(@Nonnull final Path path) {
 		this.loader = HoconConfigurationLoader.builder().setPath(path).build();
 
@@ -29,6 +31,7 @@ public class HoconPlayerData implements PlayerData {
 			catch (final IOException exc) { LOGGER.error("Failed to create playerdata file: {}", exc); }
 		}
 		this.node = this.load();
+		this.last_use = System.currentTimeMillis();
 	}
 
 	private CommentedConfigurationNode load() {
@@ -36,13 +39,17 @@ public class HoconPlayerData implements PlayerData {
 		catch (final IOException exc) { LOGGER.error("Failed to load playerdata file: {}", exc); return this.loader.createEmptyNode(); }
 	}
 
-	private void save() {
+	@Override
+	public void save() {
 		try { this.loader.save(this.node); }
 		catch (final IOException exc) { LOGGER.error("Failed to save playerdata file: {}", exc); }
 	}
 
-	@Override public int getLevel(@Nonnull final SkillType skill) { return this.node.getNode(skill.getId(), "level").getInt(); }
-	@Override public void setLevel(@Nonnull final SkillType skill, final int level) { node.getNode(skill.getId(), "level").setValue(level); this.save(); }
-	@Override public int getExp(@Nonnull final SkillType skill) { return this.node.getNode(skill.getId(), "exp").getInt(); }
-	@Override public void setExp(@Nonnull final SkillType skill, final int exp) { this.node.getNode(skill.getId(), "exp").setValue(exp); this.save(); }
+	@Override public int getLevel(@Nonnull final SkillType skill) { this.setLastUse(); return this.node.getNode(skill.getId(), "level").getInt(); }
+	@Override public void setLevel(@Nonnull final SkillType skill, final int level) { this.setLastUse(); node.getNode(skill.getId(), "level").setValue(level); }
+	@Override public int getExp(@Nonnull final SkillType skill) { this.setLastUse(); return this.node.getNode(skill.getId(), "exp").getInt(); }
+	@Override public void setExp(@Nonnull final SkillType skill, final int exp) { this.setLastUse(); this.node.getNode(skill.getId(), "exp").setValue(exp); }
+
+	@Override public long getLastUse() { return this.last_use; }
+	private void setLastUse() { this.last_use = System.currentTimeMillis(); }
 }

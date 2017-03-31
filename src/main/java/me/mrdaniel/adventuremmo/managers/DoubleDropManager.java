@@ -68,36 +68,3 @@ public class DoubleDropManager {
 		});
 	}
 }
-
-//public class DoubleDropManager {
-//
-//	private final Map<World, List<Vector3i>> blocks;
-//
-//	public DoubleDropManager(@Nonnull final AdventureMMO mmo) {
-//		this.blocks = Maps.newHashMap();
-//
-//		Task.builder().delayTicks(10).intervalTicks(2).execute(() -> this.blocks.values().forEach(list -> list.clear())).submit(mmo);
-//		mmo.getGame().getServer().getWorlds().forEach(w -> this.blocks.put(w, Lists.newArrayList()));
-//	}
-//
-//	public void addDouble(@Nonnull final World world, @Nonnull final Vector3i pos) {
-//		this.blocks.get(world).add(pos);
-//	}
-//
-//	public void addTriple(@Nonnull final World world, @Nonnull final Vector3i pos) {
-//		this.blocks.get(world).add(pos);
-//	}
-//
-//	public void loadWorld(@Nonnull final World world) {
-//		this.blocks.put(world, Lists.newArrayList());
-//	}
-//
-//	public void unloadWorld(@Nonnull final World world) {
-//		this.blocks.remove(world);
-//	}
-//
-//	@Listener(order = Order.LATE)
-//	public void onItemDrop(final DropItemEvent.Destruct e, @First final BlockSpawnCause block, @First final Player p) {
-//		e.getEntities().stream().filter(ent -> ent instanceof Item).map(ent -> (Item)ent).filter(item -> this.blocks.get(item.getWorld()).contains(item.getLocation().getBlockPosition())).forEach(item -> ItemUtils.drop(item.getLocation(), item.item().get()));
-//	}
-//}

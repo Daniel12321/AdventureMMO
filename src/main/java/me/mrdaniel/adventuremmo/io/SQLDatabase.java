@@ -20,6 +20,7 @@ import com.google.common.collect.Maps;
 
 import me.mrdaniel.adventuremmo.AdventureMMO;
 import me.mrdaniel.adventuremmo.catalogtypes.skills.SkillType;
+import me.mrdaniel.adventuremmo.catalogtypes.tools.ToolType;
 import me.mrdaniel.adventuremmo.io.items.BlockData;
 import me.mrdaniel.adventuremmo.io.items.ItemDatabase;
 import me.mrdaniel.adventuremmo.io.items.ToolData;
@@ -76,13 +77,14 @@ public class SQLDatabase implements PlayerDatabase, ItemDatabase, TopDatabase {
 
 	// PlayerDatabase
 	@Override
-	public synchronized void load(@Nonnull final UUID uuid) {
-		this.players.put(uuid, new SQLPlayerData());
+	public synchronized void unload(@Nonnull final UUID uuid) {
+		this.players.remove(uuid);
 	}
 
 	@Override
-	public synchronized void unload(@Nonnull final UUID uuid) {
-		this.players.remove(uuid);
+	public synchronized void unloadAll() {
+		this.players.values().forEach(data -> data.save());
+		this.players.clear();
 	}
 
 	@Override
@@ -95,5 +97,25 @@ public class SQLDatabase implements PlayerDatabase, ItemDatabase, TopDatabase {
 	@Nonnull
 	public Optional<PlayerData> getOffline(@Nonnull final UUID uuid) {
 		return Optional.empty();
+	}
+
+	@Override
+	public void set(@Nonnull final ItemType item, @Nonnull final ToolType one) {
+		;
+	}
+
+	@Override
+	public void set(@Nonnull final BlockType block, @Nonnull final SkillType skill, final int exp) {
+		;
+	}
+
+	@Override
+	public void remove(@Nonnull final ItemType item) {
+		;
+	}
+
+	@Override
+	public void remove(@Nonnull final BlockType block) {
+		;
 	}
 }

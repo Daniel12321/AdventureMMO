@@ -14,8 +14,8 @@ import me.mrdaniel.adventuremmo.utils.MathUtils;
 
 public interface PlayerDatabase {
 
-	void load(UUID uuid);
 	void unload(UUID uuid);
+	void unloadAll();
 
 	PlayerData get(UUID uuid);
 	Optional<PlayerData> getOffline(UUID uuid);
@@ -35,17 +35,6 @@ public interface PlayerDatabase {
 			}
 		}
 		data.setExp(skill, new_exp);
-		return data;
-	}
-
-	default PlayerData addLevel(@Nonnull final AdventureMMO mmo, @Nonnull final Player p, @Nonnull final SkillType skill, final int level) {
-		PlayerData data = this.get(p.getUniqueId());
-
-		int current_level = data.getLevel(skill);
-		int new_level = current_level + level;
-		if (!mmo.getGame().getEventManager().post(new LevelUpEvent(mmo, p, skill, current_level, new_level))) {
-			data.setLevel(skill, new_level);
-		}
 		return data;
 	}
 }

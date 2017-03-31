@@ -17,7 +17,9 @@ import com.google.common.collect.Maps;
 
 import me.mrdaniel.adventuremmo.AdventureMMO;
 import me.mrdaniel.adventuremmo.MMOObject;
+import me.mrdaniel.adventuremmo.catalogtypes.skills.SkillType;
 import me.mrdaniel.adventuremmo.catalogtypes.skills.SkillTypes;
+import me.mrdaniel.adventuremmo.catalogtypes.tools.ToolType;
 import me.mrdaniel.adventuremmo.catalogtypes.tools.ToolTypes;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
@@ -73,6 +75,11 @@ public class HoconItemDatabase extends MMOObject implements ItemDatabase {
 		catch (final IOException exc) { super.getMMO().getLogger().error("Failed to load itemdata file: {}", exc); return this.loader.createEmptyNode(); }
 	}
 
+	private void save() {
+		try { this.loader.save(this.node); }
+		catch (final IOException exc) { super.getLogger().error("Failed to save itemdata file: {}", exc); }
+	}
+
 	@Override
 	@Nonnull
 	public Optional<BlockData> getData(@Nonnull final BlockType type) {
@@ -90,5 +97,35 @@ public class HoconItemDatabase extends MMOObject implements ItemDatabase {
 	public Optional<ToolData> getData(@Nullable final ItemStack item) {
 		if (item == null) { return Optional.of(new ToolData(ToolTypes.HAND)); }
 		return Optional.ofNullable(this.tools.get(item.getItem()));
+	}
+
+	@Override
+	public void set(@Nonnull final ItemType item, @Nullable final ToolType tool) {
+		ToolData data = new ToolData(tool);
+		this.tools.put(item, data);
+		this.node.getNode("tools", item.getId()).setValue(data.serialize());
+		this.save();
+	}
+
+	@Override
+	public void set(@Nonnull final BlockType block, @Nonnull final SkillType skill, final int exp) {
+		BlockData data = new BlockData(skill, exp);
+		this.blocks.put(block, data);
+		this.node.getNode("blocks", block.getId()).setValue(data.serialize());
+		this.save();
+	}
+
+	@Override
+	public void remove(@Nonnull final ItemType item) {
+		this.tools.remove(item);
+		this.node.getNode("tools").removeChild(item.getId());
+		this.save();
+	}
+
+	@Override
+	public void remove(@Nonnull final BlockType block) {
+		this.blocks.remove(block);
+		this.node.getNode("blocks").removeChild(block.getId());
+		this.save();
 	}
 }

@@ -16,6 +16,6 @@ public class SettingRegistryModule implements CatalogRegistryModule<Setting> {
 
 	@Override
 	public Collection<Setting> getAll() {
-		return Settings.getAll();
+		return Settings.VALUES;
 	}
 }

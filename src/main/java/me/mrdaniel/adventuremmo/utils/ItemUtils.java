@@ -77,7 +77,7 @@ public class ItemUtils {
 	public static void giveSuperTool(@Nonnull final Player p, @Nonnull final ToolType tool) {
 		ItemStack item = p.getItemInHand(HandTypes.MAIN_HAND).get();
 
-		item.offer(new SuperToolData(item.get(Keys.ITEM_ENCHANTMENTS).orElse(Lists.newArrayList()), TextUtils.toString(item.get(Keys.DISPLAY_NAME).orElse(Text.of("")))));
+		item.offer(new SuperToolData(item.get(Keys.ITEM_ENCHANTMENTS).orElse(Lists.newArrayList()), TextUtils.toString(item.get(Keys.DISPLAY_NAME).orElse(Text.of(""))), item.get(Keys.ITEM_DURABILITY).orElse(0)));
 		item.offer(Keys.DISPLAY_NAME, Text.of(TextColors.RED, TextStyles.BOLD, "Super ", tool.getName()));
 		item.offer(Keys.UNBREAKABLE, true);
 

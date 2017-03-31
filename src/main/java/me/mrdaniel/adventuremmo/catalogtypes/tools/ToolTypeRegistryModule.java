@@ -16,6 +16,6 @@ public class ToolTypeRegistryModule implements CatalogRegistryModule<ToolType> {
 
 	@Override
 	public Collection<ToolType> getAll() {
-		return ToolTypes.getAll();
+		return ToolTypes.VALUES;
 	}
 }

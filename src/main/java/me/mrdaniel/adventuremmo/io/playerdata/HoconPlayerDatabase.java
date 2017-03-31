@@ -7,8 +7,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
+
+import org.spongepowered.api.scheduler.Task;
 
 import me.mrdaniel.adventuremmo.AdventureMMO;
 
@@ -26,23 +30,35 @@ public class HoconPlayerDatabase implements PlayerDatabase {
 			catch (final IOException exc) { mmo.getLogger().error("Failed to create main playerdata directory: {}", exc); }
 		}
 
-		mmo.getGame().getServer().getOnlinePlayers().forEach(p -> this.load(p.getUniqueId()));
-	}
-
-	@Override
-	public synchronized void load(@Nonnull final UUID uuid) {
-		this.players.put(uuid, new HoconPlayerData(this.path.resolve(uuid.toString() + ".conf")));
+		Task.builder().async().delay(30, TimeUnit.SECONDS).interval(30, TimeUnit.SECONDS).execute(() -> {
+			this.players.values().forEach(data -> data.save());
+			this.players.entrySet().stream().filter(e -> e.getValue().getLastUse() < System.currentTimeMillis() - 180000).map(e -> e.getKey()).collect(Collectors.toList()).forEach(uuid -> this.players.remove(uuid));
+		}).submit(mmo);
 	}
 
 	@Override
 	public synchronized void unload(@Nonnull final UUID uuid) {
-		this.players.remove(uuid);
+		Optional.ofNullable(this.players.get(uuid)).ifPresent(data -> {
+			data.save();
+			this.players.remove(uuid);
+		});
+	}
+
+	@Override
+	public synchronized void unloadAll() {
+		this.players.values().forEach(data -> data.save());
+		this.players.clear();
 	}
 
 	@Override
 	@Nonnull
 	public synchronized PlayerData get(@Nonnull final UUID uuid) {
-		return this.players.get(uuid);
+		HoconPlayerData data = this.players.get(uuid);
+		if (data == null) {
+			data = new HoconPlayerData(this.path.resolve(uuid.toString() + ".conf"));
+			this.players.put(uuid, data);
+		}
+		return data;
 	}
 
 	@Override

@@ -20,14 +20,11 @@ public final class ToolTypes {
 	public static final ToolType HAND = new ToolType("Hand", "hand");
 	public static final ToolType BOW = new ToolType("Bow", "bow");
 
-	@Nonnull
-	public static List<ToolType> getAll() {
-		return Lists.newArrayList(PICKAXE, AXE, SHOVEL, HOE, ROD, SWORD, HAND, BOW);
-	}
+	public static final List<ToolType> VALUES = Lists.newArrayList(PICKAXE, AXE, SHOVEL, HOE, ROD, SWORD, HAND, BOW);
 
 	@Nonnull
 	public static Optional<ToolType> of(@Nonnull final String id) {
-		for (ToolType type : getAll()) { if (type.getId().equalsIgnoreCase(id)) { return Optional.of(type); } }
+		for (ToolType type : VALUES) { if (type.getId().equalsIgnoreCase(id)) { return Optional.of(type); } }
 		return Optional.empty();
 	}
 }
