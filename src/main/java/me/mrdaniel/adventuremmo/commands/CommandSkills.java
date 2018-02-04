@@ -22,7 +22,10 @@ public class CommandSkills extends PlayerCommand {
 	public void execute(final Player p, final CommandContext args) {
 		Optional<SkillType> skill = args.getOne("skill");
 
-		if (!skill.isPresent()) { this.mmo.getMenus().sendSkillList(p); }
-		else { this.mmo.getMenus().sendSkillInfo(p, skill.get()); }
+		if (!skill.isPresent()) {
+			this.mmo.getMenus().sendSkillList(p);
+		} else {
+			this.mmo.getMenus().sendSkillInfo(p, skill.get());
+		}
 	}
 }

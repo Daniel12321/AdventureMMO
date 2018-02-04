@@ -46,8 +46,6 @@ import me.mrdaniel.adventuremmo.commands.CommandSkill;
 import me.mrdaniel.adventuremmo.commands.CommandSkills;
 import me.mrdaniel.adventuremmo.commands.CommandTop;
 import me.mrdaniel.adventuremmo.commands.CommandView;
-import me.mrdaniel.adventuremmo.data.manipulators.ImmutableMMOData;
-import me.mrdaniel.adventuremmo.data.manipulators.ImmutableSuperToolData;
 import me.mrdaniel.adventuremmo.data.manipulators.MMOData;
 import me.mrdaniel.adventuremmo.data.manipulators.MMODataBuilder;
 import me.mrdaniel.adventuremmo.data.manipulators.SuperToolData;
@@ -71,11 +69,8 @@ import me.mrdaniel.adventuremmo.service.AdventureMMOService;
 import me.mrdaniel.adventuremmo.utils.ChoiceMaps;
 import me.mrdaniel.adventuremmo.utils.ItemUtils;
 
-@Plugin(id = "adventuremmo",
-	name = "AdventureMMO",
-	version = "2.0.7",
-	description = "A light-weight plugin that adds skills with all sorts of fun game mechanics to your server.",
-	authors = {"Daniel12321"})
+@Plugin(id = "adventuremmo", name = "AdventureMMO", version = "2.1", description = "A light-weight plugin that adds skills with all sorts of fun game mechanics to your server.", authors = {
+		"Daniel12321" })
 public class AdventureMMO {
 
 	private final Game game;
@@ -92,15 +87,19 @@ public class AdventureMMO {
 	private ChoiceMaps choices;
 
 	@Inject
-	public AdventureMMO(final Game game, @ConfigDir(sharedRoot = false) final Path path, final PluginContainer container, final MetricsLite metrics) {
+	public AdventureMMO(final Game game, @ConfigDir(sharedRoot = false) final Path path,
+			final PluginContainer container, final MetricsLite metrics) {
 		this.game = game;
 		this.logger = LoggerFactory.getLogger("AdventureMMO");
 		this.configdir = path;
 		this.container = container;
 
 		if (!Files.exists(path)) {
-			try { Files.createDirectory(path); }
-			catch (final IOException exc) { this.logger.error("Failed to create main config directory: {}", exc); }
+			try {
+				Files.createDirectory(path);
+			} catch (final IOException exc) {
+				this.logger.error("Failed to create main config directory: {}", exc);
+			}
 		}
 	}
 
@@ -108,8 +107,8 @@ public class AdventureMMO {
 	public void onPreInit(@Nullable final GamePreInitializationEvent e) {
 		this.logger.info("Registering custom data...");
 
-		this.game.getDataManager().register(MMOData.class, ImmutableMMOData.class, new MMODataBuilder());
-		this.game.getDataManager().register(SuperToolData.class, ImmutableSuperToolData.class, new SuperToolDataBuilder());
+		this.game.getDataManager().registerBuilder(MMOData.class, new MMODataBuilder());
+		this.game.getDataManager().registerBuilder(SuperToolData.class, new SuperToolDataBuilder());
 
 		this.game.getRegistry().registerModule(SkillType.class, new SkillTypeRegistryModule());
 		this.game.getRegistry().registerModule(ToolType.class, new ToolTypeRegistryModule());
@@ -146,50 +145,75 @@ public class AdventureMMO {
 		this.choices = new ChoiceMaps();
 
 		// Registering Commands
-		this.game.getCommandManager().register(this, CommandSpec.builder()
-				.description(Text.of(TextColors.BLUE, "AdventureMMO | Skills Command"))
-				.arguments(GenericArguments.optionalWeak(GenericArguments.choices(Text.of("skill"), this.choices.getSkills())))
-				.executor(new CommandSkills(this))
-				.build(), config.getNode("commands", "skills").getList(obj -> (String)obj));
+		this.game.getCommandManager().register(this,
+				CommandSpec.builder().description(Text.of(TextColors.BLUE, "AdventureMMO | Skills Command"))
+						.arguments(GenericArguments
+								.optionalWeak(GenericArguments.choices(Text.of("skill"), this.choices.getSkills())))
+						.executor(new CommandSkills(this)).build(),
+				config.getNode("commands", "skills").getList(obj -> (String) obj));
 
-		this.game.getCommandManager().register(this, CommandSpec.builder()
-				.description(Text.of(TextColors.BLUE, "AdventureMMO | Top Command"))
-				.arguments(GenericArguments.optionalWeak(GenericArguments.choices(Text.of("skill"), this.choices.getSkills())))
-				.executor(new CommandTop(this))
-				.build(), config.getNode("commands", "tops").getList(obj -> (String)obj));
+		this.game.getCommandManager().register(this,
+				CommandSpec.builder().description(Text.of(TextColors.BLUE, "AdventureMMO | Top Command"))
+						.arguments(GenericArguments
+								.optionalWeak(GenericArguments.choices(Text.of("skill"), this.choices.getSkills())))
+						.executor(new CommandTop(this)).build(),
+				config.getNode("commands", "tops").getList(obj -> (String) obj));
 
-		this.game.getCommandManager().register(this, CommandSpec.builder()
-				.description(Text.of(TextColors.BLUE, "AdventureMMO | Settings Command"))
-				.executor(new CommandSettings(this))
-				.build(), config.getNode("commands", "settings").getList(obj -> (String)obj));
+		this.game.getCommandManager().register(this,
+				CommandSpec.builder().description(Text.of(TextColors.BLUE, "AdventureMMO | Settings Command"))
+						.executor(new CommandSettings(this)).build(),
+				config.getNode("commands", "settings").getList(obj -> (String) obj));
 
-		SkillTypes.VALUES.stream().filter(skill -> config.getNode("commands", skill.getId()).getBoolean(true)).forEach(skill -> {
-			this.game.getCommandManager().register(this, CommandSpec.builder()
-					.description(Text.of(TextColors.BLUE, "AdventureMMO | ", skill.getName(), " Command"))
-					.executor(new CommandSkill(this, skill))
-					.build(), skill.getId());
-		});
+		SkillTypes.VALUES.stream().filter(skill -> config.getNode("commands", skill.getId()).getBoolean(true))
+				.forEach(skill -> {
+					this.game.getCommandManager().register(this, CommandSpec.builder()
+							.description(Text.of(TextColors.BLUE, "AdventureMMO | ", skill.getName(), " Command"))
+							.executor(new CommandSkill(this, skill)).build(), skill.getId());
+				});
 
 		// Admin Commands
 		this.game.getCommandManager().register(this, CommandSpec.builder()
-				.child(CommandSpec.builder().description(Text.of(TextColors.BLUE, "AdventureMMO | Reload Command")).permission("mmo.admin.reload").executor(new CommandReload(this)).build(), "reload")
-				.child(CommandSpec.builder().description(Text.of(TextColors.BLUE, "AdventureMMO | View Command")).permission("mmo.admin.view").arguments(GenericArguments.user(Text.of("user"))).executor(new CommandView(this)).build(), "view")
-				.child(CommandSpec.builder().description(Text.of(TextColors.BLUE, "AdventureMMO | Set Command")).permission("mmo.admin.set").arguments(GenericArguments.user(Text.of("user")), GenericArguments.choices(Text.of("skill"), this.choices.getSkills()), GenericArguments.integer(Text.of("level")), GenericArguments.optionalWeak(GenericArguments.integer(Text.of("exp")))).executor(new CommandSet(this)).build(), "set")
-				.child(CommandSpec.builder().description(Text.of(TextColors.BLUE, "AdventureMMO | SetItem Command")).permission("mmo.admin.setitem").arguments(GenericArguments.choices(Text.of("tooltype"), this.choices.getTools())).executor(new CommandItemSet(this)).build(), "setitem")
-				.child(CommandSpec.builder().description(Text.of(TextColors.BLUE, "AdventureMMO | SetBlock Command")).permission("mmo.admin.setblock").arguments(GenericArguments.choices(Text.of("skill"), this.choices.getSkills()), GenericArguments.integer(Text.of("exp"))).executor(new CommandBlockSet(this)).build(), "setblock")
-				.child(CommandSpec.builder().description(Text.of(TextColors.BLUE, "AdventureMMO | ClearItem Command")).permission("mmo.admin.clearitem").executor(new CommandItemClear(this)).build(), "clearitem")
-				.child(CommandSpec.builder().description(Text.of(TextColors.BLUE, "AdventureMMO | ClearBlock Command")).permission("mmo.admin.clearblock").executor(new CommandBlockClear(this)).build(), "clearblock")
+				.child(CommandSpec.builder().description(Text.of(TextColors.BLUE, "AdventureMMO | Reload Command"))
+						.permission("mmo.admin.reload").executor(new CommandReload(this)).build(), "reload")
+				.child(CommandSpec.builder().description(Text.of(TextColors.BLUE, "AdventureMMO | View Command"))
+						.permission("mmo.admin.view").arguments(GenericArguments.user(Text.of("user")))
+						.executor(new CommandView(this)).build(), "view")
+				.child(CommandSpec.builder().description(Text.of(TextColors.BLUE, "AdventureMMO | Set Command"))
+						.permission("mmo.admin.set")
+						.arguments(GenericArguments.user(Text.of("user")),
+								GenericArguments.choices(Text.of("skill"), this.choices.getSkills()),
+								GenericArguments.integer(Text.of("level")),
+								GenericArguments.optionalWeak(GenericArguments.integer(Text.of("exp"))))
+						.executor(new CommandSet(this)).build(), "set")
+				.child(CommandSpec.builder().description(Text.of(TextColors.BLUE, "AdventureMMO | SetItem Command"))
+						.permission("mmo.admin.setitem")
+						.arguments(GenericArguments.choices(Text.of("tooltype"), this.choices.getTools()))
+						.executor(new CommandItemSet(this)).build(), "setitem")
+				.child(CommandSpec.builder().description(Text.of(TextColors.BLUE, "AdventureMMO | SetBlock Command"))
+						.permission("mmo.admin.setblock")
+						.arguments(GenericArguments.choices(Text.of("skill"), this.choices.getSkills()),
+								GenericArguments.integer(Text.of("exp")))
+						.executor(new CommandBlockSet(this)).build(), "setblock")
+				.child(CommandSpec.builder().description(Text.of(TextColors.BLUE, "AdventureMMO | ClearItem Command"))
+						.permission("mmo.admin.clearitem").executor(new CommandItemClear(this)).build(), "clearitem")
+				.child(CommandSpec.builder().description(Text.of(TextColors.BLUE, "AdventureMMO | ClearBlock Command"))
+						.permission("mmo.admin.clearblock").executor(new CommandBlockClear(this)).build(), "clearblock")
 				.build(), "mmoadmin");
 
 		// Registering Listeners
-		SkillTypes.VALUES.forEach(skill -> this.game.getEventManager().registerListeners(this, skill.getListener().apply(this, config)));
+		SkillTypes.VALUES.forEach(
+				skill -> this.game.getEventManager().registerListeners(this, skill.getListener().apply(this, config)));
 		this.game.getEventManager().registerListeners(this, new ClientListener(this));
 		this.game.getEventManager().registerListeners(this, new AbilitiesListener(this, config));
 		this.game.getEventManager().registerListeners(this, new WorldListener(this));
 		this.game.getEventManager().registerListeners(this, this.doubledrops);
 		if (config.getNode("economy", "enabled").getBoolean()) {
-			try { this.game.getEventManager().registerListeners(this, new EconomyListener(this, config)); }
-			catch (final ServiceException exc) { this.logger.error("No Economy Service was found! Install one or disable economy in the config file: {}", exc); }
+			try {
+				this.game.getEventManager().registerListeners(this, new EconomyListener(this, config));
+			} catch (final ServiceException exc) {
+				this.logger.error("No Economy Service was found! Install one or disable economy in the config file: {}",
+						exc);
+			}
 		}
 		this.logger.info("Loaded plugin successfully in {} milliseconds.", System.currentTimeMillis() - startuptime);
 	}
@@ -215,15 +239,53 @@ public class AdventureMMO {
 		this.logger.info("Reloaded successfully.");
 	}
 
-	@Nonnull public Game getGame() { return this.game; }
-	@Nonnull public Logger getLogger() { return this.logger; }
-	@Nonnull public PluginContainer getContainer() { return this.container; }
+	@Nonnull
+	public Game getGame() {
+		return this.game;
+	}
 
-	@Nonnull public PlayerDatabase getPlayerDatabase() { return this.playerdata; }
-	@Nonnull public TopDatabase getTops() { return this.tops; }
-	@Nonnull public ItemDatabase getItemDatabase() { return this.itemdata; }
-	@Nonnull public MenuManager getMenus() { return this.menus; }
-	@Nonnull public MessageManager getMessages() { return this.messages; }
-	@Nonnull public DoubleDropManager getDoubleDrops() { return this.doubledrops; }
-	@Nonnull public ChoiceMaps getChoices() { return this.choices; }
+	@Nonnull
+	public Logger getLogger() {
+		return this.logger;
+	}
+
+	@Nonnull
+	public PluginContainer getContainer() {
+		return this.container;
+	}
+
+	@Nonnull
+	public PlayerDatabase getPlayerDatabase() {
+		return this.playerdata;
+	}
+
+	@Nonnull
+	public TopDatabase getTops() {
+		return this.tops;
+	}
+
+	@Nonnull
+	public ItemDatabase getItemDatabase() {
+		return this.itemdata;
+	}
+
+	@Nonnull
+	public MenuManager getMenus() {
+		return this.menus;
+	}
+
+	@Nonnull
+	public MessageManager getMessages() {
+		return this.messages;
+	}
+
+	@Nonnull
+	public DoubleDropManager getDoubleDrops() {
+		return this.doubledrops;
+	}
+
+	@Nonnull
+	public ChoiceMaps getChoices() {
+		return this.choices;
+	}
 }

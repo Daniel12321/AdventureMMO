@@ -26,13 +26,18 @@ public class HoconPlayerDatabase implements PlayerDatabase {
 		this.players = new ConcurrentHashMap<UUID, HoconPlayerData>();
 
 		if (!Files.exists(path)) {
-			try { Files.createDirectory(path); }
-			catch (final IOException exc) { mmo.getLogger().error("Failed to create main playerdata directory: {}", exc); }
+			try {
+				Files.createDirectory(path);
+			} catch (final IOException exc) {
+				mmo.getLogger().error("Failed to create main playerdata directory: {}", exc);
+			}
 		}
 
 		Task.builder().async().delay(30, TimeUnit.SECONDS).interval(30, TimeUnit.SECONDS).execute(() -> {
 			this.players.values().forEach(data -> data.save());
-			this.players.entrySet().stream().filter(e -> e.getValue().getLastUse() < System.currentTimeMillis() - 180000).map(e -> e.getKey()).collect(Collectors.toList()).forEach(uuid -> this.players.remove(uuid));
+			this.players.entrySet().stream()
+					.filter(e -> e.getValue().getLastUse() < System.currentTimeMillis() - 180000).map(e -> e.getKey())
+					.collect(Collectors.toList()).forEach(uuid -> this.players.remove(uuid));
 		}).submit(mmo);
 	}
 
@@ -65,7 +70,9 @@ public class HoconPlayerDatabase implements PlayerDatabase {
 	@Nonnull
 	public Optional<PlayerData> getOffline(@Nonnull final UUID uuid) {
 		Path path = this.path.resolve(uuid.toString() + ".conf");
-		if (!Files.exists(path)) { return Optional.empty(); }
+		if (!Files.exists(path)) {
+			return Optional.empty();
+		}
 		return Optional.of(new HoconPlayerData(path));
 	}
 }

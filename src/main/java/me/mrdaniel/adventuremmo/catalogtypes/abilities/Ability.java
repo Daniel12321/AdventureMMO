@@ -45,7 +45,7 @@ public abstract class Ability implements CatalogType {
 		return this.increment;
 	}
 
-	public double getInitial() { 
+	public double getInitial() {
 		return this.initial;
 	}
 
@@ -54,7 +54,7 @@ public abstract class Ability implements CatalogType {
 	}
 
 	public double getValue(final int level) {
-		return Math.min(this.getInitial() + (this.getIncrement()*level), this.getCap());
+		return Math.min(this.getInitial() + (this.getIncrement() * level), this.getCap());
 	}
 
 	public boolean isEnabled() {

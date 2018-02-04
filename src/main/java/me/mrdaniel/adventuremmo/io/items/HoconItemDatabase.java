@@ -42,42 +42,62 @@ public class HoconItemDatabase extends MMOObject implements ItemDatabase {
 		this.loader = HoconConfigurationLoader.builder().setPath(path).build();
 
 		if (!Files.exists(path)) {
-			try { mmo.getContainer().getAsset("itemdata.conf").get().copyToFile(path); }
-			catch (final IOException exc) { mmo.getLogger().error("Failed to create itemdata file: {}", exc); }
+			try {
+				mmo.getContainer().getAsset("itemdata.conf").get().copyToFile(path);
+			} catch (final IOException exc) {
+				mmo.getLogger().error("Failed to create itemdata file: {}", exc);
+			}
 		}
 		this.node = this.load();
 
 		this.node.getNode("blocks").getChildrenMap().forEach((ido, value) -> {
-			String id = (String)ido;
+			String id = (String) ido;
 			Optional<BlockType> type = super.getGame().getRegistry().getType(BlockType.class, id);
 			Optional<BlockData> data = BlockData.deserialize(value.getString());
 			if (type.isPresent()) {
-				if (data.isPresent()) { if (SkillTypes.VALUES.contains(data.get().getSkill())) { this.blocks.put(type.get(), data.get()); } }
-				else { super.getLogger().warn("Invalid exp format for block id {}, skipping!", id); }
+				if (data.isPresent()) {
+					if (SkillTypes.VALUES.contains(data.get().getSkill())) {
+						this.blocks.put(type.get(), data.get());
+					}
+				} else {
+					super.getLogger().warn("Invalid exp format for block id {}, skipping!", id);
+				}
+			} else {
+				super.getLogger().warn("Failed to find block id {}, skipping!", id);
 			}
-			else { super.getLogger().warn("Failed to find block id {}, skipping!", id); }
 		});
 
 		this.node.getNode("tools").getChildrenMap().forEach((ido, value) -> {
-			String id = (String)ido;
+			String id = (String) ido;
 			Optional<ItemType> type = super.getGame().getRegistry().getType(ItemType.class, id);
 			Optional<ToolData> data = ToolData.deserialize(value.getString());
 			if (type.isPresent()) {
-				if (data.isPresent()) { this.tools.put(type.get(), data.get()); }
-				else { super.getLogger().warn("Invalid tooltype format for tool id {}, skipping!", id); }
+				if (data.isPresent()) {
+					this.tools.put(type.get(), data.get());
+				} else {
+					super.getLogger().warn("Invalid tooltype format for tool id {}, skipping!", id);
+				}
+			} else {
+				super.getLogger().warn("Failed to find item id {}, skipping!", id);
 			}
-			else { super.getLogger().warn("Failed to find item id {}, skipping!", id); }
 		});
 	}
 
 	private CommentedConfigurationNode load() {
-		try { return this.loader.load(); }
-		catch (final IOException exc) { super.getMMO().getLogger().error("Failed to load itemdata file: {}", exc); return this.loader.createEmptyNode(); }
+		try {
+			return this.loader.load();
+		} catch (final IOException exc) {
+			super.getMMO().getLogger().error("Failed to load itemdata file: {}", exc);
+			return this.loader.createEmptyNode();
+		}
 	}
 
 	private void save() {
-		try { this.loader.save(this.node); }
-		catch (final IOException exc) { super.getLogger().error("Failed to save itemdata file: {}", exc); }
+		try {
+			this.loader.save(this.node);
+		} catch (final IOException exc) {
+			super.getLogger().error("Failed to save itemdata file: {}", exc);
+		}
 	}
 
 	@Override
@@ -95,8 +115,10 @@ public class HoconItemDatabase extends MMOObject implements ItemDatabase {
 	@Override
 	@Nonnull
 	public Optional<ToolData> getData(@Nullable final ItemStack item) {
-		if (item == null) { return Optional.of(new ToolData(ToolTypes.HAND)); }
-		return Optional.ofNullable(this.tools.get(item.getItem()));
+		if (item == null) {
+			return Optional.of(new ToolData(ToolTypes.HAND));
+		}
+		return Optional.ofNullable(this.tools.get(item.getType()));
 	}
 
 	@Override

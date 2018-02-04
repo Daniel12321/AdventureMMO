@@ -22,15 +22,22 @@ public class Config {
 		this.loader = HoconConfigurationLoader.builder().setPath(path).build();
 
 		if (!Files.exists(path)) {
-			try { mmo.getContainer().getAsset("config.conf").get().copyToFile(path); }
-			catch (final IOException exc) { mmo.getLogger().error("Failed to save config asset: {}", exc); }
+			try {
+				mmo.getContainer().getAsset("config.conf").get().copyToFile(path);
+			} catch (final IOException exc) {
+				mmo.getLogger().error("Failed to save config asset: {}", exc);
+			}
 		}
 		this.node = this.load(mmo.getLogger());
 	}
 
 	private CommentedConfigurationNode load(@Nonnull final Logger logger) {
-		try { return this.loader.load(); }
-		catch (final IOException exc) { logger.error("Failed to load config file: {}", exc); return this.loader.createEmptyNode(); }
+		try {
+			return this.loader.load();
+		} catch (final IOException exc) {
+			logger.error("Failed to load config file: {}", exc);
+			return this.loader.createEmptyNode();
+		}
 	}
 
 	@Nonnull

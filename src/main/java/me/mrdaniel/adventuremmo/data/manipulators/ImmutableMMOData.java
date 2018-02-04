@@ -18,7 +18,8 @@ public class ImmutableMMOData extends AbstractImmutableData<ImmutableMMOData, MM
 	private final boolean scoreboard;
 	private final boolean scoreboard_permanent;
 
-	public ImmutableMMOData(@Nonnull final Map<String, Long> delays, @Nonnull final Map<String, Long> abilities, final boolean action_bar, final boolean scoreboard, final boolean scoreboard_permanent) {
+	public ImmutableMMOData(@Nonnull final Map<String, Long> delays, @Nonnull final Map<String, Long> abilities,
+			final boolean action_bar, final boolean scoreboard, final boolean scoreboard_permanent) {
 		this.delays = delays;
 		this.abilities = abilities;
 
@@ -39,7 +40,18 @@ public class ImmutableMMOData extends AbstractImmutableData<ImmutableMMOData, MM
 		registerFieldGetter(MMOKeys.SCOREBOARD_PERMANENT, () -> this.scoreboard_permanent);
 	}
 
-	@Override public DataContainer toContainer() { return this.asMutable().toContainer(); }
-	@Override public MMOData asMutable() { return new MMOData(this.delays, this.abilities, this.action_bar, this.scoreboard, this.scoreboard_permanent); }
-	@Override public int getContentVersion() { return 1; }
+	@Override
+	public DataContainer toContainer() {
+		return this.asMutable().toContainer();
+	}
+
+	@Override
+	public MMOData asMutable() {
+		return new MMOData(this.delays, this.abilities, this.action_bar, this.scoreboard, this.scoreboard_permanent);
+	}
+
+	@Override
+	public int getContentVersion() {
+		return 1;
+	}
 }

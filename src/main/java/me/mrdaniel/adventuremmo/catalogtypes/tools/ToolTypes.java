@@ -9,7 +9,8 @@ import com.google.common.collect.Lists;
 
 public final class ToolTypes {
 
-	private ToolTypes(){}
+	private ToolTypes() {
+	}
 
 	public static final ToolType PICKAXE = new ToolType("Pickaxe", "pickaxe");
 	public static final ToolType AXE = new ToolType("Axe", "axe");
@@ -24,7 +25,11 @@ public final class ToolTypes {
 
 	@Nonnull
 	public static Optional<ToolType> of(@Nonnull final String id) {
-		for (ToolType type : VALUES) { if (type.getId().equalsIgnoreCase(id)) { return Optional.of(type); } }
+		for (ToolType type : VALUES) {
+			if (type.getId().equalsIgnoreCase(id)) {
+				return Optional.of(type);
+			}
+		}
 		return Optional.empty();
 	}
 }

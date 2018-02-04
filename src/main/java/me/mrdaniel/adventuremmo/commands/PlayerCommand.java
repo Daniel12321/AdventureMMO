@@ -13,8 +13,11 @@ public abstract class PlayerCommand implements CommandExecutor {
 
 	@Override
 	public CommandResult execute(final CommandSource src, final CommandContext args) throws CommandException {
-		if (!(src instanceof Player)) { src.sendMessage(Text.of(TextColors.RED, "This commands is for players only.")); return CommandResult.success(); }
-		Player p = (Player)src;
+		if (!(src instanceof Player)) {
+			src.sendMessage(Text.of(TextColors.RED, "This commands is for players only."));
+			return CommandResult.success();
+		}
+		Player p = (Player) src;
 
 		this.execute(p, args);
 		return CommandResult.success();

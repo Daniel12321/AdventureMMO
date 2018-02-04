@@ -22,7 +22,8 @@ public abstract class ActiveAbilityListener extends MMOObject {
 
 	protected final Tristate onblock;
 
-	public ActiveAbilityListener(@Nonnull final AdventureMMO mmo, @Nonnull final ActiveAbility ability, @Nonnull final SkillType skill, @Nonnull final ToolType tool, final Tristate onblock) {
+	public ActiveAbilityListener(@Nonnull final AdventureMMO mmo, @Nonnull final ActiveAbility ability,
+			@Nonnull final SkillType skill, @Nonnull final ToolType tool, final Tristate onblock) {
 		super(mmo);
 
 		this.ability = ability;
@@ -35,7 +36,10 @@ public abstract class ActiveAbilityListener extends MMOObject {
 	@Listener(order = Order.EARLY)
 	@IsCancelled(value = Tristate.FALSE)
 	public void onAbility(final AbilityEvent e) {
-		if (e.getTool() != this.tool || !this.ability.isEnabled() || (this.onblock == Tristate.TRUE && !e.isOnBlock()) || (this.onblock == Tristate.FALSE && e.isOnBlock())) { return; }
+		if (e.getTool() != this.tool || !this.ability.isEnabled() || (this.onblock == Tristate.TRUE && !e.isOnBlock())
+				|| (this.onblock == Tristate.FALSE && e.isOnBlock())) {
+			return;
+		}
 
 		e.setAbility(this.ability);
 		e.setSkill(this.skill);

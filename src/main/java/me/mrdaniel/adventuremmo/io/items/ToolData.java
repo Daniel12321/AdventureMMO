@@ -27,7 +27,10 @@ public class ToolData {
 
 	@Nonnull
 	public static Optional<ToolData> deserialize(@Nonnull final String str) {
-		try { return Optional.of(new ToolData(ToolTypes.of(str).get())); }
-		catch (final Exception exc) { return Optional.empty(); }
+		try {
+			return Optional.of(new ToolData(ToolTypes.of(str).get()));
+		} catch (final Exception exc) {
+			return Optional.empty();
+		}
 	}
 }

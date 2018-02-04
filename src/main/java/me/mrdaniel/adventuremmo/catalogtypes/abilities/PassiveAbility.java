@@ -12,7 +12,7 @@ public class PassiveAbility extends Ability {
 	}
 
 	public boolean getChance(final int level) {
-		return super.getValue(level) > Math.random()*100;
+		return super.getValue(level) > Math.random() * 100;
 	}
 
 	@Override

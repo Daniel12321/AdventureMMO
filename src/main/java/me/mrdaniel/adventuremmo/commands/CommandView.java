@@ -24,7 +24,8 @@ public class CommandView extends MMOObject implements CommandExecutor {
 	@Override
 	public CommandResult execute(final CommandSource src, final CommandContext args) throws CommandException {
 		User user = args.<User>getOne("user").get();
-		PlayerData data = super.getMMO().getPlayerDatabase().getOffline(user.getUniqueId()).orElseThrow(() -> new CommandException(Text.of(TextColors.RED, "Invalid User!")));
+		PlayerData data = super.getMMO().getPlayerDatabase().getOffline(user.getUniqueId())
+				.orElseThrow(() -> new CommandException(Text.of(TextColors.RED, "Invalid User!")));
 
 		super.getMMO().getMenus().sendAdminView(src, data, user.getName());
 		return CommandResult.success();

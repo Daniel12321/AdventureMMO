@@ -27,29 +27,64 @@ public class HoconPlayerData implements PlayerData {
 		this.loader = HoconConfigurationLoader.builder().setPath(path).build();
 
 		if (!Files.exists(path)) {
-			try { Files.createFile(path); }
-			catch (final IOException exc) { LOGGER.error("Failed to create playerdata file: {}", exc); }
+			try {
+				Files.createFile(path);
+			} catch (final IOException exc) {
+				LOGGER.error("Failed to create playerdata file: {}", exc);
+			}
 		}
 		this.node = this.load();
 		this.last_use = System.currentTimeMillis();
 	}
 
 	private CommentedConfigurationNode load() {
-		try { return this.loader.load(); }
-		catch (final IOException exc) { LOGGER.error("Failed to load playerdata file: {}", exc); return this.loader.createEmptyNode(); }
+		try {
+			return this.loader.load();
+		} catch (final IOException exc) {
+			LOGGER.error("Failed to load playerdata file: {}", exc);
+			return this.loader.createEmptyNode();
+		}
 	}
 
 	@Override
 	public void save() {
-		try { this.loader.save(this.node); }
-		catch (final IOException exc) { LOGGER.error("Failed to save playerdata file: {}", exc); }
+		try {
+			this.loader.save(this.node);
+		} catch (final IOException exc) {
+			LOGGER.error("Failed to save playerdata file: {}", exc);
+		}
 	}
 
-	@Override public int getLevel(@Nonnull final SkillType skill) { this.setLastUse(); return this.node.getNode(skill.getId(), "level").getInt(); }
-	@Override public void setLevel(@Nonnull final SkillType skill, final int level) { this.setLastUse(); node.getNode(skill.getId(), "level").setValue(level); }
-	@Override public int getExp(@Nonnull final SkillType skill) { this.setLastUse(); return this.node.getNode(skill.getId(), "exp").getInt(); }
-	@Override public void setExp(@Nonnull final SkillType skill, final int exp) { this.setLastUse(); this.node.getNode(skill.getId(), "exp").setValue(exp); }
+	@Override
+	public int getLevel(@Nonnull final SkillType skill) {
+		this.setLastUse();
+		return this.node.getNode(skill.getId(), "level").getInt();
+	}
 
-	@Override public long getLastUse() { return this.last_use; }
-	private void setLastUse() { this.last_use = System.currentTimeMillis(); }
+	@Override
+	public void setLevel(@Nonnull final SkillType skill, final int level) {
+		this.setLastUse();
+		node.getNode(skill.getId(), "level").setValue(level);
+	}
+
+	@Override
+	public int getExp(@Nonnull final SkillType skill) {
+		this.setLastUse();
+		return this.node.getNode(skill.getId(), "exp").getInt();
+	}
+
+	@Override
+	public void setExp(@Nonnull final SkillType skill, final int exp) {
+		this.setLastUse();
+		this.node.getNode(skill.getId(), "exp").setValue(exp);
+	}
+
+	@Override
+	public long getLastUse() {
+		return this.last_use;
+	}
+
+	private void setLastUse() {
+		this.last_use = System.currentTimeMillis();
+	}
 }

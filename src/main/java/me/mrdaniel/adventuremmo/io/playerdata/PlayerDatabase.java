@@ -15,12 +15,15 @@ import me.mrdaniel.adventuremmo.utils.MathUtils;
 public interface PlayerDatabase {
 
 	void unload(UUID uuid);
+
 	void unloadAll();
 
 	PlayerData get(UUID uuid);
+
 	Optional<PlayerData> getOffline(UUID uuid);
 
-	default PlayerData addExp(@Nonnull final AdventureMMO mmo, @Nonnull final Player p, @Nonnull final SkillType skill, final int exp) {
+	default PlayerData addExp(@Nonnull final AdventureMMO mmo, @Nonnull final Player p, @Nonnull final SkillType skill,
+			final int exp) {
 		PlayerData data = this.get(p.getUniqueId());
 
 		int current_level = data.getLevel(skill);
@@ -29,7 +32,8 @@ public interface PlayerDatabase {
 		int exp_till_next_level = MathUtils.expTillNextLevel(current_level);
 
 		if (new_exp >= exp_till_next_level) {
-			if (!mmo.getGame().getEventManager().post(new LevelUpEvent(mmo, p, skill, current_level, current_level + 1))) {
+			if (!mmo.getGame().getEventManager()
+					.post(new LevelUpEvent(mmo, p, skill, current_level, current_level + 1))) {
 				data.setLevel(skill, current_level + 1);
 				new_exp -= exp_till_next_level;
 			}

@@ -5,6 +5,7 @@ import javax.annotation.Nonnull;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.cause.EventContext;
 import org.spongepowered.api.event.impl.AbstractEvent;
 
 import me.mrdaniel.adventuremmo.AdventureMMO;
@@ -19,14 +20,15 @@ public class PlayerDamageEntityEvent extends AbstractEvent {
 	private final boolean death;
 	private final Cause cause;
 
-	public PlayerDamageEntityEvent(@Nonnull final AdventureMMO mmo, @Nonnull final Player player, @Nonnull final Entity entity, @Nonnull final ToolType tool, final double damage, final boolean death) {
+	public PlayerDamageEntityEvent(@Nonnull final AdventureMMO mmo, @Nonnull final Player player,
+			@Nonnull final Entity entity, @Nonnull final ToolType tool, final double damage, final boolean death) {
 		this.player = player;
 		this.entity = entity;
 		this.tool = tool;
 		this.damage = damage;
 		this.death = death;
 
-		this.cause = Cause.source(mmo.getContainer()).build();
+		this.cause = Cause.builder().append(mmo.getContainer()).build(EventContext.empty());
 	}
 
 	@Nonnull

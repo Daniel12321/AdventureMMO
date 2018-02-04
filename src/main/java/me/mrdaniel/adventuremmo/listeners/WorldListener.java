@@ -32,18 +32,22 @@ public class WorldListener extends MMOObject {
 		this.uuid = UUID.fromString("af191b27-3180-4021-bf4a-1d0484069300");
 	}
 
-	@Include(value = {ChangeBlockEvent.Decay.class, ChangeBlockEvent.Grow.class, ChangeBlockEvent.Break.class})
+	@Include(value = { ChangeBlockEvent.Decay.class, ChangeBlockEvent.Grow.class, ChangeBlockEvent.Break.class })
 	@Listener(order = Order.LATE)
 	@IsCancelled(value = Tristate.FALSE)
 	public void onChange(final ChangeBlockEvent e) {
-		e.getTransactions().forEach(trans -> trans.getOriginal().getLocation().ifPresent(loc -> loc.getExtent().setCreator(loc.getBlockPosition(), null)));
+		e.getTransactions().forEach(trans -> trans.getOriginal().getLocation()
+				.ifPresent(loc -> loc.getExtent().setCreator(loc.getBlockPosition(), null)));
 	}
 
 	@Listener(order = Order.LATE)
 	@IsCancelled(value = Tristate.FALSE)
 	public void onBlockPlace(final ChangeBlockEvent.Place e) {
 		if (e.getCause().first(Piston.class).isPresent() || e.getCause().first(Player.class).isPresent()) {
-			e.getTransactions().forEach(trans -> trans.getOriginal().getLocation().ifPresent(loc -> loc.getExtent().setCreator(loc.getBlockPosition(), e.getCause().first(Player.class).map(p -> p.getUniqueId()).orElse(this.uuid))));
+			e.getTransactions()
+					.forEach(trans -> trans.getOriginal().getLocation()
+							.ifPresent(loc -> loc.getExtent().setCreator(loc.getBlockPosition(),
+									e.getCause().first(Player.class).map(p -> p.getUniqueId()).orElse(this.uuid))));
 		}
 	}
 
@@ -51,7 +55,9 @@ public class WorldListener extends MMOObject {
 	@IsCancelled(value = Tristate.FALSE)
 	public void onItemClick(final ClickInventoryEvent e, @First final Player p) {
 		for (SlotTransaction trans : e.getTransactions()) {
-			if (trans.getOriginal().get(ImmutableSuperToolData.class).isPresent()) { e.setCancelled(true); }
+			if (trans.getOriginal().get(ImmutableSuperToolData.class).isPresent()) {
+				e.setCancelled(true);
+			}
 		}
 	}
 
@@ -59,7 +65,10 @@ public class WorldListener extends MMOObject {
 	@IsCancelled(value = Tristate.FALSE)
 	public void onItemDrop(final DropItemEvent.Pre e) {
 		for (ItemStackSnapshot item : e.getOriginalDroppedItems()) {
-			if (item.get(ImmutableSuperToolData.class).isPresent()) { e.setCancelled(true); return; }
+			if (item.get(ImmutableSuperToolData.class).isPresent()) {
+				e.setCancelled(true);
+				return;
+			}
 		}
 	}
 }

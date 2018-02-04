@@ -9,7 +9,8 @@ public class ActiveAbility extends Ability {
 
 	private final ActiveAbilityActions actions;
 
-	public ActiveAbility(@Nonnull final String name, @Nonnull final String id, @Nonnull final ActiveAbilityActions actions) {
+	public ActiveAbility(@Nonnull final String name, @Nonnull final String id,
+			@Nonnull final ActiveAbilityActions actions) {
 		super(name, id);
 
 		this.actions = actions;
