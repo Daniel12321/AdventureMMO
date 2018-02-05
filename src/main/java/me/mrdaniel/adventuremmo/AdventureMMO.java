@@ -14,6 +14,7 @@ import org.spongepowered.api.Game;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.config.ConfigDir;
+import org.spongepowered.api.data.DataRegistration;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.GameReloadEvent;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
@@ -46,6 +47,8 @@ import me.mrdaniel.adventuremmo.commands.CommandSkill;
 import me.mrdaniel.adventuremmo.commands.CommandSkills;
 import me.mrdaniel.adventuremmo.commands.CommandTop;
 import me.mrdaniel.adventuremmo.commands.CommandView;
+import me.mrdaniel.adventuremmo.data.manipulators.ImmutableMMOData;
+import me.mrdaniel.adventuremmo.data.manipulators.ImmutableSuperToolData;
 import me.mrdaniel.adventuremmo.data.manipulators.MMOData;
 import me.mrdaniel.adventuremmo.data.manipulators.MMODataBuilder;
 import me.mrdaniel.adventuremmo.data.manipulators.SuperToolData;
@@ -69,7 +72,7 @@ import me.mrdaniel.adventuremmo.service.AdventureMMOService;
 import me.mrdaniel.adventuremmo.utils.ChoiceMaps;
 import me.mrdaniel.adventuremmo.utils.ItemUtils;
 
-@Plugin(id = "adventuremmo", name = "AdventureMMO", version = "2.1", description = "A light-weight plugin that adds skills with all sorts of fun game mechanics to your server.", authors = {
+@Plugin(id = "adventuremmo", name = "AdventureMMO", version = "2.1.1", description = "A light-weight plugin that adds skills with all sorts of fun game mechanics to your server.", authors = {
 		"Daniel12321", "rojo8399" })
 public class AdventureMMO {
 
@@ -107,8 +110,8 @@ public class AdventureMMO {
 	public void onPreInit(@Nullable final GamePreInitializationEvent e) {
 		this.logger.info("Registering custom data...");
 
-		this.game.getDataManager().registerBuilder(MMOData.class, new MMODataBuilder());
-		this.game.getDataManager().registerBuilder(SuperToolData.class, new SuperToolDataBuilder());
+		DataRegistration.builder().dataClass(MMOData.class).immutableClass(ImmutableMMOData.class).builder(new MMODataBuilder()).manipulatorId("mmo-data").dataName("MMO Data").buildAndRegister(container);
+		DataRegistration.builder().dataClass(SuperToolData.class).immutableClass(ImmutableSuperToolData.class).builder(new SuperToolDataBuilder()).manipulatorId("super-tool-data").dataName("Super Tool Data").buildAndRegister(container);
 
 		this.game.getRegistry().registerModule(SkillType.class, new SkillTypeRegistryModule());
 		this.game.getRegistry().registerModule(ToolType.class, new ToolTypeRegistryModule());
