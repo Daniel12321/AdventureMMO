@@ -47,6 +47,7 @@ import me.mrdaniel.adventuremmo.commands.CommandSkill;
 import me.mrdaniel.adventuremmo.commands.CommandSkills;
 import me.mrdaniel.adventuremmo.commands.CommandTop;
 import me.mrdaniel.adventuremmo.commands.CommandView;
+import me.mrdaniel.adventuremmo.data.MMOKeys;
 import me.mrdaniel.adventuremmo.data.manipulators.ImmutableMMOData;
 import me.mrdaniel.adventuremmo.data.manipulators.ImmutableSuperToolData;
 import me.mrdaniel.adventuremmo.data.manipulators.MMOData;
@@ -72,7 +73,7 @@ import me.mrdaniel.adventuremmo.service.AdventureMMOService;
 import me.mrdaniel.adventuremmo.utils.ChoiceMaps;
 import me.mrdaniel.adventuremmo.utils.ItemUtils;
 
-@Plugin(id = "adventuremmo", name = "AdventureMMO", version = "2.1.1", description = "A light-weight plugin that adds skills with all sorts of fun game mechanics to your server.", authors = {
+@Plugin(id = "adventuremmo", name = "AdventureMMO", version = "2.1.2", description = "A light-weight plugin that adds skills with all sorts of fun game mechanics to your server.", authors = {
 		"Daniel12321", "rojo8399" })
 public class AdventureMMO {
 
@@ -110,14 +111,17 @@ public class AdventureMMO {
 	public void onPreInit(@Nullable final GamePreInitializationEvent e) {
 		this.logger.info("Registering custom data...");
 
-		DataRegistration.builder().dataClass(MMOData.class).immutableClass(ImmutableMMOData.class).builder(new MMODataBuilder()).manipulatorId("mmo-data").dataName("MMO Data").buildAndRegister(container);
-		DataRegistration.builder().dataClass(SuperToolData.class).immutableClass(ImmutableSuperToolData.class).builder(new SuperToolDataBuilder()).manipulatorId("super-tool-data").dataName("Super Tool Data").buildAndRegister(container);
+		// Initialize the MMOKeys class and register the keys.
+		@SuppressWarnings("unused")
+		Object key = MMOKeys.DURABILITY;
 
+		// Register Modules
 		this.game.getRegistry().registerModule(SkillType.class, new SkillTypeRegistryModule());
 		this.game.getRegistry().registerModule(ToolType.class, new ToolTypeRegistryModule());
 		this.game.getRegistry().registerModule(Ability.class, new AbilityRegistryModule());
 		this.game.getRegistry().registerModule(Setting.class, new SettingRegistryModule());
 
+		// Regsiter Service
 		this.game.getServiceManager().setProvider(this, AdventureMMOService.class, new AdventureMMOService(this));
 
 		this.logger.info("Registered custom data successfully.");
@@ -126,6 +130,13 @@ public class AdventureMMO {
 	@Listener
 	public void onInit(@Nullable final GameInitializationEvent e) {
 		this.logger.info("Loading plugin...");
+
+		// Register Data
+		DataRegistration.builder().dataClass(MMOData.class).immutableClass(ImmutableMMOData.class)
+				.builder(new MMODataBuilder()).manipulatorId("data").dataName("Data").buildAndRegister(container);
+		DataRegistration.builder().dataClass(SuperToolData.class).immutableClass(ImmutableSuperToolData.class)
+				.builder(new SuperToolDataBuilder()).manipulatorId("super-tool-data").dataName("Super Tool Data")
+				.buildAndRegister(container);
 
 		final long startuptime = System.currentTimeMillis();
 

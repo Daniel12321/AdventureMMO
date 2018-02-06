@@ -11,33 +11,57 @@ import org.spongepowered.api.item.enchantment.Enchantment;
 
 import com.google.common.reflect.TypeToken;
 
-@SuppressWarnings("serial")
 public class MMOKeys {
 
 	public static final ValueFactory FACTORY = Sponge.getRegistry().getValueFactory();
 
-	// MMOData
-	public static final Key<MapValue<String, Long>> DELAYS = Key.builder()
-			.type(new TypeToken<MapValue<String, Long>>() {
-			}).query(DataQuery.of("delays")).id("mmo:delays").name("MMO Delays").build();
-	public static final Key<MapValue<String, Long>> ABILITIES = Key.builder()
-			.type(new TypeToken<MapValue<String, Long>>() {
-			}).query(DataQuery.of("abilities")).id("mmo:abilities").name("MMO Abilities").build();
+	private static final TypeToken<MapValue<String, Long>> DELAYS_VALUE_TOKEN = new TypeToken<MapValue<String, Long>>() {
+		private static final long serialVersionUID = -1;
+	};
 
-	public static final Key<Value<Boolean>> ACTION_BAR = Key.builder().type(new TypeToken<Value<Boolean>>() {
-	}).query(DataQuery.of("action_bar")).id("mmo:action_bar").name("MMO Action Bar").build();
-	public static final Key<Value<Boolean>> SCOREBOARD = Key.builder().type(new TypeToken<Value<Boolean>>() {
-	}).query(DataQuery.of("scoreboard")).id("mmo:scoreboard").name("MMO Scoreboard").build();;
-	public static final Key<Value<Boolean>> SCOREBOARD_PERMANENT = Key.builder().type(new TypeToken<Value<Boolean>>() {
-	}).query(DataQuery.of("scoreboard_permanent")).id("mmo:scoreboard_permanent").name("MMO Scoreboard Permanent")
+	private static final TypeToken<MapValue<String, Long>> ABILITIES_VALUE_TOKEN = new TypeToken<MapValue<String, Long>>() {
+		private static final long serialVersionUID = -1;
+	};
+
+	private static final TypeToken<Value<Boolean>> ACTION_BAR_VALUE_TOKEN = new TypeToken<Value<Boolean>>() {
+		private static final long serialVersionUID = -1;
+	};
+
+	private static final TypeToken<Value<Boolean>> SCOREBOARD_VALUE_TOKEN = new TypeToken<Value<Boolean>>() {
+		private static final long serialVersionUID = -1;
+	};
+	private static final TypeToken<Value<Boolean>> SCOREBOARD_PERMANENT_VALUE_TOKEN = new TypeToken<Value<Boolean>>() {
+		private static final long serialVersionUID = -1;
+	};
+	private static final TypeToken<ListValue<Enchantment>> ENCHANTS_VALUE_TOKEN = new TypeToken<ListValue<Enchantment>>() {
+		private static final long serialVersionUID = -1;
+	};
+	private static final TypeToken<Value<String>> NAME_VALUE_TOKEN = new TypeToken<Value<String>>() {
+		private static final long serialVersionUID = -1;
+	};
+	private static final TypeToken<Value<Integer>> DURABILITY_VALUE_TOKEN = new TypeToken<Value<Integer>>() {
+		private static final long serialVersionUID = -1;
+	};
+
+	// MMOData
+	public static final Key<MapValue<String, Long>> DELAYS = Key.builder().type(DELAYS_VALUE_TOKEN)
+			.query(DataQuery.of("delays")).id("delays").name("Delays").build();
+	public static final Key<MapValue<String, Long>> ABILITIES = Key.builder().type(ABILITIES_VALUE_TOKEN)
+			.query(DataQuery.of("abilities")).id("abilities").name("Abilities").build();
+
+	public static final Key<Value<Boolean>> ACTION_BAR = Key.builder().type(ACTION_BAR_VALUE_TOKEN)
+			.query(DataQuery.of("action_bar")).id("action_bar").name("Action Bar").build();
+	public static final Key<Value<Boolean>> SCOREBOARD = Key.builder().type(SCOREBOARD_VALUE_TOKEN)
+			.query(DataQuery.of("scoreboard")).id("scoreboard").name("Scoreboard").build();;
+	public static final Key<Value<Boolean>> SCOREBOARD_PERMANENT = Key.builder().type(SCOREBOARD_PERMANENT_VALUE_TOKEN)
+			.query(DataQuery.of("scoreboard_permanent")).id("scoreboard_permanent").name("Scoreboard Permanent")
 			.build();;
 
 	// SuperToolData
-	public static final Key<ListValue<Enchantment>> ENCHANTS = Key.builder()
-			.type(new TypeToken<ListValue<Enchantment>>() {
-			}).query(DataQuery.of("enchants")).id("mmo:enchants").name("MMO Enchants").build();
-	public static final Key<Value<String>> NAME = Key.builder().type(new TypeToken<Value<String>>() {
-	}).query(DataQuery.of("name")).name("MMO Name").id("mmo:name").build();
-	public static final Key<Value<Integer>> DURABILITY = Key.builder().type(new TypeToken<Value<Integer>>() {
-	}).query(DataQuery.of("durability")).id("mmo:durability").name("MMO Durability").build();
+	public static final Key<ListValue<Enchantment>> ENCHANTS = Key.builder().type(ENCHANTS_VALUE_TOKEN)
+			.query(DataQuery.of("enchants")).id("enchants").name("Enchants").build();
+	public static final Key<Value<String>> NAME = Key.builder().type(NAME_VALUE_TOKEN).query(DataQuery.of("name"))
+			.name("MMO Name").id("mmo:name").build();
+	public static final Key<Value<Integer>> DURABILITY = Key.builder().type(DURABILITY_VALUE_TOKEN)
+			.query(DataQuery.of("durability")).id("durability").name("Durability").build();
 }

@@ -3,7 +3,7 @@ plugins {
 }
 
 group = 'me.mrdaniel.adventuremmo'
-version = '2.1.1'
+version = '2.1.2'
 description = 'A light-weight plugin that adds skills with all sorts of fun game mechanics to your server.'
 
 compileJava.options.encoding = 'UTF-8'
