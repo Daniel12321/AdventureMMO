@@ -19,7 +19,7 @@ import me.mrdaniel.adventuremmo.event.PlayerDamageEntityEvent;
 import me.mrdaniel.adventuremmo.io.playerdata.PlayerData;
 import me.mrdaniel.adventuremmo.utils.ItemUtils;
 
-public class UnarmedListener extends ActiveAbilityListener  {
+public class UnarmedListener extends ActiveAbilityListener {
 
 	private final int damage_exp;
 	private final int kill_exp;
@@ -34,7 +34,8 @@ public class UnarmedListener extends ActiveAbilityListener  {
 	@Listener
 	public void onTarget(final PlayerDamageEntityEvent e) {
 		if (e.getTool() != null && e.getTool() == super.tool) {
-			PlayerData pdata = super.getMMO().getPlayerDatabase().addExp(super.getMMO(), e.getPlayer(), super.skill, e.isDeath() ? this.kill_exp : this.damage_exp);
+			PlayerData pdata = super.getMMO().getPlayerDatabase().addExp(super.getMMO(), e.getPlayer(), super.skill,
+					e.isDeath() ? this.kill_exp : this.damage_exp);
 			Entity target = e.getEntity();
 			if (!e.isDeath()) {
 				if (Abilities.DISARM.getChance(pdata.getLevel(super.skill)) && target instanceof ArmorEquipable) {
@@ -46,7 +47,9 @@ public class UnarmedListener extends ActiveAbilityListener  {
 					});
 				}
 				if (e.getPlayer().get(MMOData.class).orElse(new MMOData()).isAbilityActive(super.ability.getId())) {
-					Task.builder().delayTicks(0).execute(() -> target.setVelocity(target.getVelocity().mul(6.0, 3.0, 6.0))).submit(super.getMMO());
+					Task.builder().delayTicks(0)
+							.execute(() -> target.setVelocity(target.getVelocity().mul(6.0, 3.0, 6.0)))
+							.submit(super.getMMO());
 				}
 			}
 		}

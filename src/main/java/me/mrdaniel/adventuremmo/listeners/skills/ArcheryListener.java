@@ -22,9 +22,8 @@ import me.mrdaniel.adventuremmo.MMOObject;
 import me.mrdaniel.adventuremmo.catalogtypes.abilities.Abilities;
 import me.mrdaniel.adventuremmo.catalogtypes.skills.SkillTypes;
 import me.mrdaniel.adventuremmo.io.playerdata.PlayerData;
-import me.mrdaniel.adventuremmo.utils.ServerUtils;
 
-public class ArcheryListener extends MMOObject  {
+public class ArcheryListener extends MMOObject {
 
 	private final int damage_exp;
 	private final int kill_exp;
@@ -42,7 +41,8 @@ public class ArcheryListener extends MMOObject  {
 		if (source.getSource() instanceof Arrow) {
 			Arrow arrow = (Arrow) source.getSource();
 			if (arrow.getShooter() instanceof Player) {
-				super.getMMO().getPlayerDatabase().addExp(super.getMMO(), (Player)arrow.getShooter(), SkillTypes.ARCHERY, e.willCauseDeath() ? this.kill_exp : this.damage_exp);
+				super.getMMO().getPlayerDatabase().addExp(super.getMMO(), (Player) arrow.getShooter(),
+						SkillTypes.ARCHERY, e.willCauseDeath() ? this.kill_exp : this.damage_exp);
 			}
 		}
 	}
@@ -59,8 +59,9 @@ public class ArcheryListener extends MMOObject  {
 				EntityArchetype a = e.getTargetEntity().createArchetype();
 				Vector3d v = e.getTargetEntity().getVelocity();
 				for (int i = 0; i < 9; i++) {
-					a.offer(Keys.VELOCITY, v.add(0.05 - (Math.random()*0.1), 0.05 - (Math.random()*0.1), 0.05 - (Math.random()*0.1)));
-					a.apply(e.getTargetEntity().getLocation(), ServerUtils.getSpawnCause(e.getTargetEntity()));
+					a.offer(Keys.VELOCITY, v.add(0.05 - (Math.random() * 0.1), 0.05 - (Math.random() * 0.1),
+							0.05 - (Math.random() * 0.1)));
+					a.apply(e.getTargetEntity().getLocation());
 				}
 			}
 		}

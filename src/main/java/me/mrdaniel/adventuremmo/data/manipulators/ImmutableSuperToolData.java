@@ -6,17 +6,18 @@ import javax.annotation.Nonnull;
 
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.manipulator.immutable.common.AbstractImmutableData;
-import org.spongepowered.api.data.meta.ItemEnchantment;
+import org.spongepowered.api.item.enchantment.Enchantment;
 
 import me.mrdaniel.adventuremmo.data.MMOKeys;
 
 public class ImmutableSuperToolData extends AbstractImmutableData<ImmutableSuperToolData, SuperToolData> {
 
-	private final List<ItemEnchantment> enchants;
+	private final List<Enchantment> enchants;
 	private final String name;
 	private final int durability;
 
-	public ImmutableSuperToolData(@Nonnull final List<ItemEnchantment> enchants, @Nonnull final String name, final int durability) {
+	public ImmutableSuperToolData(@Nonnull final List<Enchantment> enchants, @Nonnull final String name,
+			final int durability) {
 		this.enchants = enchants;
 		this.name = name;
 		this.durability = durability;
@@ -31,7 +32,18 @@ public class ImmutableSuperToolData extends AbstractImmutableData<ImmutableSuper
 		registerFieldGetter(MMOKeys.DURABILITY, () -> this.durability);
 	}
 
-	@Override public DataContainer toContainer() { return this.asMutable().toContainer(); }
-	@Override public SuperToolData asMutable() { return new SuperToolData(this.enchants, this.name, this.durability); }
-	@Override public int getContentVersion() { return 1; }
+	@Override
+	public DataContainer toContainer() {
+		return this.asMutable().toContainer();
+	}
+
+	@Override
+	public SuperToolData asMutable() {
+		return new SuperToolData(this.enchants, this.name, this.durability);
+	}
+
+	@Override
+	public int getContentVersion() {
+		return 1;
+	}
 }

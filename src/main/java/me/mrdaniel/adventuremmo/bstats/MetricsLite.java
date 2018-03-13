@@ -34,7 +34,6 @@ import java.util.zip.GZIPOutputStream;
 
 public class MetricsLite {
 
-	
 	public static final int B_STATS_VERSION = 1;
 	private static final String URL = "https://bStats.org/submitData/sponge";
 	private static boolean created = false;
@@ -50,28 +49,41 @@ public class MetricsLite {
 
 	@Inject
 	private MetricsLite(PluginContainer plugin, Logger logger, @ConfigDir(sharedRoot = true) Path configDir) {
-		if (created) throw new IllegalStateException("There's already an instance of this Metrics class!");
-		else { created = true; }
+		if (created)
+			throw new IllegalStateException("There's already an instance of this Metrics class!");
+		else {
+			created = true;
+		}
 
 		this.plugin = plugin;
 		this.logger = logger;
 		this.configDir = configDir;
 
-		try { this.loadConfig(); }
-		catch (IOException e) { logger.warn("Failed to load bStats config!", e); return; }
+		try {
+			this.loadConfig();
+		} catch (IOException e) {
+			logger.warn("Failed to load bStats config!", e);
+			return;
+		}
 
-		if (!this.enabled) { return; }
+		if (!this.enabled) {
+			return;
+		}
 
 		Class<?> usedMetricsClass = getFirstBStatsClass();
-		if (usedMetricsClass == null) { return; }
+		if (usedMetricsClass == null) {
+			return;
+		}
 		if (usedMetricsClass == getClass()) {
 			linkMetrics(this);
 			startSubmitting();
-		}
-		else {
-			try { usedMetricsClass.getMethod("linkMetrics", Object.class).invoke(null, this); }
-			catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-				if (this.logFailedRequests) { logger.warn("Failed to link to first metrics class {}!", usedMetricsClass.getName(), e); }
+		} else {
+			try {
+				usedMetricsClass.getMethod("linkMetrics", Object.class).invoke(null, this);
+			} catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+				if (this.logFailedRequests) {
+					logger.warn("Failed to link to first metrics class {}!", usedMetricsClass.getName(), e);
+				}
 			}
 		}
 	}
@@ -95,10 +107,13 @@ public class MetricsLite {
 		timer.scheduleAtFixedRate(new TimerTask() {
 			@Override
 			public void run() {
-				if (!Sponge.getPluginManager().isLoaded(plugin.getId())) { timer.cancel(); return; }
+				if (!Sponge.getPluginManager().isLoaded(plugin.getId())) {
+					timer.cancel();
+					return;
+				}
 				Task.builder().execute(() -> submitData()).submit(plugin);
 			}
-		}, 1000*60*5, 1000*60*30);
+		}, 1000 * 60 * 5, 1000 * 60 * 30);
 	}
 
 	private JsonObject getServerData() {
@@ -126,21 +141,30 @@ public class MetricsLite {
 		for (Object metrics : knownMetricsInstances) {
 			try {
 				Object plugin = metrics.getClass().getMethod("getPluginData").invoke(metrics);
-				if (plugin instanceof JsonObject) { pluginData.add((JsonObject) plugin); }
+				if (plugin instanceof JsonObject) {
+					pluginData.add((JsonObject) plugin);
+				}
+			} catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException ignored) {
 			}
-			catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException ignored) { }
 		}
 		data.add("plugins", pluginData);
 
-		new Thread(() ->  {
-			try { sendData(data); }
-			catch (Exception e) { if (this.logFailedRequests) { this.logger.warn("Could not submit plugin stats!", e); } }
+		new Thread(() -> {
+			try {
+				sendData(data);
+			} catch (Exception e) {
+				if (this.logFailedRequests) {
+					this.logger.warn("Could not submit plugin stats!", e);
+				}
+			}
 		}).start();
 	}
 
 	private void loadConfig() throws IOException {
 		Path configPath = this.configDir.resolve("bStats");
-		if (!Files.exists(configPath)) { Files.createDirectory(configPath); }
+		if (!Files.exists(configPath)) {
+			Files.createDirectory(configPath);
+		}
 		Path configFile = configPath.resolve("config.conf");
 		HoconConfigurationLoader configurationLoader = HoconConfigurationLoader.builder().setPath(configFile).build();
 		CommentedConfigurationNode node;
@@ -154,14 +178,14 @@ public class MetricsLite {
 			node.getNode("logFailedRequests").setValue(false);
 
 			node.getNode("enabled").setComment(
-					"bStats collects some data for plugin authors like how many servers are using their plugins.\n" +
-							"To honor their work, you should not disable it.\n" +
-							"This has nearly no effect on the server performance!\n" +
-							"Check out https://bStats.org/ to learn more :)"
-			);
+					"bStats collects some data for plugin authors like how many servers are using their plugins.\n"
+							+ "To honor their work, you should not disable it.\n"
+							+ "This has nearly no effect on the server performance!\n"
+							+ "Check out https://bStats.org/ to learn more :)");
 			configurationLoader.save(node);
+		} else {
+			node = configurationLoader.load();
 		}
-		else { node = configurationLoader.load(); }
 
 		this.enabled = node.getNode("enabled").getBoolean(true);
 		this.serverUUID = node.getNode("serverUuid").getString();
@@ -176,28 +200,37 @@ public class MetricsLite {
 		try {
 			String className = readFile(tempFile);
 			if (className != null) {
-				try { return Class.forName(className); }
-				catch (ClassNotFoundException ignored) { }
+				try {
+					return Class.forName(className);
+				} catch (ClassNotFoundException ignored) {
+				}
 			}
 			writeFile(tempFile, getClass().getName());
 			return getClass();
-		}
-		catch (IOException e) {
-			if (this.logFailedRequests) { this.logger.warn("Failed to get first bStats class!", e); }
+		} catch (IOException e) {
+			if (this.logFailedRequests) {
+				this.logger.warn("Failed to get first bStats class!", e);
+			}
 			return null;
 		}
 	}
 
 	private String readFile(File file) throws IOException {
-		if (!file.exists()) { return null; }
-		try (FileReader fileReader = new FileReader(file); BufferedReader bufferedReader = new BufferedReader(fileReader)) {
+		if (!file.exists()) {
+			return null;
+		}
+		try (FileReader fileReader = new FileReader(file);
+				BufferedReader bufferedReader = new BufferedReader(fileReader)) {
 			return bufferedReader.readLine();
 		}
 	}
 
 	private void writeFile(File file, String text) throws IOException {
-		if (!file.exists()) { file.createNewFile(); }
-		try (FileWriter fileWriter = new FileWriter(file); BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
+		if (!file.exists()) {
+			file.createNewFile();
+		}
+		try (FileWriter fileWriter = new FileWriter(file);
+				BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
 			bufferedWriter.write(text);
 			bufferedWriter.newLine();
 			bufferedWriter.write("Note: This class only exists for internal purpose. You can ignore it :)");
@@ -228,7 +261,9 @@ public class MetricsLite {
 	}
 
 	private static byte[] compress(final String str) throws IOException {
-		if (str == null) { return null; }
+		if (str == null) {
+			return null;
+		}
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		GZIPOutputStream gzip = new GZIPOutputStream(outputStream);
 		gzip.write(str.getBytes("UTF-8"));

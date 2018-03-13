@@ -16,7 +16,8 @@ public class ItemInfo {
 	private final int max_damage;
 	private final boolean enchanted;
 
-	public ItemInfo(@Nonnull final ItemType type, final int min_amount, final int max_amount, final int min_damage, final int max_damage, final boolean enchanted) {
+	public ItemInfo(@Nonnull final ItemType type, final int min_amount, final int max_amount, final int min_damage,
+			final int max_damage, final boolean enchanted) {
 		this.type = type;
 		this.min_amount = min_amount;
 		this.max_amount = max_amount + 1;
@@ -27,12 +28,16 @@ public class ItemInfo {
 
 	@Nonnull
 	public ItemStack create(@Nonnull final AdventureMMO mmo) {
-		ItemStack item = ItemUtils.build(this.type, (int) (Math.random() * (this.max_amount - this.min_amount) + this.min_amount), (int) (Math.random() * (this.max_damage - this.min_damage) + this.min_damage));
+		ItemStack item = ItemUtils.build(this.type,
+				(int) (Math.random() * (this.max_amount - this.min_amount) + this.min_amount),
+				(int) (Math.random() * (this.max_damage - this.min_damage) + this.min_damage));
 		return this.enchanted ? ItemUtils.enchant(mmo, item) : item;
 	}
 
-//	@Override
-//	public String toString() {
-//		return "ItemInfo{ItemType=" + this.type.getId() + ", amount=" + this.min_amount + "-" + this.max_amount + ", damage=" + this.min_damage + "-" + this.max_damage + ", enchanted=" + this.enchanted + "}";
-//	}
+	// @Override
+	// public String toString() {
+	// return "ItemInfo{ItemType=" + this.type.getId() + ", amount=" +
+	// this.min_amount + "-" + this.max_amount + ", damage=" + this.min_damage + "-"
+	// + this.max_damage + ", enchanted=" + this.enchanted + "}";
+	// }
 }

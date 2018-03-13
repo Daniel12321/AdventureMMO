@@ -35,8 +35,11 @@ public class SQLDatabase implements PlayerDatabase, ItemDatabase, TopDatabase {
 
 	public SQLDatabase(@Nonnull final AdventureMMO mmo, @Nonnull final Path path) {
 		if (!Files.exists(path)) {
-			try { mmo.getContainer().getAsset("storage.db").get().copyToFile(path); }
-			catch (final IOException exc) { mmo.getLogger().error("Failed to create database file from asset: {}", exc); }
+			try {
+				mmo.getContainer().getAsset("storage.db").get().copyToFile(path);
+			} catch (final IOException exc) {
+				mmo.getLogger().error("Failed to create database file from asset: {}", exc);
+			}
 		}
 
 		this.players = new ConcurrentHashMap<UUID, SQLPlayerData>();

@@ -22,7 +22,8 @@ public class SkillType implements CatalogType {
 	private final BiFunction<AdventureMMO, Config, Object> listener;
 	private final List<Ability> abilities;
 
-	SkillType(@Nonnull final String name, @Nonnull final String id, @Nonnull final BiFunction<AdventureMMO, Config, Object> listener, @Nonnull final Ability... abilities) {
+	SkillType(@Nonnull final String name, @Nonnull final String id,
+			@Nonnull final BiFunction<AdventureMMO, Config, Object> listener, @Nonnull final Ability... abilities) {
 		this.name = name;
 		this.id = id;
 		this.listener = listener;

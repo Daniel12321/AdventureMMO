@@ -15,9 +15,28 @@ public abstract class MMOObject {
 		this.mmo = mmo;
 	}
 
-	@Nonnull public AdventureMMO getMMO() { return this.mmo; }
-	@Nonnull public PluginContainer getContainer() { return this.mmo.getContainer(); }
-	@Nonnull public Logger getLogger() { return this.mmo.getLogger(); }
-	@Nonnull public Game getGame() { return this.mmo.getGame(); }
-	@Nonnull public Server getServer() { return this.mmo.getGame().getServer(); }
+	@Nonnull
+	public AdventureMMO getMMO() {
+		return this.mmo;
+	}
+
+	@Nonnull
+	public PluginContainer getContainer() {
+		return this.mmo.getContainer();
+	}
+
+	@Nonnull
+	public Logger getLogger() {
+		return this.mmo.getLogger();
+	}
+
+	@Nonnull
+	public Game getGame() {
+		return this.mmo.getGame();
+	}
+
+	@Nonnull
+	public Server getServer() {
+		return this.mmo.getGame().getServer();
+	}
 }

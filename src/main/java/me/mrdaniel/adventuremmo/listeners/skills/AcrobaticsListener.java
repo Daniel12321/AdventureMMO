@@ -34,15 +34,18 @@ public class AcrobaticsListener extends MMOObject {
 		if (e.getTargetEntity() instanceof Player) {
 			Player p = (Player) e.getTargetEntity();
 
-			boolean fall = e.getCause().first(DamageSource.class).map(source -> source.getType() == DamageTypes.FALL).orElse(false);
-			PlayerData data = fall ? super.getMMO().getPlayerDatabase().addExp(super.getMMO(), p, SkillTypes.ACROBATICS, (int) (this.exp_multiplier * p.get(Keys.FALL_DISTANCE).orElse(4F))) : super.getMMO().getPlayerDatabase().get(p.getUniqueId());
+			boolean fall = e.getCause().first(DamageSource.class).map(source -> source.getType() == DamageTypes.FALL)
+					.orElse(false);
+			PlayerData data = fall
+					? super.getMMO().getPlayerDatabase().addExp(super.getMMO(), p, SkillTypes.ACROBATICS,
+							(int) (this.exp_multiplier * p.get(Keys.FALL_DISTANCE).orElse(4F)))
+					: super.getMMO().getPlayerDatabase().get(p.getUniqueId());
 			int level = data.getLevel(SkillTypes.ACROBATICS);
 
 			if (fall && Abilities.ROLL.getChance(level)) {
 				e.setCancelled(true);
 				super.getMMO().getMessages().sendRoll(p);
-			}
-			else if (Abilities.DODGE.getChance(level)) {
+			} else if (Abilities.DODGE.getChance(level)) {
 				e.setCancelled(true);
 				super.getMMO().getMessages().sendDodge(p);
 			}

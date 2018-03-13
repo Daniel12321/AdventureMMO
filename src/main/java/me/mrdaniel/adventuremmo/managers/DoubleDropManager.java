@@ -9,9 +9,7 @@ import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.Item;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
-import org.spongepowered.api.event.cause.entity.spawn.BlockSpawnCause;
 import org.spongepowered.api.event.filter.IsCancelled;
-import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.item.inventory.DropItemEvent;
 import org.spongepowered.api.event.world.LoadWorldEvent;
 import org.spongepowered.api.event.world.UnloadWorldEvent;
@@ -32,7 +30,8 @@ public class DoubleDropManager {
 	public DoubleDropManager(@Nonnull final AdventureMMO mmo) {
 		this.blocks = Maps.newHashMap();
 
-		Task.builder().delayTicks(10).intervalTicks(1).execute(() -> this.blocks.values().forEach(m -> m.clear())).submit(mmo);
+		Task.builder().delayTicks(10).intervalTicks(1).execute(() -> this.blocks.values().forEach(m -> m.clear()))
+				.submit(mmo);
 		mmo.getGame().getServer().getWorlds().forEach(w -> this.blocks.put(w, Maps.newHashMap()));
 	}
 
@@ -58,13 +57,14 @@ public class DoubleDropManager {
 
 	@Listener(order = Order.LATE)
 	@IsCancelled(value = Tristate.FALSE)
-	public void onItemDrop(final DropItemEvent.Destruct e, @First final BlockSpawnCause block) {
-		e.getEntities().stream().filter(ent -> ent instanceof Item).map(ent -> (Item)ent).forEach(item -> {
-			Optional.ofNullable(this.blocks.get(item.getWorld()).get(item.getLocation().getBlockPosition())).ifPresent(times -> {
-				ItemStack is = item.item().get().createStack();
-				is.setQuantity(is.getQuantity()*times);
-				item.offer(Keys.REPRESENTED_ITEM, is.createSnapshot());
-			});
+	public void onItemDrop(final DropItemEvent.Destruct e) {
+		e.getEntities().stream().filter(ent -> ent instanceof Item).map(ent -> (Item) ent).forEach(item -> {
+			Optional.ofNullable(this.blocks.get(item.getWorld()).get(item.getLocation().getBlockPosition()))
+					.ifPresent(times -> {
+						ItemStack is = item.item().get().createStack();
+						is.setQuantity(is.getQuantity() * times);
+						item.offer(Keys.REPRESENTED_ITEM, is.createSnapshot());
+					});
 		});
 	}
 }

@@ -7,13 +7,11 @@ import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.type.TreeType;
 import org.spongepowered.api.data.type.TreeTypes;
 import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.util.Direction;
 import org.spongepowered.api.util.Tristate;
-import org.spongepowered.api.world.BlockChangeFlag;
+import org.spongepowered.api.world.BlockChangeFlags;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
@@ -37,31 +35,40 @@ public class WoodcuttingListener extends ActiveAbilityListener {
 	@Listener
 	public void onBlockBreak(final BreakBlockEvent e) {
 		if (e.getBlock().getSkill() == super.skill && e.getTool() != null && e.getTool() == super.tool) {
-			PlayerData pdata = super.getMMO().getPlayerDatabase().addExp(super.getMMO(), e.getPlayer(), super.skill, e.getBlock().getExp());
+			PlayerData pdata = super.getMMO().getPlayerDatabase().addExp(super.getMMO(), e.getPlayer(), super.skill,
+					e.getBlock().getExp());
 
 			if (Abilities.DOUBLE_DROP.getChance(pdata.getLevel(super.skill))) {
-				super.getMMO().getDoubleDrops().addDouble(e.getLocation().getExtent(), e.getLocation().getBlockPosition());
+				super.getMMO().getDoubleDrops().addDouble(e.getLocation().getExtent(),
+						e.getLocation().getBlockPosition());
 			}
 
 			if (e.getPlayer().get(MMOData.class).orElse(new MMOData()).isAbilityActive(super.ability.getId())) {
 				Task.builder().delayTicks(2).execute(() -> {
-					Lists.newArrayList(Direction.UP, Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST).forEach(direction -> {
-						Location<World> newloc = e.getLocation().getRelative(direction);
-						super.getMMO().getItemDatabase().getData(newloc.getBlockType()).ifPresent(blockdata -> {
-							if (blockdata.getSkill() == this.skill) {
-								ItemStackSnapshot item = ItemUtils.build(newloc.getBlockType().getItem().get(), Abilities.DOUBLE_DROP.getChance(pdata.getLevel(super.skill)) ? 1 : 2, this.matchTree(newloc.getBlock().get(Keys.TREE_TYPE).orElse(TreeTypes.OAK))).createSnapshot();
-								newloc.setBlockType(BlockTypes.AIR, BlockChangeFlag.ALL, Cause.source(super.getMMO().getContainer()).named(NamedCause.simulated(e.getPlayer())).build());
-								ItemUtils.drop(newloc, item);
-								super.getGame().getEventManager().post(new BreakBlockEvent(super.getMMO(), e.getPlayer(), newloc, blockdata, this.tool));
-							}
-						});
-					}); 
+					Lists.newArrayList(Direction.UP, Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST)
+							.forEach(direction -> {
+								Location<World> newloc = e.getLocation().getRelative(direction);
+								super.getMMO().getItemDatabase().getData(newloc.getBlockType()).ifPresent(blockdata -> {
+									if (blockdata.getSkill() == this.skill) {
+										ItemStackSnapshot item = ItemUtils.build(newloc.getBlockType().getItem().get(),
+												Abilities.DOUBLE_DROP.getChance(pdata.getLevel(super.skill)) ? 1 : 2,
+												this.matchTree(
+														newloc.getBlock().get(Keys.TREE_TYPE).orElse(TreeTypes.OAK)))
+												.createSnapshot();
+										newloc.setBlockType(BlockTypes.AIR, BlockChangeFlags.ALL);
+										ItemUtils.drop(newloc, item);
+										super.getGame().getEventManager().post(new BreakBlockEvent(super.getMMO(),
+												e.getPlayer(), newloc, blockdata, this.tool));
+									}
+								});
+							});
 				}).submit(super.getMMO());
 			}
 		}
 	}
 
 	private int matchTree(@Nonnull final TreeType type) {
-		return type == TreeTypes.SPRUCE || type == TreeTypes.DARK_OAK ? 1 : type == TreeTypes.BIRCH ? 2 : type == TreeTypes.JUNGLE ? 3 : 0;
+		return type == TreeTypes.SPRUCE || type == TreeTypes.DARK_OAK ? 1
+				: type == TreeTypes.BIRCH ? 2 : type == TreeTypes.JUNGLE ? 3 : 0;
 	}
 }
